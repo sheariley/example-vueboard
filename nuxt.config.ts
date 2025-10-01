@@ -1,7 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true,
+    vscode: {}
+  },
 
   modules: [
     '@nuxt/eslint',
@@ -9,7 +12,13 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxt/test-utils',
     '@nuxt/scripts',
-    '@pinia/nuxt',
     // '@nuxtjs/supabase'
-  ]
+    '@pinia/nuxt'
+  ],
+
+  css: ['~/assets/css/main.css'],
+
+  ui: {
+    mdc: true
+  }
 })
