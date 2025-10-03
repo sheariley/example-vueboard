@@ -7,23 +7,35 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "mock:db": "json-server ./mock-data/db.json -c ./mock-data/json-server-config.json"
   },
   "dependencies": {
     "@googlemaps/markerclusterer": "^2.6.2",
     "@nuxt/eslint": "^1.9.0",
+    "@nuxt/icon": "^2.0.0",
     "@nuxt/image": "^1.11.0",
     "@nuxt/scripts": "^0.12.1",
-    "@nuxt/test-utils": "^3.19.2",
     "@nuxt/ui": "^4.0.0",
     "@nuxtjs/supabase": "^2.0.0",
     "@pinia/nuxt": "^0.11.2",
     "@unhead/vue": "^2.0.17",
+    "@vee-validate/nuxt": "^4.15.1",
+    "@vee-validate/zod": "^4.15.1",
     "eslint": "^9.36.0",
     "nuxt": "^4.1.2",
     "pinia": "^3.0.3",
     "typescript": "^5.9.2",
     "vue": "^3.5.22",
     "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@iconify-json/fa7-solid": "^1.2.2",
+    "@nuxt/test-utils": "^3.19.2",
+    "@vue/test-utils": "^2.4.6",
+    "happy-dom": "^18.0.1",
+    "json-server": "0.17.4",
+    "playwright-core": "^1.55.1",
+    "vitest": "^3.2.4"
   }
 }
