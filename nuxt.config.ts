@@ -14,9 +14,14 @@ export default defineNuxtConfig({
     '@nuxt/scripts',
     // '@nuxtjs/supabase'
     '@pinia/nuxt',
-    '@vee-validate/nuxt',
     '@nuxt/icon'
   ],
+
+  runtimeConfig: {
+    public: {
+      projectsApiBase: ''
+    }
+  },
 
   app: {
     head: {

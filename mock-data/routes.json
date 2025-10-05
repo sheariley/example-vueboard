@@ -1,4 +1,0 @@
-{
-  "/projects/:projectId/projectColumns": "/projectColumns?projectId=:projectId",
-  "/projects/:projectId/projectColumns/:columnId/workItems": "/workItems?projectColumnId=:columnId"
-}
