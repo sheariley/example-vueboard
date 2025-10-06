@@ -4,7 +4,7 @@ export function prepareProjectEntityForSave(entity: Project): Project {
   return {
     ...entity,
     clientId: undefined,
-    columns: prepareColumnEntitiesForSave(entity.columns)
+    projectColumns: prepareColumnEntitiesForSave(entity.projectColumns)
   }
 }
 

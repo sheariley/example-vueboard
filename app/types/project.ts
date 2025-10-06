@@ -14,8 +14,14 @@ export const ProjectSchema = zod.object({
     .max(200, { error: 'Too long (max: 200)' }),
   description: zod.string()
     .optional(),
-  columns: zod.array(ProjectColumnSchema)
+  projectColumns: zod.array(ProjectColumnSchema)
     .optional()
 })
 
 export type Project = zod.infer<typeof ProjectSchema>
+
+export const DefaultProjectState: Project = {
+  title: 'New Project',
+  description: '',
+  projectColumns: []
+}

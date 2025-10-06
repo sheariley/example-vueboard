@@ -23,3 +23,9 @@ export const ProjectColumnSchema = zod.object({
 })
 
 export type ProjectColumn = zod.infer<typeof ProjectColumnSchema>
+
+export const DefaultProjectColumnState: ProjectColumn = {
+  index: 0,
+  name: 'Backlog',
+  workItems: []
+}

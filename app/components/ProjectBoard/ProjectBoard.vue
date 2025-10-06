@@ -9,7 +9,7 @@
           <UTextarea placeholder="Description" v-model="state.description" />
         </UFormField>
         <UButton type="submit">
-          <UIcon name="fa7-solid:save"/> Save
+          <font-awesome-icon icon="fa-solid fa-save"/> Save
         </UButton>
       </UForm>
     </div>
@@ -29,7 +29,7 @@
   const state = reactive<Partial<Project>>({
     title: project.title,
     description: project.description,
-    columns: project.columns
+    projectColumns: project.projectColumns
   });
 
   function saveProject() {

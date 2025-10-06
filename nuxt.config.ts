@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     '@nuxt/scripts',
     // '@nuxtjs/supabase'
     '@pinia/nuxt',
-    '@nuxt/icon'
+    // '@nuxt/icon'
   ],
 
   runtimeConfig: {
@@ -31,17 +31,24 @@ export default defineNuxtConfig({
     }
   },
 
-  css: ['~/assets/css/main.css'],
+  pinia: {
+    storesDirs: ['app/stores/**']
+  },
+
+  css: [
+    '@fortawesome/fontawesome-svg-core/styles.css',
+    '~/assets/css/main.css'
+  ],
 
   ui: {
     mdc: true
   },
 
-  icon: {
-    mode: 'css',
-    cssLayer: 'base',
-    clientBundle: {
-      scan: true
-    }
-  }
+  // icon: {
+  //   mode: 'css',
+  //   cssLayer: 'base',
+  //   clientBundle: {
+  //     scan: true
+  //   }
+  // }
 })

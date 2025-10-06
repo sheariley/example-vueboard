@@ -1,7 +1,7 @@
 <template>
   <UHeader></UHeader>
 
-  <UMain>
+  <UMain class="flex flex-col">
     <UContainer>
       <slot />
     </UContainer>

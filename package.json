@@ -11,6 +11,9 @@
     "mock:db": "json-server ./mock-data/db.json -c ./mock-data/json-server-config.json"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.1.0",
+    "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "@fortawesome/vue-fontawesome": "^3.1.2",
     "@googlemaps/markerclusterer": "^2.6.2",
     "@nuxt/eslint": "^1.9.0",
     "@nuxt/icon": "^2.0.0",
