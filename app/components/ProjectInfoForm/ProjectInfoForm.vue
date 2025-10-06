@@ -32,9 +32,10 @@
     cancel: []
   }>()
 
-  const title = defineModel('title', { type: String })
-
-  const description = defineModel('description', { type: String })
+  const { title, description } = defineProps<{
+    title: string
+    description?: string
+  }>()
 
   const state = reactive({
     title: title,
