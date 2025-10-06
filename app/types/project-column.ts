@@ -3,8 +3,7 @@ import * as zod from 'zod'
 import { WorkItemSchema } from './work-item'
 
 export const ProjectColumnSchema = zod.object({
-  clientId: zod.string()
-    .optional(),
+  uid: zod.uuidv4(),
   projectId: zod.number()
     .int()
     .nonnegative()
@@ -25,6 +24,7 @@ export const ProjectColumnSchema = zod.object({
 export type ProjectColumn = zod.infer<typeof ProjectColumnSchema>
 
 export const DefaultProjectColumnState: ProjectColumn = {
+  uid: '',
   index: 0,
   name: 'Backlog',
   workItems: []

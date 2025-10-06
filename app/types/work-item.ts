@@ -1,8 +1,7 @@
 import * as zod from 'zod'
 
 export const WorkItemSchema = zod.object({
-  clientId: zod.string()
-    .optional(),
+  uid: zod.uuidv4(),
   projectColumnId: zod.number()
     .int()
     .nonnegative()
@@ -15,6 +14,7 @@ export const WorkItemSchema = zod.object({
     .min(3, { message: 'This is required' })
     .max(200, { error: 'Too long (max: 200)' }),
   content: zod.string()
+    .nullable()
     .optional(),
   tags: zod.array(zod.string()
     .min(1, { message: 'A tag must not be empty' })
@@ -23,3 +23,9 @@ export const WorkItemSchema = zod.object({
 })
 
 export type WorkItem = zod.infer<typeof WorkItemSchema>
+
+export const DefaultWorkItemState: WorkItem = {
+  uid: '',
+  title: '',
+  tags: []
+}

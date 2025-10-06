@@ -14,7 +14,6 @@ export const useProjectListItemsStore = defineStore('projectListItemsStore', () 
     loadError.value = null // clear previous error
     loading.value = true
 
-    // TODO: Change to use a proper endpoint once we implement it
     const url = `${config.public.projectsApiBase}/projects`
     
     try {
@@ -22,10 +21,7 @@ export const useProjectListItemsStore = defineStore('projectListItemsStore', () 
       if (!resp.ok) {
         throw new Error(`Error fetching projects: ${resp.statusText} (${resp.status})`, { cause: resp })
       }
-      const rawProjects: ProjectListItem[] = await resp.json()
-    
-      // TODO: Replace with proper list item assignment once we implement proper endpoint
-      listItems.value = rawProjects.map(({ id, title, description }) => ({ id, title, description }))
+      listItems.value = await resp.json()
     } catch (error) {
       loadError.value = coerceErrorMessage(error)
     } finally {

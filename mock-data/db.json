@@ -1,16 +1,19 @@
 {
   "projects": [
     {
+      "uid": "b7e1e2c2-1a2b-4c3d-8e4f-5f6a7b8c9d0e",
       "id": 1,
       "title": "Website Redesign",
       "description": "Revamp the company website with a modern design and improved user experience."
     },
     {
+      "uid": "c1d2e3f4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
       "id": 2,
       "title": "Mobile App Launch",
       "description": "Develop and launch a new mobile application for iOS and Android platforms."
     },
     {
+      "uid": "e7f8a9b0-1c2d-3e4f-5a6b-7c8d9e0f1a2b",
       "id": 3,
       "title": "Marketing Campaign",
       "description": "Execute a comprehensive marketing campaign to boost brand awareness and engagement."
@@ -18,12 +21,14 @@
   ],
   "projectColumns": [
     {
+      "uid": "f1a2b3c4-d5e6-7f8a-9b0c-1d2e3f4a5b6c",
       "id": 1,
       "projectId": 1,
       "name": "Backlog",
       "index": 0,
       "workItems": [
         {
+          "uid": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
           "projectColumnId": 1,
           "id": 1,
           "title": "Gather requirements",
@@ -31,6 +36,7 @@
           "tags": ["planning", "meeting"]
         },
         {
+          "uid": "b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e",
           "projectColumnId": 1,
           "id": 2,
           "title": "Research competitors",
@@ -40,12 +46,14 @@
       ]
     },
     {
+      "uid": "c2d3e4f5-a6b7-8c9d-0e1f-2a3b4c5d6e7f",
       "id": 2,
       "projectId": 1,
       "name": "In Progress",
       "index": 1,
       "workItems": [
         {
+          "uid": "c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f",
           "projectColumnId": 2,
           "id": 3,
           "title": "Create wireframes",
@@ -55,12 +63,14 @@
       ]
     },
     {
+      "uid": "d3e4f5a6-b7c8-9d0e-1f2a-3b4c5d6e7f8a",
       "id": 3,
       "projectId": 1,
       "name": "Review",
       "index": 2,
       "workItems": [
         {
+          "uid": "d4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f9a",
           "projectColumnId": 3,
           "id": 4,
           "title": "Review homepage mockup",
@@ -70,12 +80,14 @@
       ]
     },
     {
+      "uid": "e4f5a6b7-c8d9-0e1f-2a3b-4c5d6e7f8a9b",
       "id": 4,
       "projectId": 1,
       "name": "Done",
       "index": 3,
       "workItems": [
         {
+          "uid": "e5f6a7b8-c9d0-1e2f-3a4b-5c6d7e8f9a0b",
           "projectColumnId": 4,
           "id": 5,
           "title": "Finalize color palette",
@@ -85,12 +97,14 @@
       ]
     },
     {
+      "uid": "f5a6b7c8-d9e0-1f2a-3b4c-5d6e7f8a9b0c",
       "id": 5,
       "projectId": 2,
       "name": "Backlog",
       "index": 0,
       "workItems": [
         {
+          "uid": "f6a7b8c9-d0e1-2f3a-4b5c-6d7e8f9a0b1c",
           "projectColumnId": 5,
           "id": 6,
           "title": "Define MVP features",
@@ -98,6 +112,7 @@
           "tags": ["planning", "features"]
         },
         {
+          "uid": "a7b8c9d0-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
           "projectColumnId": 5,
           "id": 7,
           "title": "Set up analytics",
@@ -107,12 +122,14 @@
       ]
     },
     {
+      "uid": "a6b7c8d9-e0f1-2a3b-4c5d-6e7f8a9b0c1d",
       "id": 6,
       "projectId": 2,
       "name": "In Progress",
       "index": 1,
       "workItems": [
         {
+          "uid": "a8b9c0d1-e2f3-4a5b-6c7d-8e9f0a1b2c3d",
           "projectColumnId": 6,
           "id": 8,
           "title": "Develop onboarding screens",
@@ -122,12 +139,14 @@
       ]
     },
     {
+      "uid": "b7c8d9e0-f1a2-3b4c-5d6e-7f8a9b0c1d2e",
       "id": 7,
       "projectId": 2,
       "name": "Review",
       "index": 2,
       "workItems": [
         {
+          "uid": "b9c0d1e2-f3a4-5b6c-7d8e-9f0a1b2c3d4e",
           "projectColumnId": 7,
           "id": 9,
           "title": "Test push notifications",
@@ -137,12 +156,14 @@
       ]
     },
     {
+      "uid": "c8d9e0f1-a2b3-4c5d-6e7f-8a9b0c1d2e3f",
       "id": 8,
       "projectId": 2,
       "name": "Done",
       "index": 3,
       "workItems": [
         {
+          "uid": "c0d1e2f3-a4b5-6c7d-8e9f-0a1b2c3d4e5f",
           "projectColumnId": 8,
           "id": 10,
           "title": "Publish beta version",
@@ -152,12 +173,14 @@
       ]
     },
     {
+      "uid": "d9e0f1a2-b3c4-5d6e-7f8a-9b0c1d2e3f4a",
       "id": 9,
       "projectId": 3,
       "name": "Backlog",
       "index": 0,
       "workItems": [
         {
+          "uid": "d1e2f3a4-b5c6-7d8e-9f0a-1b2c3d4e5f6a",
           "projectColumnId": 9,
           "id": 11,
           "title": "Brainstorm campaign ideas",
@@ -165,6 +188,7 @@
           "tags": ["brainstorm", "ideas"]
         },
         {
+          "uid": "e2f3a4b5-c6d7-8e9f-0a1b-2c3d4e5f6a7b",
           "projectColumnId": 9,
           "id": 12,
           "title": "Identify target audience",
@@ -174,12 +198,14 @@
       ]
     },
     {
+      "uid": "e0f1a2b3-c4d5-6e7f-8a9b-0c1d2e3f4a5b",
       "id": 10,
       "projectId": 3,
       "name": "In Progress",
       "index": 1,
       "workItems": [
         {
+          "uid": "e3f4a5b6-c7d8-9e0f-1a2b-3c4d5e6f7a8b",
           "projectColumnId": 10,
           "id": 13,
           "title": "Design social media graphics",
@@ -189,12 +215,14 @@
       ]
     },
     {
+      "uid": "f1a2b3c4-d5e6-7f8a-9b0c-1d2e3f4a5b6d",
       "id": 11,
       "projectId": 3,
       "name": "Review",
       "index": 2,
       "workItems": [
         {
+          "uid": "f3a4b5c6-d7e8-9f0a-1b2c-3d4e5f6a7b8c",
           "projectColumnId": 11,
           "id": 14,
           "title": "Review ad copy",
@@ -204,12 +232,14 @@
       ]
     },
     {
+      "uid": "a2b3c4d5-e6f7-8a9b-0c1d-2e3f4a5b6c7d",
       "id": 12,
       "projectId": 3,
       "name": "Done",
       "index": 3,
       "workItems": [
         {
+          "uid": "a4b5c6d7-e8f9-0a1b-2c3d-4e5f6a7b8c9d",
           "projectColumnId": 12,
           "id": 15,
           "title": "Launch email newsletter",

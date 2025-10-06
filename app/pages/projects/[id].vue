@@ -11,28 +11,14 @@
     <template v-else-if="currentProjectStore.loadError">
     </template>
     <template v-else>
-      <UForm :schema="ProjectSchema" @submit="saveProject"
-        class="flex flex-col items-stretch gap-1">
-        <UFormField label="Title" required>
-          <UInput placeholder="Title" v-model="title" class="w-full" />
-        </UFormField>
-        <UFormField label="Description">
-          <UTextarea placeholder="Description" v-model="description" class="w-full" />
-        </UFormField>
-        <div class="flex justify-end">
-          <UButton type="submit" :disabled="!isValid">
-            <font-awesome-icon icon="fa-solid fa-save"/> Save
-          </UButton>
-        </div>
-      </UForm>
+      <ProjectInfoForm v-model:title="title" v-model:description="description" />
       <ProjectBoard :columns="projectColumns" @columns-change="updateColumnsStore" />
     </template>
   </UContainer>
 </template>
 
 <script lang="ts" setup>
-  import { useCurrentProjectStore } from '~/stores/currentProjectStore'
-  import { ProjectSchema, type ProjectColumn } from '~/types'
+  import { type ProjectColumn } from '~/types'
 
   const currentProjectStore = useCurrentProjectStore()
 
@@ -41,8 +27,6 @@
   const projectId = Number(route.params.id);
 
   const { title, description, projectColumns, isValid } = storeToRefs(currentProjectStore)
-
-  
 
   function updateColumnsStore(columns: ProjectColumn[]) {
     projectColumns.value = columns

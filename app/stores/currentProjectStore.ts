@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia';
 
-import { DefaultProjectColumnState, DefaultProjectState, type ProjectColumn, type Project, ProjectSchema } from '~/types';
+import { DefaultProjectState, type Project, type ProjectColumn, ProjectSchema } from '~/types';
 import coerceErrorMessage from '~/util/coerceErrorMessage';
-import { mapRawProjectToClientEntity } from '~/util/mapRawProjectsToClientEntities';
 import { prepareProjectEntityForSave } from '~/util/prepareProjectEntitiesForSave';
 
 export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
@@ -12,7 +11,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   const loadError = ref<string | null>(null)
   const isValid = ref(false)
 
-  // const project = ref<Project | null>(null)
+  const uid = ref<string>(crypto.randomUUID())
   const id = ref<number | undefined>()
   const title = ref<string>('')
   const description = ref<string | undefined>()
@@ -20,9 +19,10 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
 
   watch(() => toEntity(), async entity => {
     isValid.value = await validate(entity)
-  })
+  }, { deep: true, immediate: true })
 
   function hydrateFromEntity(project: Project) {
+    uid.value = project.uid
     id.value = project.id
     title.value = project.title
     description.value = project.description
@@ -31,6 +31,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
 
   function toEntity(): Project {
     const project: Project = {
+      uid: uid.value,
       id: id.value,
       title: title.value,
       description: description.value,
@@ -41,10 +42,11 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   }
 
   function reset() {
-    id.value = undefined
-    title.value = ''
-    description.value = undefined
-    projectColumns.value = []
+    hydrateFromEntity({
+      ...DefaultProjectState,
+      uid: crypto.randomUUID(),
+      projectColumns: []
+    })
   }
 
   async function validate(project: Project) {
@@ -63,12 +65,8 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
       if (!resp.ok) {
         throw new Error(`Error fetching project: ${resp.statusText} (${resp.status})`, { cause: resp })
       }
-      const rawProject: Project = await resp.json()
+      const project: Project = await resp.json()
       
-      // Generate client-side clientId properties.
-      // This allows us to handle new entities that don't have a server assigned id value yet.
-      const project = mapRawProjectToClientEntity(rawProject)
-
       hydrateFromEntity(project)
 
     } catch (error) {
