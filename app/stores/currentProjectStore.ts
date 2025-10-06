@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 
-import { DefaultProjectColumnState, DefaultProjectState, type Project } from '~/types';
+import { DefaultProjectColumnState, DefaultProjectState, type ProjectColumn, type Project, ProjectSchema } from '~/types';
 import coerceErrorMessage from '~/util/coerceErrorMessage';
 import { mapRawProjectToClientEntity } from '~/util/mapRawProjectsToClientEntities';
 import { prepareProjectEntityForSave } from '~/util/prepareProjectEntitiesForSave';
@@ -8,9 +8,49 @@ import { prepareProjectEntityForSave } from '~/util/prepareProjectEntitiesForSav
 export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   const config = useRuntimeConfig()
 
-  const project = ref<Project | null>(null)
-  const loading = ref(false)
+  const loading = ref(true)
   const loadError = ref<string | null>(null)
+  const isValid = ref(false)
+
+  // const project = ref<Project | null>(null)
+  const id = ref<number | undefined>()
+  const title = ref<string>('')
+  const description = ref<string | undefined>()
+  const projectColumns = ref<ProjectColumn[]>([])
+
+  watch(() => toEntity(), async entity => {
+    isValid.value = await validate(entity)
+  })
+
+  function hydrateFromEntity(project: Project) {
+    id.value = project.id
+    title.value = project.title
+    description.value = project.description
+    projectColumns.value = project.projectColumns || []
+  }
+
+  function toEntity(): Project {
+    const project: Project = {
+      id: id.value,
+      title: title.value,
+      description: description.value,
+      projectColumns: projectColumns.value
+    }
+
+    return project
+  }
+
+  function reset() {
+    id.value = undefined
+    title.value = ''
+    description.value = undefined
+    projectColumns.value = []
+  }
+
+  async function validate(project: Project) {
+    const result = await ProjectSchema.safeParseAsync(project)
+    return result.success
+  }
 
   async function fetchProject(projectId: number) {
     loadError.value = null // clear previous error
@@ -27,7 +67,10 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
       
       // Generate client-side clientId properties.
       // This allows us to handle new entities that don't have a server assigned id value yet.
-      project.value = mapRawProjectToClientEntity(rawProject)
+      const project = mapRawProjectToClientEntity(rawProject)
+
+      hydrateFromEntity(project)
+
     } catch (error) {
       loadError.value = coerceErrorMessage(error)
     } finally {
@@ -39,7 +82,9 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   const saveError = ref<string | null>(null)
 
   async function saveProject() {
-    if (!project.value) {
+    const project = toEntity()
+
+    if (!project) {
       saveError.value = 'Error saving project: No project loaded yet.'
       return
     }
@@ -50,12 +95,12 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     let method = 'POST'
     let url = `${config.public.projectsApiBase}/projects`
 
-    if (project.value?.id) {
-      url += `/${project.value.id}`
+    if (project?.id) {
+      url += `/${project.id}`
       method = 'PUT'
     }
 
-    const body = JSON.stringify(prepareProjectEntityForSave(project.value!))
+    const body = JSON.stringify(prepareProjectEntityForSave(project))
 
     try {
       const resp = await fetch(url, {
@@ -72,39 +117,33 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
 
       const savedEntity: Project = await resp.json()
 
-      // update project with saved data returned from server while preserving the clientId
-      project.value = { ...savedEntity, clientId: project.value.clientId }
+      return savedEntity
 
     } catch (error) {
       saveError.value = coerceErrorMessage(error)
+      return null
     } finally {
       saving.value = false
     }
-  }
 
-  function createNewProject() {
-    const newProject: Project = {
-      ...DefaultProjectState,
-      projectColumns: [
-        {
-          ...DefaultProjectColumnState,
-          workItems: []
-        }
-      ]
-    }
-
-    project.value = newProject
   }
 
   return {
-    project,
     loading,
     loadError,
     saving,
     saveError,
+    isValid,
+
+    title,
+    description,
+    projectColumns,
     
+    hydrateFromEntity,
+    toEntity,
+    reset,
+
     fetchProject,
     saveProject,
-    createNewProject
   }
 })

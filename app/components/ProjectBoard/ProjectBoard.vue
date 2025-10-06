@@ -1,42 +1,24 @@
 <template>
-  <div class="project-board">
-    <div class="project-board-header">
-      <UForm :schema="ProjectSchema" @submit="saveProject">
-        <UFormField label="Title" required>
-          <UInput placeholder="Title" v-model="state.title" />
-        </UFormField>
-        <UFormField label="Description">
-          <UTextarea placeholder="Description" v-model="state.description" />
-        </UFormField>
-        <UButton type="submit">
-          <font-awesome-icon icon="fa-solid fa-save"/> Save
-        </UButton>
-      </UForm>
-    </div>
-    <div class="project-board-columns">
-      <h2>TODO: Render columns here</h2>
+  <div class="flex flex-nowrap items-stretch gap-4 md:gap-6 lg:gap-8 flex-1 *:flex-1">
+    <div v-for="column of columns"
+      class="flex flex-col items-stretch gap-4 py-2">
+      <WorkItemCard v-for="workItem of column.workItems" :work-item="workItem" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { ProjectSchema, type Project } from '~/types'
+  import { type ProjectColumn } from '~/types'
 
-  const { project } = defineProps<{
-    project: Project
+  const { columns } = defineProps<{
+    columns: ProjectColumn[]
   }>()
 
-  const state = reactive<Partial<Project>>({
-    title: project.title,
-    description: project.description,
-    projectColumns: project.projectColumns
+  const emits = defineEmits<{
+    columnsChange: [columns: ProjectColumn[]]
+  }>()
+
+  const state = reactive({
+    columns
   });
-
-  function saveProject() {
-    alert(JSON.stringify(state));
-  }
 </script>
-
-<style>
-
-</style>

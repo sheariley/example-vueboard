@@ -9,9 +9,9 @@
 </template>
 
 <script lang="ts" setup>
-  import { type Project } from '~/types'
+  import { type ProjectListItem } from '~/types'
 
   const { project } = defineProps<{
-    project: Project
+    project: ProjectListItem
   }>()
 </script>

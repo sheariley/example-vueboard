@@ -2,9 +2,7 @@
   <UHeader></UHeader>
 
   <UMain class="flex flex-col">
-    <UContainer>
-      <slot />
-    </UContainer>
+    <slot />
   </UMain>
 </template>
 

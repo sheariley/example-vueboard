@@ -15,7 +15,6 @@ export const ProjectSchema = zod.object({
   description: zod.string()
     .optional(),
   projectColumns: zod.array(ProjectColumnSchema)
-    .optional()
 })
 
 export type Project = zod.infer<typeof ProjectSchema>

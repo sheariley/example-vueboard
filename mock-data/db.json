@@ -27,7 +27,7 @@
           "projectColumnId": 1,
           "id": 1,
           "title": "Gather requirements",
-          "content": "Collect all necessary requirements from stakeholders.",
+          "content": null,
           "tags": ["planning", "meeting"]
         },
         {
