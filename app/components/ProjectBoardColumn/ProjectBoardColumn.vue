@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-stretch divide-y divide-neutral-400 gap-2 p-2 bg-neutral-800 border-1 border-neutral-600 rounded-xl">
+  <div class="flex flex-col items-stretch divide-y divide-neutral-400 gap-2 p-2 bg-neutral-800 border-1 border-neutral-600 rounded-xl project-board-column">
     <div class="flex flex-nowrap gap-2 h-[33px]" v-if="!isEditingName">
       <span class="text-lg flex-1">{{ name }}</span>
       <UButton color="neutral" variant="ghost"
@@ -30,10 +30,12 @@
     </div>
     <draggable class="flex flex-col items-stretch gap-4 py-2 flex-1"
       group="workItems"
-      :list="workItems"
+      v-model="workItems"
+      ghostClass="work-item-drag-placeholder"
       itemKey="uid"
-      @change="onChangeWorkItems">
-      <template #item="{ element, index }">
+      @change="onWorkItemDragged"
+    >
+      <template #item="{ element }">
         <WorkItemCard :workItem="element" />
       </template>
     </draggable>
@@ -69,10 +71,17 @@
     toggleIsEditingName(false)
   }
 
-  function onChangeWorkItems(e: DraggableChangedEvent<WorkItem>) {
+  function onWorkItemDragged(e: DraggableChangedEvent<WorkItem>) {
     // refresh index properties on work items after drag op
     workItems.value = workItems.value!.map((x, index) => ({ ...x, index }))
   }
 
   onMounted(commitNameEdit)
 </script>
+
+<style>
+.work-item-drag-placeholder {
+  opacity: 0.5;
+  border: 1px solid #fff;
+}
+</style>
