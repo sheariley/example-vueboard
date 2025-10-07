@@ -15,10 +15,10 @@
     </UFormField>
     <div class="flex justify-end gap-8">
       <UButton type="submit" :disabled="!isValid" color="success">
-        <font-awesome-icon icon="fa-solid fa-check"/> Done
+        <FontAwesomeIcon icon="fa-solid fa-check"/> Done
       </UButton>
       <UButton @click="emits('cancel')" color="neutral">
-        <font-awesome-icon icon="fa-solid fa-xmark"/> Cancel
+        <FontAwesomeIcon icon="fa-solid fa-xmark"/> Cancel
       </UButton>
     </div>
   </UForm>

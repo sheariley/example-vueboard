@@ -19,6 +19,23 @@ export default defineNuxtConfig({
     // '@nuxt/icon'
   ],
 
+  imports: {
+    presets: [
+      {
+        from: '@fortawesome/vue-fontawesome',
+        imports: [
+          { name: 'FontAwesomeIcon' }
+        ]
+      },
+      {
+        from: 'vuedraggable',
+        imports: [
+          { name: 'default', as: 'Draggable' }
+        ]
+      }
+    ]
+  },
+
   runtimeConfig: {
     public: {
       projectsApiBase: ''

@@ -15,7 +15,7 @@
       <template v-else-if="projectListItemsStore.loadError">
         <UAlert class="select-none" color="error" variant="subtle">
           <template #title>
-            <font-awesome-icon icon="fa-solid fa-face-dizzy" spin />&nbsp;
+            <FontAwesomeIcon icon="fa-solid fa-face-dizzy" spin />&nbsp;
             Oops! Something went wrong.
           </template>
           <template #description>
@@ -23,7 +23,7 @@
           </template>
           <template #actions>
             <UButton>
-              <font-awesome-icon icon="fa-solid fa-repeat" /> Retry
+              <FontAwesomeIcon icon="fa-solid fa-repeat" /> Retry
             </UButton>
           </template>
         </UAlert>
@@ -31,7 +31,7 @@
       <template v-else-if="!projectListItemsStore.listItems?.length">
         <ProseH2>Create a new project to begin.</ProseH2>
         <UButton size="xl">
-          <font-awesome-icon icon="fa-solid fa-rocket" size="xl" /> Create New Project
+          <FontAwesomeIcon icon="fa-solid fa-rocket" size="xl" /> Create New Project
         </UButton>
       </template>
       <template v-else-if="projectListItemsStore.listItems?.length">

@@ -7,7 +7,7 @@
         variant="ghost"
         color="neutral"
       >
-        <font-awesome-icon icon="fa-solid fa-pencil" />
+        <FontAwesomeIcon icon="fa-solid fa-pencil" />
       </UButton>
     </div>
 
