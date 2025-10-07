@@ -42,13 +42,5 @@ export default defineNuxtConfig({
 
   ui: {
     mdc: true
-  },
-
-  // icon: {
-  //   mode: 'css',
-  //   cssLayer: 'base',
-  //   clientBundle: {
-  //     scan: true
-  //   }
-  // }
+  }
 })

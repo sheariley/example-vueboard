@@ -14,12 +14,13 @@
       <ProjectInfoHeader v-if="!isEditingInfo"
         :title="title"
         :description="description"
+        class="mb-4"
         @edit-click="() => toggleEditInfo(true)"
-        class="mb-12"
        />
       <ProjectInfoForm v-else
         :title="title"
         :description="description"
+        class="mb-4"
         @done="commitEditInfo"
         @cancel="() => toggleEditInfo(false)"
       />
