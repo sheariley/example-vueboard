@@ -28,14 +28,22 @@
         <font-awesome-icon icon="fa-solid fa-rotate-left" />
       </UButton>
     </div>
-    <div class="flex flex-col items-stretch gap-4 py-2 flex-1">
-      <WorkItemCard v-for="workItem of workItems" :workItem />
-    </div>
+    <draggable class="flex flex-col items-stretch gap-4 py-2 flex-1"
+      group="workItems"
+      :list="workItems"
+      itemKey="uid"
+      @change="onChangeWorkItems">
+      <template #item="{ element, index }">
+        <WorkItemCard :workItem="element" />
+      </template>
+    </draggable>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import type { WorkItem } from '~/types';
+  import draggable from 'vuedraggable'
+
+  import type { WorkItem, DraggableChangedEvent } from '~/types';
 
   const workItems = defineModel<WorkItem[] | undefined>('workItems', { required: true })
   const name = defineModel<string>('name')
@@ -59,6 +67,11 @@
   function cancelNameEdit() {
     name.value = currentName.value
     toggleIsEditingName(false)
+  }
+
+  function onChangeWorkItems(e: DraggableChangedEvent<WorkItem>) {
+    // refresh index properties on work items after drag op
+    workItems.value = workItems.value!.map((x, index) => ({ ...x, index }))
   }
 
   onMounted(commitNameEdit)

@@ -19,7 +19,8 @@ export const WorkItemSchema = zod.object({
   tags: zod.array(zod.string()
     .min(1, { message: 'A tag must not be empty' })
     .max(30, { error: 'Too long (max: 30)' })
-  )
+  ),
+  index: zod.number().int().nonnegative()
 })
 
 export type WorkItem = zod.infer<typeof WorkItemSchema>
@@ -27,5 +28,6 @@ export type WorkItem = zod.infer<typeof WorkItemSchema>
 export const DefaultWorkItemState: WorkItem = {
   uid: '',
   title: '',
-  tags: []
+  tags: [],
+  index: 0
 }

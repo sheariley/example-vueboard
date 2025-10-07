@@ -22,7 +22,7 @@ export default defineNuxtConfig({
       projectsApiBase: ''
     }
   },
-
+  
   app: {
     head: {
       htmlAttrs: {

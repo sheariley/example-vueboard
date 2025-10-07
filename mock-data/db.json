@@ -33,7 +33,8 @@
           "id": 1,
           "title": "Gather requirements",
           "content": null,
-          "tags": ["planning", "meeting"]
+          "tags": ["planning", "meeting"],
+          "index": 0
         },
         {
           "uid": "b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e",
@@ -41,7 +42,8 @@
           "id": 2,
           "title": "Research competitors",
           "content": "Analyze competitor websites for design inspiration.",
-          "tags": ["research", "design"]
+          "tags": ["research", "design"],
+          "index": 1
         }
       ]
     },
@@ -58,7 +60,8 @@
           "id": 3,
           "title": "Create wireframes",
           "content": "Design wireframes for the new website layout.",
-          "tags": ["design", "wireframe"]
+          "tags": ["design", "wireframe"],
+          "index": 0
         }
       ]
     },
@@ -75,7 +78,8 @@
           "id": 4,
           "title": "Review homepage mockup",
           "content": "Get feedback on the homepage mockup from the team.",
-          "tags": ["review", "homepage"]
+          "tags": ["review", "homepage"],
+          "index": 0
         }
       ]
     },
@@ -92,7 +96,8 @@
           "id": 5,
           "title": "Finalize color palette",
           "content": "Confirm the color palette for the redesign.",
-          "tags": ["design", "colors"]
+          "tags": ["design", "colors"],
+          "index": 0
         }
       ]
     },
@@ -109,7 +114,8 @@
           "id": 6,
           "title": "Define MVP features",
           "content": "List and prioritize features for the first app release.",
-          "tags": ["planning", "features"]
+          "tags": ["planning", "features"],
+          "index": 0
         },
         {
           "uid": "a7b8c9d0-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
@@ -117,7 +123,8 @@
           "id": 7,
           "title": "Set up analytics",
           "content": "Integrate analytics tools for user tracking.",
-          "tags": ["setup", "analytics"]
+          "tags": ["setup", "analytics"],
+          "index": 1
         }
       ]
     },
@@ -134,7 +141,8 @@
           "id": 8,
           "title": "Develop onboarding screens",
           "content": "Create onboarding screens for new users.",
-          "tags": ["development", "UI"]
+          "tags": ["development", "UI"],
+          "index": 0
         }
       ]
     },
@@ -151,7 +159,8 @@
           "id": 9,
           "title": "Test push notifications",
           "content": "Verify push notifications work on all devices.",
-          "tags": ["testing", "notifications"]
+          "tags": ["testing", "notifications"],
+          "index": 0
         }
       ]
     },
@@ -168,7 +177,8 @@
           "id": 10,
           "title": "Publish beta version",
           "content": "Release the beta version to selected users.",
-          "tags": ["release", "beta"]
+          "tags": ["release", "beta"],
+          "index": 0
         }
       ]
     },
@@ -185,7 +195,8 @@
           "id": 11,
           "title": "Brainstorm campaign ideas",
           "content": "Gather creative ideas for the upcoming marketing campaign.",
-          "tags": ["brainstorm", "ideas"]
+          "tags": ["brainstorm", "ideas"],
+          "index": 0
         },
         {
           "uid": "e2f3a4b5-c6d7-8e9f-0a1b-2c3d4e5f6a7b",
@@ -193,7 +204,8 @@
           "id": 12,
           "title": "Identify target audience",
           "content": "Define the target audience demographics and interests.",
-          "tags": ["research", "audience"]
+          "tags": ["research", "audience"],
+          "index": 1
         }
       ]
     },
@@ -210,7 +222,8 @@
           "id": 13,
           "title": "Design social media graphics",
           "content": "Create engaging graphics for social media posts.",
-          "tags": ["design", "social media"]
+          "tags": ["design", "social media"],
+          "index": 0
         }
       ]
     },
@@ -227,7 +240,8 @@
           "id": 14,
           "title": "Review ad copy",
           "content": "Check and approve the copy for online ads.",
-          "tags": ["review", "copywriting"]
+          "tags": ["review", "copywriting"],
+          "index": 0
         }
       ]
     },
@@ -244,7 +258,8 @@
           "id": 15,
           "title": "Launch email newsletter",
           "content": "Send out the campaign newsletter to subscribers.",
-          "tags": ["email", "launch"]
+          "tags": ["email", "launch"],
+          "index": 0
         }
       ]
     }
