@@ -8,7 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "mock:db": "json-server ./mock-data/db.json -c ./mock-data/json-server-config.json"
+    "mock:db": "json-server ./mock-data/db.json -w -c ./mock-data/json-server-config.json"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",

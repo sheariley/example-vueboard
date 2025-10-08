@@ -1,8 +1,9 @@
 import * as zod from 'zod'
 
 import { WorkItemSchema } from './work-item'
+import { ProjectColumnOptionsSchema } from './project-column-options'
 
-export const ProjectColumnSchema = zod.object({
+export const ProjectColumnSchema = ProjectColumnOptionsSchema.extend({
   uid: zod.uuidv4(),
   projectId: zod.number()
     .int()
@@ -12,8 +13,6 @@ export const ProjectColumnSchema = zod.object({
     .int()
     .nonnegative()
     .optional(),
-  name: zod.string()
-    .min(3, { message: 'This is required' }),
   index: zod.number()
     .int()
     .nonnegative(),

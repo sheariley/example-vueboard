@@ -1,6 +1,7 @@
 export * from './draggableChangedEvent'
 export * from './project'
 export * from './project-column'
+export * from './project-column-options'
 export * from './project-info'
 export * from './project-list-item'
 export * from './work-item'

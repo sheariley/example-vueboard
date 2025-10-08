@@ -1,7 +1,8 @@
 <template>
   <UForm :schema="ProjectInfoSchema" :state="state"
     @submit="emits('done', state)"
-    class="flex flex-col items-stretch gap-1">
+    class="flex flex-col items-stretch gap-1"
+  >
     <UFormField label="Title" name="title" required>
       <UInput placeholder="Title" v-model="state.title" class="w-full" />
     </UFormField>

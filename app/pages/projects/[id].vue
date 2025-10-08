@@ -24,7 +24,7 @@
         @done="commitEditInfo"
         @cancel="() => toggleEditInfo(false)"
       />
-      <ProjectBoard :columns="projectColumns" @columns-change="updateColumnsStore" />
+      <ProjectBoard v-model="projectColumns" @columns-change="updateColumnsStore" />
     </template>
   </UContainer>
 </template>

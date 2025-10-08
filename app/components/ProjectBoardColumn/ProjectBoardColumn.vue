@@ -1,33 +1,29 @@
 <template>
-  <div class="flex flex-col items-stretch divide-y divide-neutral-400 gap-2 p-2 bg-neutral-800 border-1 border-neutral-600 rounded-xl project-board-column">
-    <div class="flex flex-nowrap items-center gap-2 h-[33px]" v-if="!isEditing">
-      <FontAwesomeIcon class="drag-handle cursor-ew-resize" icon="fa-solid fa-grip-vertical" width-auto />
-      <span class="text-lg flex-1">{{ name }}</span>
-      <UButton color="neutral" variant="ghost"
-        @click="() => toggleIsEditing(true)"
-      >
-        <FontAwesomeIcon icon="fa-solid fa-pencil" />
-      </UButton>
-    </div>
-    <div class="flex flex-nowrap gap-2 justify-between h-[33px]" v-else>
-      <UInput
-        placeholder="Name"
-        v-model="name"
-        name="name"
-        variant="subtle"
-        color="neutral"
-        class="flex-1"
+  <div
+    class="flex flex-col items-stretch divide-y divide-neutral-400 gap-2 p-2 bg-neutral-800 border-1 border-neutral-600 rounded-xl project-board-column"
+    :style="{ color: columnState.fgColor, backgroundColor: columnState.bgColor }"
+  >
+    <div class="flex flex-nowrap items-center gap-2 h-[33px]">
+      <FontAwesomeIcon
+        class="drag-handle cursor-ew-resize"
+        icon="fa-solid fa-grip-vertical"
+        width-auto
       />
-      <UButton color="success" variant="subtle"
-        @click="commitNameEdit"
-      >
-        <FontAwesomeIcon icon="fa-solid fa-check" />
-      </UButton>
-      <UButton color="neutral" variant="subtle"
-        @click="cancelNameEdit"
-      >
-        <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
-      </UButton>
+      <span class="text-lg flex-1">{{ columnState.name }}</span>
+
+      <UModal v-model:open="isEditing" :close="false">
+        <UButton color="neutral" variant="link" :style="{ color: columnState.fgColor }">
+          <FontAwesomeIcon icon="fa-solid fa-ellipsis-vertical" />
+        </UButton>
+
+        <template #content>
+          <ProjectColumnOptionsModal
+            v-model="columnState"
+            @done="doneEditing"
+            @cancel="cancelEditing"
+          />
+        </template>
+      </UModal>
     </div>
     <Draggable class="flex flex-col items-stretch gap-4 py-2 flex-1"
       group="workItems"
@@ -45,14 +41,23 @@
 </template>
 
 <script lang="ts" setup>
-  import type { WorkItem, DraggableChangedEvent } from '~/types';
+  import type { WorkItem, DraggableChangedEvent, ProjectColumn, ProjectColumnOptions } from '~/types';
 
   const workItems = defineModel<WorkItem[] | undefined>('workItems', { required: true })
-  const name = defineModel<string>('name')
+
+  const emits = defineEmits<{
+    change: [column: ProjectColumn]
+  }>()
+
+  const { column } = defineProps<{
+    column: ProjectColumn
+  }>()
 
   const isEditing = ref(false)
-  const currentName = ref<string>()
-
+  const columnState = reactive({
+    ...column
+  })
+  
   function toggleIsEditing(value?: boolean) {
     if (typeof value !== 'undefined') {
       isEditing.value = value
@@ -61,22 +66,28 @@
     isEditing.value = !isEditing.value
   }
 
-  function commitNameEdit() {
-    currentName.value = name.value
-    toggleIsEditing(false)
-  }
-
-  function cancelNameEdit() {
-    name.value = currentName.value
-    toggleIsEditing(false)
-  }
-
   function onWorkItemDragged(e: DraggableChangedEvent<WorkItem>) {
     // refresh index properties on work items after drag op
     workItems.value = workItems.value!.map((x, index) => ({ ...x, index }))
   }
 
-  onMounted(commitNameEdit)
+  function doneEditing(updatedState: ProjectColumnOptions) {
+    columnState.name = updatedState.name
+    columnState.fgColor = updatedState.fgColor
+    columnState.bgColor = updatedState.bgColor
+    emits('change', columnState)
+
+    toggleIsEditing(false)
+  }
+
+  function cancelEditing() {
+    // revert
+    columnState.name = column.name
+    columnState.fgColor = column.fgColor
+    columnState.bgColor = column.bgColor
+
+    toggleIsEditing(false)
+  }  
 </script>
 
 <style>
