@@ -9,22 +9,15 @@
     }"
   >
     <template #anchor>
-      <UFieldGroup v-bind:class="classProp">
-        <UButton
-          variant="subtle"
-          color="neutral"
-          class="w-8 rounded-l-md"
-          :style="{ backgroundColor: modelValue }"
-          @click="open = true"
-        />
-        <UInput
-          ref="inputElRef"
-          v-model="modelValue"
-          :v-bind="inputProps"
-          class="w-full"
-        />
-        <slot name="trailing" />
-      </UFieldGroup>
+      <UButton
+        v-bind="buttonProps"
+        :class="{
+          'w-8': true,
+          classProp
+        }"
+        :style="{ backgroundColor: modelValue }"
+        @click="open = true"
+      />
     </template>
 
     <template #content>
@@ -52,19 +45,17 @@
 </template>
 
 <script lang="ts" setup>
-  import type { InputProps } from '@nuxt/ui'
+  import type { ButtonProps } from '@nuxt/ui';
 
-  const { defaultValue, class: classProp, ...inputProps } = defineProps<{
+  const { defaultValue, class: classProp, ...buttonProps } = defineProps<{
     defaultValue?: string
-  } & InputProps>()
+  } & ButtonProps>()
 
   const modelValue = defineModel<string | undefined>({
     required: true
   })
 
   const open = ref(false)
-
-  const inputElRef = useTemplateRef<HTMLInputElement>('inputElRef')
 
   const pickerPopoverElRef = useTemplateRef<HTMLElement>('pickerPopoverElRef')
 

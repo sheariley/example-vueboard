@@ -26,33 +26,54 @@
         </UFieldGroup>
       </UFormField>
       
-      <UFormField name="fgColor" label="Foreground Color">
-        <ColorInput v-model="state.fgColor" class="w-full">
-          <template #trailing>
-            <UButton
-              color="neutral"
-              variant="subtle"
-              v-if="state.fgColor !== columnOptions.fgColor"
-              @click="state.fgColor = columnOptions.fgColor"
-            >
-              <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
-            </UButton>
-          </template>
-        </ColorInput>
+      <UFormField name="fgColor" label="Default Card Foreground Color">
+        <UFieldGroup>
+          <ColorInputButton
+            v-model="state.fgColor"
+            color="neutral"
+            variant="subtle"
+          />
+          <UInput
+            name="fgColor"
+            v-model="state.fgColor"
+            color="neutral"
+            variant="subtle"
+            class="w-full"
+          />
+          <UButton
+            color="neutral"
+            variant="subtle"
+            v-if="state.fgColor !== columnOptions.fgColor"
+            @click="state.fgColor = columnOptions.fgColor"
+          >
+            <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+          </UButton>
+        </UFieldGroup>
       </UFormField>
-      <UFormField name="bgColor" label="Background Color">
-        <ColorInput v-model="state.bgColor" class="w-full">
-          <template #trailing>
-            <UButton
-              color="neutral"
-              variant="subtle"
-              v-if="state.bgColor !== columnOptions.bgColor"
-              @click="state.bgColor = columnOptions.bgColor"
-            >
-              <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
-            </UButton>
-          </template>
-        </ColorInput>
+
+      <UFormField name="bgColor" label="Default Card Background Color">
+        <UFieldGroup>
+          <ColorInputButton
+            v-model="state.bgColor"
+            color="neutral"
+            variant="subtle"
+          />
+          <UInput
+            name="bgColor"
+            v-model="state.bgColor"
+            color="neutral"
+            variant="subtle"
+            class="w-full"
+          />
+          <UButton
+            color="neutral"
+            variant="subtle"
+            v-if="state.bgColor !== columnOptions.bgColor"
+            @click="state.bgColor = columnOptions.bgColor"
+          >
+            <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+          </UButton>
+        </UFieldGroup>
       </UFormField>
     </div>
     <div class="flex flex-nowrap justify-stretch sm:justify-between p-4 gap-4">

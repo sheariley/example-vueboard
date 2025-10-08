@@ -57,33 +57,53 @@
         </div>
       </UFormField>
 
-      <UFormField name="fgColor" label="Default Card Foreground Color">
-        <ColorInput v-model="state.defaultCardFgColor" class="w-full">
-          <template #trailing>
-            <UButton
-              color="neutral"
-              variant="subtle"
-              v-if="state.defaultCardFgColor !== currentProjectStore.defaultCardFgColor"
-              @click="state.defaultCardFgColor = currentProjectStore.defaultCardFgColor"
-            >
-              <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
-            </UButton>
-          </template>
-        </ColorInput>
+      <UFormField name="defaultCardFgColor" label="Default Card Foreground Color">
+        <UFieldGroup>
+          <ColorInputButton
+            v-model="state.defaultCardFgColor"
+            color="neutral"
+            variant="subtle"
+          />
+          <UInput
+            name="defaultCardFgColor"
+            v-model="state.defaultCardFgColor"
+            color="neutral"
+            variant="subtle"
+            class="w-full"
+          />
+          <UButton
+            color="neutral"
+            variant="subtle"
+            v-if="state.defaultCardFgColor !== currentProjectStore.defaultCardFgColor"
+            @click="state.defaultCardFgColor = currentProjectStore.defaultCardFgColor"
+          >
+            <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+          </UButton>
+        </UFieldGroup>
       </UFormField>
-      <UFormField name="bgColor" label="Default Card Background Color">
-        <ColorInput v-model="state.defaultCardBgColor" class="w-full">
-          <template #trailing>
-            <UButton
-              color="neutral"
-              variant="subtle"
-              v-if="state.defaultCardBgColor !== currentProjectStore.defaultCardBgColor"
-              @click="state.defaultCardBgColor = currentProjectStore.defaultCardBgColor"
-            >
-              <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
-            </UButton>
-          </template>
-        </ColorInput>
+      <UFormField name="defaultCardBgColor" label="Default Card Background Color">
+        <UFieldGroup>
+          <ColorInputButton
+            v-model="state.defaultCardBgColor"
+            color="neutral"
+            variant="subtle"
+          />
+          <UInput
+            name="defaultCardBgColor"
+            v-model="state.defaultCardBgColor"
+            color="neutral"
+            variant="subtle"
+            class="w-full"
+          />
+          <UButton
+            color="neutral"
+            variant="subtle"
+            v-if="state.defaultCardBgColor !== currentProjectStore.defaultCardBgColor"
+            @click="state.defaultCardBgColor = currentProjectStore.defaultCardBgColor"
+          >
+            <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+          </UButton>
+        </UFieldGroup>
       </UFormField>
     </div>
     <div class="flex flex-nowrap justify-stretch sm:justify-between p-4 gap-4">
