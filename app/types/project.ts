@@ -13,5 +13,7 @@ export const DefaultProjectState: Project = {
   uid: '',
   title: 'New Project',
   description: '',
+  defaultCardBgColor: '#005C36',
+  defaultCardFgColor: '#FFFFFF',
   projectColumns: []
 }

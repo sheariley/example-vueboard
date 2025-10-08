@@ -1,7 +1,7 @@
 import * as zod from 'zod'
-import { ProjectInfoSchema } from './project-info'
+import { ProjectOptionsSchema } from './project-options'
 
-export const ProjectListItemSchema = ProjectInfoSchema.extend({
+export const ProjectListItemSchema = ProjectOptionsSchema.extend({
   uid: zod.uuidv4(),
   id: zod.number()
     .int()

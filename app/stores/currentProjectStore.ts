@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 
-import { DefaultProjectState, type Project, type ProjectColumn, ProjectSchema } from '~/types';
+import { DefaultProjectState, type Project, type ProjectColumn, type ProjectOptions, ProjectSchema } from '~/types';
 import coerceErrorMessage from '~/util/coerceErrorMessage';
 import { prepareProjectEntityForSave } from '~/util/prepareProjectEntitiesForSave';
 
@@ -14,8 +14,33 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   const uid = ref<string>(crypto.randomUUID())
   const id = ref<number | undefined>()
   const title = ref<string>('')
-  const description = ref<string | undefined>()
+  const description = ref<string>()
+  const defaultCardFgColor = ref<string>()
+  const defaultCardBgColor = ref<string>()
   const projectColumns = ref<ProjectColumn[]>([])
+
+  // const projectEntity = computed<Project>({
+  //   get() {
+  //     return {
+  //       uid: uid.value,
+  //       id: id.value,
+  //       title: title.value,
+  //       description: description.value,
+  //       defaultCardFgColor: defaultCardFgColor.value,
+  //       defaultCardBgColor: defaultCardBgColor.value,
+  //       projectColumns: projectColumns.value
+  //     }
+  //   },
+  //   set(newValue) {
+  //     uid.value = newValue.uid
+  //     id.value = newValue.id
+  //     title.value = newValue.title
+  //     description.value = newValue.description
+  //     defaultCardFgColor.value = newValue.defaultCardFgColor
+  //     defaultCardBgColor.value = newValue.defaultCardBgColor
+  //     projectColumns.value = newValue.projectColumns
+  //   }
+  // })
 
   watch(() => toEntity(), async entity => {
     isValid.value = await validate(entity)
@@ -135,8 +160,10 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
 
     title,
     description,
+    defaultCardFgColor,
+    defaultCardBgColor,
     projectColumns,
-    
+
     hydrateFromEntity,
     toEntity,
     reset,

@@ -11,55 +11,17 @@
     <template v-else-if="currentProjectStore.loadError">
     </template>
     <template v-else>
-      <ProjectInfoHeader v-if="!isEditingInfo"
-        :title="title"
-        :description="description"
-        class="mb-4"
-        @edit-click="() => toggleEditInfo(true)"
-       />
-      <ProjectInfoForm v-else
-        :title="title"
-        :description="description"
-        class="mb-4"
-        @done="commitEditInfo"
-        @cancel="() => toggleEditInfo(false)"
-      />
-      <ProjectBoard v-model="projectColumns" @columns-change="updateColumnsStore" />
+      <ProjectBoard />
     </template>
   </UContainer>
 </template>
 
 <script lang="ts" setup>
-  import { type ProjectColumn, type ProjectInfo } from '~/types'
-
   const currentProjectStore = useCurrentProjectStore()
 
   const route = useRoute()
 
   const projectId = Number(route.params.id);
-
-  const { title, description, projectColumns, isValid } = storeToRefs(currentProjectStore)
-
-  const isEditingInfo = ref(false)
-
-  function toggleEditInfo(value?: boolean) {
-    if (typeof value !== 'undefined') {
-      isEditingInfo.value = value
-      return
-    }
-    isEditingInfo.value = !isEditingInfo.value
-  }
-
-  function commitEditInfo(state: Partial<ProjectInfo>) {
-    currentProjectStore.title = state.title!
-    currentProjectStore.description = state.description
-
-    toggleEditInfo(false)
-  }
-
-  function updateColumnsStore(columns: ProjectColumn[]) {
-    projectColumns.value = columns
-  }
 
   function saveProject() {
     alert(JSON.stringify(currentProjectStore.toEntity()));

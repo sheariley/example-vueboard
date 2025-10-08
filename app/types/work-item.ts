@@ -1,4 +1,5 @@
 import * as zod from 'zod'
+import { hexColor } from '~/util/zodSchemas'
 
 export const WorkItemSchema = zod.object({
   uid: zod.uuidv4(),
@@ -20,7 +21,13 @@ export const WorkItemSchema = zod.object({
     .min(1, { message: 'A tag must not be empty' })
     .max(30, { error: 'Too long (max: 30)' })
   ),
-  index: zod.number().int().nonnegative()
+  index: zod.number()
+    .int()
+    .nonnegative(),
+  fgColor: hexColor
+    .optional(),
+  bgColor: hexColor
+    .optional()
 })
 
 export type WorkItem = zod.infer<typeof WorkItemSchema>

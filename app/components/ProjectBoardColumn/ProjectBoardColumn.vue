@@ -21,7 +21,11 @@
           body: 'p-0 sm:p-0'
         }"
       >
-        <UButton color="neutral" variant="link" :style="{ color: columnState.fgColor }">
+        <UButton
+          color="neutral"
+          variant="link"
+          :style="{ color: columnState.fgColor }"
+        >
           <FontAwesomeIcon icon="fa-solid fa-ellipsis-vertical" />
         </UButton>
 
@@ -62,13 +66,13 @@
     change: [column: ProjectColumn]
   }>()
 
-  const { column } = defineProps<{
+  const props = defineProps<{
     column: ProjectColumn
   }>()
 
   const isEditing = ref(false)
   const columnState = reactive({
-    ...column
+    ...props.column
   })
   
   function toggleIsEditing(value?: boolean) {
@@ -77,11 +81,6 @@
       return
     }
     isEditing.value = !isEditing.value
-  }
-
-  function onWorkItemDragged(e: DraggableChangedEvent<WorkItem>) {
-    // refresh index properties on work items after drag op
-    workItems.value = workItems.value!.map((x, index) => ({ ...x, index }))
   }
 
   function doneEditing(updatedState: ProjectColumnOptions) {
@@ -95,12 +94,17 @@
 
   function cancelEditing() {
     // revert
-    columnState.name = column.name
-    columnState.fgColor = column.fgColor
-    columnState.bgColor = column.bgColor
+    columnState.name = props.column.name
+    columnState.fgColor = props.column.fgColor
+    columnState.bgColor = props.column.bgColor
 
     toggleIsEditing(false)
-  }  
+  }
+  
+  function onWorkItemDragged(e: DraggableChangedEvent<WorkItem>) {
+    // refresh index properties on work items after drag op
+    workItems.value = workItems.value!.map((x, index) => ({ ...x, index }))
+  }
 </script>
 
 <style>

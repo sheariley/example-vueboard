@@ -77,7 +77,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ProjectColumnOptionsSchema, type ProjectColumnOptions } from '~/types';
+  import { ProjectColumnOptionsSchema, type ProjectColumnOptions } from '~/types'
 
   // TODO: Add reset icon button to each field to reset it back to original value from the columnOptions object
 

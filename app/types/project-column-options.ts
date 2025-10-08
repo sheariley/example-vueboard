@@ -6,8 +6,10 @@ import { hexColor } from '~/util/zodSchemas'
 export const ProjectColumnOptionsSchema = zod.object({
   name: zod.string()
     .min(3, { message: 'This is required and must be at least 3 characters long.' }),
-  fgColor: hexColor.optional(),
-  bgColor: hexColor.optional()
+  fgColor: hexColor
+    .optional(),
+  bgColor: hexColor
+    .optional()
 })
 
 export type ProjectColumnOptions = zod.infer<typeof ProjectColumnOptionsSchema>

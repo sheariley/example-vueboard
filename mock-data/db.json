@@ -45,7 +45,9 @@
           "title": "Research competitors",
           "content": "Analyze competitor websites for design inspiration.",
           "tags": ["research", "design"],
-          "index": 1
+          "index": 1,
+          "fgColor": "#FFFFFF",
+          "bgColor": "#430A64"
         }
       ]
     },
