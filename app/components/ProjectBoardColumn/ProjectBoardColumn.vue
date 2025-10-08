@@ -9,7 +9,8 @@
         icon="fa-solid fa-grip-vertical"
         width-auto
       />
-      <span class="text-lg flex-1">{{ columnState.name }}</span>
+      
+      <span class="text-lg font-semibold flex-1">{{ columnState.name }}</span>
 
       <UModal
         v-model:open="isEditing"
