@@ -9,7 +9,7 @@
     }"
   >
     <template #anchor>
-      <UFieldGroup>
+      <UFieldGroup v-bind:class="classProp">
         <UButton
           variant="subtle"
           color="neutral"
@@ -21,6 +21,7 @@
           ref="inputElRef"
           v-model="modelValue"
           :v-bind="inputProps"
+          class="w-full"
         />
         <slot name="trailing" />
       </UFieldGroup>
@@ -53,7 +54,7 @@
 <script lang="ts" setup>
   import type { InputProps } from '@nuxt/ui'
 
-  const { defaultValue, ...inputProps } = defineProps<{
+  const { defaultValue, class: classProp, ...inputProps } = defineProps<{
     defaultValue?: string
   } & InputProps>()
 

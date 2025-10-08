@@ -11,12 +11,25 @@
       />
       <span class="text-lg flex-1">{{ columnState.name }}</span>
 
-      <UModal v-model:open="isEditing" :close="false">
+      <UModal
+        v-model:open="isEditing"
+        :close="false"
+        title="Column Options"
+        description="Customize column options, such as name, foreground color, or background color."
+        :ui="{
+          content: 'mx-1 sm:w-80 sm:mx-auto',
+          body: 'p-0 sm:p-0'
+        }"
+      >
         <UButton color="neutral" variant="link" :style="{ color: columnState.fgColor }">
           <FontAwesomeIcon icon="fa-solid fa-ellipsis-vertical" />
         </UButton>
 
-        <template #content>
+        <template #header>
+          <h2 class="text-xl">Column Options</h2>
+        </template>
+
+        <template #body>
           <ProjectColumnOptionsModal
             v-model="columnState"
             @done="doneEditing"
