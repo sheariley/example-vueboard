@@ -25,8 +25,8 @@
       "id": 1,
       "projectId": 1,
       "name": "Backlog",
-      "fgColor": "#222",
-      "bgColor": "#CCC",
+      "fgColor": "#222222",
+      "bgColor": "#CCCCCC",
       "index": 0,
       "workItems": [
         {
@@ -54,8 +54,8 @@
       "id": 2,
       "projectId": 1,
       "name": "In Progress",
-      "fgColor": "#FFF",
-      "bgColor": "#967600",
+      "fgColor": "#2B2B2B",
+      "bgColor": "#E7D026",
       "index": 1,
       "workItems": [
         {
@@ -74,7 +74,7 @@
       "id": 3,
       "projectId": 1,
       "name": "Review",
-      "fgColor": "#FFF",
+      "fgColor": "#FFFFFF",
       "bgColor": "#0057B8",
       "index": 2,
       "workItems": [
@@ -94,7 +94,7 @@
       "id": 4,
       "projectId": 1,
       "name": "Done",
-      "fgColor": "#FFF",
+      "fgColor": "#FFFFFF",
       "bgColor": "#005C36",
       "index": 3,
       "workItems": [
@@ -114,7 +114,7 @@
       "id": 5,
       "projectId": 2,
       "name": "Backlog",
-      "fgColor": "#222",
+      "fgColor": "#222222",
       "bgColor": "#E0E0E0",
       "index": 0,
       "workItems": [
@@ -143,8 +143,8 @@
       "id": 6,
       "projectId": 2,
       "name": "In Progress",
-      "fgColor": "#FFF",
-      "bgColor": "#967600",
+      "fgColor": "#2B2B2B",
+      "bgColor": "#E7D026",
       "index": 1,
       "workItems": [
         {
@@ -163,7 +163,7 @@
       "id": 7,
       "projectId": 2,
       "name": "Review",
-      "fgColor": "#FFF",
+      "fgColor": "#FFFFFF",
       "bgColor": "#0057B8",
       "index": 2,
       "workItems": [
@@ -183,7 +183,7 @@
       "id": 8,
       "projectId": 2,
       "name": "Done",
-      "fgColor": "#FFF",
+      "fgColor": "#FFFFFF",
       "bgColor": "#005C36",
       "index": 3,
       "workItems": [
@@ -203,7 +203,7 @@
       "id": 9,
       "projectId": 3,
       "name": "Backlog",
-      "fgColor": "#222",
+      "fgColor": "#222222",
       "bgColor": "#E0E0E0",
       "index": 0,
       "workItems": [
@@ -232,8 +232,8 @@
       "id": 10,
       "projectId": 3,
       "name": "In Progress",
-      "fgColor": "#FFF",
-      "bgColor": "#967600",
+      "fgColor": "#2B2B2B",
+      "bgColor": "#E7D026",
       "index": 1,
       "workItems": [
         {
@@ -252,7 +252,7 @@
       "id": 11,
       "projectId": 3,
       "name": "Review",
-      "fgColor": "#FFF",
+      "fgColor": "#FFFFFF",
       "bgColor": "#0057B8",
       "index": 2,
       "workItems": [
@@ -272,7 +272,7 @@
       "id": 12,
       "projectId": 3,
       "name": "Done",
-      "fgColor": "#FFF",
+      "fgColor": "#FFFFFF",
       "bgColor": "#005C36",
       "index": 3,
       "workItems": [

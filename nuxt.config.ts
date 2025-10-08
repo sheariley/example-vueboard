@@ -15,8 +15,9 @@ export default defineNuxtConfig({
     '@nuxt/test-utils/module',
     '@nuxt/scripts',
     // '@nuxtjs/supabase'
-    '@pinia/nuxt',
     // '@nuxt/icon'
+    '@pinia/nuxt',
+    '@vueuse/nuxt'
   ],
 
   imports: {

@@ -5,23 +5,55 @@
       class="flex flex-col items-stretch gap-4"
     >
       <UFormField name="name" label="Name" required>
-        <UInput
-          placeholder="Name"
-          v-model="state.name"
-          name="name"
-          variant="subtle"
-          color="neutral"
-          class="w-full"
-        />
+        <UFieldGroup>
+          <UInput
+            placeholder="Name"
+            v-model="state.name"
+            name="name"
+            variant="subtle"
+            color="neutral"
+            class="w-full"
+          />
+          <UButton
+            color="neutral"
+            variant="subtle"
+            v-if="state.name !== columnOptions.name"
+            @click="state.name = columnOptions.name"
+          >
+            <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+          </UButton>
+        </UFieldGroup>
       </UFormField>
-      <div class="flex flex-nowrap justify-start items-center gap-8 select-none">
-        <UFormField name="fgColor" label="Foreground Color">
-          <ColorChooserButton v-model="state.fgColor" />
-        </UFormField>
-        <UFormField name="bgColor" label="Background Color">
-          <ColorChooserButton v-model="state.bgColor" />
-        </UFormField>
-      </div>
+      
+      <UFormField name="fgColor" label="Foreground Color">
+        <ColorInput v-model="state.fgColor">
+          <template #trailing>
+            <UButton
+              color="neutral"
+              variant="subtle"
+              v-if="state.fgColor !== columnOptions.fgColor"
+              @click="state.fgColor = columnOptions.fgColor"
+            >
+              <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+            </UButton>
+          </template>
+        </ColorInput>
+      </UFormField>
+
+      <UFormField name="bgColor" label="Background Color">
+        <ColorInput v-model="state.bgColor">
+          <template #trailing>
+            <UButton
+              color="neutral"
+              variant="subtle"
+              v-if="state.bgColor !== columnOptions.bgColor"
+              @click="state.bgColor = columnOptions.bgColor"
+            >
+              <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+            </UButton>
+          </template>
+        </ColorInput>
+      </UFormField>
       <div class="flex flex-nowrap justify-end gap-8">
         <UButton @click="cancel" color="neutral" variant="subtle">
           <FontAwesomeIcon icon="fa-solid fa-xmark"/> Cancel
