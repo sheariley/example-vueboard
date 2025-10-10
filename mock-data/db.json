@@ -27,6 +27,26 @@
   ],
   "projectColumns": [
     {
+      "uid": "c2d3e4f5-a6b7-8c9d-0e1f-2a3b4c5d6e7f",
+      "id": 2,
+      "projectId": 1,
+      "name": "In Progress",
+      "fgColor": "#2B2B2B",
+      "bgColor": "#E7D026",
+      "index": 1,
+      "workItems": [
+        {
+          "uid": "c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f",
+          "projectColumnId": 2,
+          "id": 3,
+          "title": "Create wireframes",
+          "content": "Design wireframes for the new website layout.",
+          "tags": ["design", "wireframe"],
+          "index": 0
+        }
+      ]
+    },
+    {
       "uid": "f1a2b3c4-d5e6-7f8a-9b0c-1d2e3f4a5b6c",
       "id": 1,
       "projectId": 1,
@@ -54,26 +74,6 @@
           "index": 1,
           "fgColor": "#FFFFFF",
           "bgColor": "#CF6E11"
-        }
-      ]
-    },
-    {
-      "uid": "c2d3e4f5-a6b7-8c9d-0e1f-2a3b4c5d6e7f",
-      "id": 2,
-      "projectId": 1,
-      "name": "In Progress",
-      "fgColor": "#2B2B2B",
-      "bgColor": "#E7D026",
-      "index": 1,
-      "workItems": [
-        {
-          "uid": "c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f",
-          "projectColumnId": 2,
-          "id": 3,
-          "title": "Create wireframes",
-          "content": "Design wireframes for the new website layout.",
-          "tags": ["design", "wireframe"],
-          "index": 0
         }
       ]
     },

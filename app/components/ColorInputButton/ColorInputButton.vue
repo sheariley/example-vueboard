@@ -59,8 +59,18 @@
 
   const pickerPopoverElRef = useTemplateRef<HTMLElement>('pickerPopoverElRef')
 
+  watch(() => open.value, isOpen => {
+    if (isOpen) {
+      document.body.classList.add('select-none')
+    } else {
+      document.body.classList.remove('select-none')
+    }
+  })
+
   onClickOutside(
     pickerPopoverElRef,
     () => { open.value = false }
   )
+
+  onUnmounted(() => document.body.classList.remove('select-none'))
 </script>

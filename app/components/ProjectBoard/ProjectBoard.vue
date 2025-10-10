@@ -52,10 +52,14 @@
       />
     </template>
   </Draggable>
+
+  <WorkItemModal />
 </template>
 
 <script lang="ts" setup>
-  import type { DraggableChangedEvent, ProjectColumn } from '~/types'
+  import sortBy from 'lodash/sortBy'
+
+  import type { ProjectColumn } from '~/types'
 
   const currentProjectStore = useCurrentProjectStore()
 
@@ -63,16 +67,18 @@
 
   const isEditing = ref(false)
 
-  function onColumnDragged(e: DraggableChangedEvent<ProjectColumn>) {
+  function onColumnDragged() {
     columns.value = columns.value.map((x, index) => ({ ...x, index }))
   }
 
   // update column state
   function onColumnChange(column: ProjectColumn) {
-    columns.value = columns.value
-      .filter(x => x.uid !== column.uid)
-      .concat([column])
-      .sort((a, b) => a.index - b.index)
+    columns.value = sortBy(
+      columns.value
+        .filter(x => x.uid !== column.uid)
+        .concat([column]),
+      'index'
+    )
   }
 </script>
 

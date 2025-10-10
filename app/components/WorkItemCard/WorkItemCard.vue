@@ -2,16 +2,28 @@
   <div 
     class="rounded-lg overflow-hidden select-none cursor-pointer *:p-2"
     :style="cardStyle"
+    @click="() => emits('click')"
   >
-    <div 
-      class="font-semibold"
-      :style="titleStyle"
+    <div
+      class="flex flex-col gap-0.5"
+      :style="cardHeaderStyle"
     >
-      {{ workItem.title }}
+      <div class="text-sm font-semibold text-center">{{ workItem.title }}</div>
     </div>
     
-    <div class="font-medium text-xs" v-if="workItem.content">
+    <div class="text-xs" v-if="workItem.content">
       {{ workItem.content }}
+    </div>
+
+    <div class="flex gap-2">
+      <UBadge
+        v-for="tag of workItem.tags"
+        :label="tag"
+        size="sm"
+        variant="subtle"
+        color="neutral"
+        :style="tagStyle"
+      />
     </div>
   </div>
 </template>
@@ -31,9 +43,11 @@
     workItem: WorkItem
   }>()
 
+  const emits = defineEmits(['click'])
+
   const fgColor = computed(() => workItem.fgColor || defaultCardFgColor.value || FallbackFgColor)
   const bgColor = computed(() => workItem.bgColor || defaultCardBgColor.value || FallbackBgColor)
-  const borderColor = computed(() => `${fgColor.value}77`)
+  const borderColor = computed(() => `${fgColor.value}66`)
 
   const cardStyle = computed(() => ({
     backgroundColor: bgColor.value,
@@ -41,7 +55,13 @@
     border: `1px solid ${borderColor.value}`
   } as StyleValue))
 
-  const titleStyle = computed(() => ({
+  const cardHeaderStyle = computed(() => ({
     borderBottom: `1px solid ${borderColor.value}`
+  } as StyleValue))
+
+  const tagStyle = computed(() => ({
+    // inverted colors
+    backgroundColor: fgColor.value,
+    color: bgColor.value
   } as StyleValue))
 </script>

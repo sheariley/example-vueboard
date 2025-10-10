@@ -1,6 +1,7 @@
+import sortBy from 'lodash/sortBy';
 import { defineStore } from 'pinia';
 
-import { DefaultProjectState, type Project, type ProjectColumn, type ProjectOptions, ProjectSchema } from '~/types';
+import { DefaultProjectState, type Project, type ProjectColumn, ProjectSchema, type WorkItem } from '~/types';
 import coerceErrorMessage from '~/util/coerceErrorMessage';
 import { prepareProjectEntityForSave } from '~/util/prepareProjectEntitiesForSave';
 
@@ -30,7 +31,15 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     description.value = project.description
     defaultCardFgColor.value = project.defaultCardFgColor
     defaultCardBgColor.value = project.defaultCardBgColor
-    projectColumns.value = project.projectColumns || []
+
+    // ensure project columns and their work items are sorted by index
+    projectColumns.value = sortBy(
+      (project.projectColumns || []).map(x => ({
+        ...x,
+        workItems: sortBy(x.workItems, 'index')
+      })),
+      'index'
+    )
   }
 
   function toEntity(): Project {
@@ -132,6 +141,62 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
 
   }
 
+  const _editingWorkItem = ref<{
+    parentColumnUid: string,
+    workItem: WorkItem
+  }>()
+
+  const editingWorkItem = computed(() => _editingWorkItem.value?.workItem)
+
+  const workItemEditTarget = computed(() => {
+    if (!_editingWorkItem.value?.workItem) return undefined;
+
+    const uid = _editingWorkItem.value?.workItem.uid
+
+    const parentColumn = projectColumns.value.find(x => x.uid === _editingWorkItem.value?.parentColumnUid)
+    if (!parentColumn) {
+      return undefined
+    }
+
+    return parentColumn.workItems?.find(x => x.uid === uid)
+  })
+
+  function startWorkItemEdit(workItem: WorkItem, parentColumnUid: string) {
+    _editingWorkItem.value = {
+      workItem: {
+        ...workItem,
+        tags: workItem.tags.slice()
+      },
+      parentColumnUid
+    }
+  }
+
+  function commitWorkItemEdit() {
+    if (!_editingWorkItem.value?.workItem) return
+
+    const { workItem } = _editingWorkItem.value;
+
+    const targetWorkItem = workItemEditTarget.value;
+    
+    if (!targetWorkItem) {
+      // TODO: Show error message
+      return
+    }
+
+    // update prop values in store
+    targetWorkItem.title = workItem.title
+    targetWorkItem.content = workItem.content
+    targetWorkItem.fgColor = workItem.fgColor
+    targetWorkItem.bgColor = workItem.bgColor
+    targetWorkItem.tags = workItem.tags.slice()
+
+    _editingWorkItem.value = undefined;
+  }
+
+  function cancelWorkItemEdit() {
+    _editingWorkItem.value = undefined
+  }
+
   return {
     loading,
     loadError,
@@ -151,5 +216,11 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
 
     fetchProject,
     saveProject,
+
+    editingWorkItem,
+    workItemEditTarget,
+    startWorkItemEdit,
+    commitWorkItemEdit,
+    cancelWorkItemEdit
   }
 })

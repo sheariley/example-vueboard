@@ -14,6 +14,7 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxt/test-utils/module',
     '@nuxt/scripts',
+    'nuxt-lodash',
     // '@nuxtjs/supabase'
     // '@nuxt/icon'
     '@pinia/nuxt',

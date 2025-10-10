@@ -26,7 +26,7 @@
         </UFieldGroup>
       </UFormField>
       
-      <UFormField name="fgColor" label="Default Card Foreground Color">
+      <UFormField name="fgColor" label="Foreground Color">
         <UFieldGroup>
           <ColorInputButton
             v-model="state.fgColor"
@@ -51,7 +51,7 @@
         </UFieldGroup>
       </UFormField>
 
-      <UFormField name="bgColor" label="Default Card Background Color">
+      <UFormField name="bgColor" label="Background Color">
         <UFieldGroup>
           <ColorInputButton
             v-model="state.bgColor"
@@ -99,8 +99,6 @@
 
 <script lang="ts" setup>
   import { ProjectColumnOptionsSchema, type ProjectColumnOptions } from '~/types'
-
-  // TODO: Add reset icon button to each field to reset it back to original value from the columnOptions object
 
   const emits = defineEmits<{
     done: [columnOptions: ProjectColumnOptions],

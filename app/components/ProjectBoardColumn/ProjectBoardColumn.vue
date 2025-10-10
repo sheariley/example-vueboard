@@ -52,16 +52,20 @@
       :disabled="isEditing"
     >
       <template #item="{ element }">
-        <WorkItemCard :workItem="element" />
+        <WorkItemCard :workItem="element" @click="() => onWorkItemClick(element)" />
       </template>
     </Draggable>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import type { WorkItem, DraggableChangedEvent, ProjectColumn, ProjectColumnOptions } from '~/types';
+  import type { ProjectColumn, ProjectColumnOptions, WorkItem } from '~/types';
 
-  const workItems = defineModel<WorkItem[] | undefined>('workItems', { required: true })
+  const currentProjectStore = useCurrentProjectStore()
+
+  const workItems = defineModel<WorkItem[] | undefined>('workItems', { 
+    required: true
+  })
 
   const emits = defineEmits<{
     change: [column: ProjectColumn]
@@ -85,6 +89,7 @@
   }
 
   function doneEditing(updatedState: ProjectColumnOptions) {
+    // commit changes to client-side state
     columnState.name = updatedState.name
     columnState.fgColor = updatedState.fgColor
     columnState.bgColor = updatedState.bgColor
@@ -102,9 +107,13 @@
     toggleIsEditing(false)
   }
   
-  function onWorkItemDragged(e: DraggableChangedEvent<WorkItem>) {
+  function onWorkItemDragged() {
     // refresh index properties on work items after drag op
     workItems.value = workItems.value!.map((x, index) => ({ ...x, index }))
+  }
+
+  function onWorkItemClick(workItem: WorkItem) {
+    currentProjectStore.startWorkItemEdit(workItem, props.column.uid)
   }
 </script>
 

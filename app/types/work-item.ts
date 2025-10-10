@@ -1,7 +1,9 @@
 import * as zod from 'zod'
 import { hexColor } from '~/util/zodSchemas'
 
-export const WorkItemSchema = zod.object({
+import { WorkItemOptionsSchema } from './work-item-options'
+
+export const WorkItemSchema = WorkItemOptionsSchema.extend({
   uid: zod.uuidv4(),
   projectColumnId: zod.number()
     .int()
@@ -11,23 +13,9 @@ export const WorkItemSchema = zod.object({
     .int()
     .nonnegative()
     .optional(),
-  title: zod.string()
-    .min(3, { message: 'This is required' })
-    .max(200, { error: 'Too long (max: 200)' }),
-  content: zod.string()
-    .nullable()
-    .optional(),
-  tags: zod.array(zod.string()
-    .min(1, { message: 'A tag must not be empty' })
-    .max(30, { error: 'Too long (max: 30)' })
-  ),
   index: zod.number()
     .int()
     .nonnegative(),
-  fgColor: hexColor
-    .optional(),
-  bgColor: hexColor
-    .optional()
 })
 
 export type WorkItem = zod.infer<typeof WorkItemSchema>
@@ -36,5 +24,7 @@ export const DefaultWorkItemState: WorkItem = {
   uid: '',
   title: '',
   tags: [],
+  fgColor: undefined,
+  bgColor: undefined,
   index: 0
 }
