@@ -6,8 +6,7 @@ export const WorkItemOptionsSchema = zod.object({
     .min(3, { message: 'This is required' })
     .max(200, { error: 'Too long (max: 200)' }),
   content: zod.string()
-    .nullable()
-    .optional(),
+    .nullable(),
   tags: zod.array(zod.string()
     .min(1, { message: 'A tag must not be empty' })
     .max(30, { error: 'Too long (max: 30)' })

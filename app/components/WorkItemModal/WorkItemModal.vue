@@ -10,135 +10,126 @@
   >
     <template #header>Edit Work Item</template>
     <template #body>
-      <UForm
-        v-if="state"
-        :state
-        :schema="WorkItemOptionsSchema"
-        class="flex flex-col items-stretch divide-y divide-neutral-800"
-      >
-        <UFormField name="title" label="Title" required>
-          <UFieldGroup class="w-full">
-            <UInput
-              placeholder="Title"
-              v-model="state.title"
-              name="title"
-              variant="subtle"
-              color="neutral"
-              class="w-full"
-            />
-            <UButton
-              color="neutral"
-              variant="subtle"
-              v-if="state.title !== original!.title"
-              @click="state.title = original!.title"
-            >
-              <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
-            </UButton>
-          </UFieldGroup>
-        </UFormField>
-
-        <UFormField
-          name="content"
-          :ui="{
-            label: 'w-full'
-          }"
+      <MarkdownEditorProvider>
+        <UForm
+          v-if="state"
+          :state
+          :schema="WorkItemOptionsSchema"
+          class="flex flex-col items-stretch gap-4"
         >
-          <template #label>
-            <div class="flex flex-nowrap justify-between items-baseline w-full">
-              <span>Description</span>
+          <UFormField name="title" label="Title" required>
+            <UFieldGroup class="w-full">
+              <UInput
+                placeholder="Title"
+                v-model="state.title"
+                name="title"
+                variant="subtle"
+                color="neutral"
+                class="w-full"
+              />
               <UButton
                 color="neutral"
-                variant="ghost"
-                v-if="state.content !== original!.content"
-                @click="state.content = original!.content"
+                variant="subtle"
+                v-if="state.title !== original!.title"
+                @click="state.title = original!.title"
               >
                 <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
               </UButton>
+            </UFieldGroup>
+          </UFormField>
+          <UFormField
+            name="content"
+            :ui="{
+              label: 'w-full'
+            }"
+          >
+            <template #label>
+              <div class="flex flex-nowrap justify-between items-center w-full h-[26px]">
+                <span>Description</span>
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  v-if="state.content !== original!.content"
+                  @click="state.content = original!.content"
+                >
+                  <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+                </UButton>
+              </div>
+            </template>
+            <div class="w-full flex flex-nowrap items-start">
+              <MarkdownEditor v-model="state.content" class="w-full" />
             </div>
-          </template>
-          <div class="w-full flex flex-nowrap items-start">
-            <UTextarea
-              placeholder="Description"
-              v-model="state.content"
-              name="content"
-              variant="subtle"
-              color="neutral"
-              class="w-full"
-            />
-          </div>
-        </UFormField>
-
-        <UFormField name="fgColor" label="Foreground Color">
-          <UFieldGroup>
-            <ColorInputButton
-              v-model="state.fgColor"
-              color="neutral"
-              variant="subtle"
-            />
-            <UInput
-              name="fgColor"
-              v-model="state.fgColor"
-              color="neutral"
-              variant="subtle"
-              class="w-full"
-            />
-            <UButton
-              color="neutral"
-              variant="subtle"
-              v-if="state.fgColor !== original!.fgColor"
-              @click="state.fgColor = original!.fgColor"
-            >
-              <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
-            </UButton>
-          </UFieldGroup>
-        </UFormField>
-
-        <UFormField name="bgColor" label="Background Color">
-          <UFieldGroup>
-            <ColorInputButton
-              v-model="state.bgColor"
-              color="neutral"
-              variant="subtle"
-            />
-            <UInput
-              name="bgColor"
-              v-model="state.bgColor"
-              color="neutral"
-              variant="subtle"
-              class="w-full"
-            />
-            <UButton
-              color="neutral"
-              variant="subtle"
-              v-if="state.bgColor !== original!.bgColor"
-              @click="state.bgColor = original!.bgColor"
-            >
-              <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
-            </UButton>
-          </UFieldGroup>
-        </UFormField>
-
-        <UFormField name="tags" label="Tags">
-          <UFieldGroup class="w-full">
-            <UInputTags
-              placeholder="Tags"
-              v-model="state.tags"
-              name="tags"
-              variant="subtle"
-              color="neutral"
-              class="w-full"
-            />
-            <UButton
-              color="neutral"
-              variant="subtle"
-              v-if="!isEqual(state.tags, original!.tags)"
-              @click="state.tags = original!.tags.slice()"
-            >
-              <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
-            </UButton>
-          </UFieldGroup>
-        </UFormField>
-      </UForm>
+          </UFormField>
+          <UFormField name="fgColor" label="Foreground Color">
+            <UFieldGroup>
+              <ColorInputButton
+                v-model="state.fgColor"
+                color="neutral"
+                variant="subtle"
+              />
+              <UInput
+                name="fgColor"
+                v-model="state.fgColor"
+                color="neutral"
+                variant="subtle"
+                class="w-full"
+              />
+              <UButton
+                color="neutral"
+                variant="subtle"
+                v-if="state.fgColor !== original!.fgColor"
+                @click="state.fgColor = original!.fgColor"
+              >
+                <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+              </UButton>
+            </UFieldGroup>
+          </UFormField>
+          <UFormField name="bgColor" label="Background Color">
+            <UFieldGroup>
+              <ColorInputButton
+                v-model="state.bgColor"
+                color="neutral"
+                variant="subtle"
+              />
+              <UInput
+                name="bgColor"
+                v-model="state.bgColor"
+                color="neutral"
+                variant="subtle"
+                class="w-full"
+              />
+              <UButton
+                color="neutral"
+                variant="subtle"
+                v-if="state.bgColor !== original!.bgColor"
+                @click="state.bgColor = original!.bgColor"
+              >
+                <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+              </UButton>
+            </UFieldGroup>
+          </UFormField>
+          <UFormField name="tags" label="Tags">
+            <UFieldGroup class="w-full">
+              <UInputTags
+                placeholder="Tags"
+                v-model="state.tags"
+                name="tags"
+                variant="subtle"
+                color="neutral"
+                class="w-full"
+              />
+              <UButton
+                color="neutral"
+                variant="subtle"
+                v-if="!isEqual(state.tags, original!.tags)"
+                @click="state.tags = original!.tags.slice()"
+              >
+                <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+              </UButton>
+            </UFieldGroup>
+          </UFormField>
+        </UForm>
+      </MarkdownEditorProvider>
     </template>
     <template #footer>
       <UButton

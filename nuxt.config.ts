@@ -14,7 +14,6 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxt/test-utils/module',
     '@nuxt/scripts',
-    'nuxt-lodash',
     // '@nuxtjs/supabase'
     // '@nuxt/icon'
     '@pinia/nuxt',
@@ -58,7 +57,9 @@ export default defineNuxtConfig({
 
   css: [
     '@fortawesome/fontawesome-svg-core/styles.css',
-    '~/assets/css/main.css'
+    '@milkdown/crepe/theme/common/style.css',
+    '@milkdown/crepe/theme/frame-dark.css',
+    '~/assets/css/main.css',
   ],
 
   ui: {

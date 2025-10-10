@@ -5,6 +5,7 @@
 - [x] Apply color properties to work item card component styles, with default color values from project used unless overridden in work item object
 - [x] Allow editing of work item cards
 - [ ] Allow work item content to contain markdown and add rich editor
+  - [ ] Add a separate field for rich content called "Notes" and rename "content" property to "description".
 - [ ] Allow adding new columns
 - [ ] Allow removing columns
 - [ ] Add list of projects to main nav menu
