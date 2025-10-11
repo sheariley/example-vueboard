@@ -6,12 +6,13 @@
 </template>
 
 <script lang="ts" setup>
-  import { type CmdKey } from "@milkdown/kit/core";
-  import { callCommand, replaceAll } from '@milkdown/kit/utils'
-  import { history as milkdownHistory } from '@milkdown/kit/plugin/history';
-  import { useEditor, Milkdown } from '@milkdown/vue';
   import { Crepe } from '@milkdown/crepe';
-  
+  import { type CmdKey } from "@milkdown/kit/core";
+  import { history as milkdownHistory } from '@milkdown/kit/plugin/history';
+  import { callCommand, replaceAll } from '@milkdown/kit/utils';
+  import { Milkdown, useEditor } from '@milkdown/vue';
+  import { clearAllMarksCommand, getNodeAttributeCommand, isSelectionInNodeCommand } from './custom-editor-commands';
+
   const modelValue = defineModel<string | null>({
     required: true
   })
@@ -37,7 +38,10 @@
     })
 
     crepe.editor.use(milkdownHistory)
-
+    crepe.editor.use(clearAllMarksCommand)
+    crepe.editor.use(getNodeAttributeCommand)
+    crepe.editor.use(isSelectionInNodeCommand)
+    
     crepe.on(api => {
       api.markdownUpdated((ctx, markdown, prevMarkdown) => {
         if (markdown === prevMarkdown) return
