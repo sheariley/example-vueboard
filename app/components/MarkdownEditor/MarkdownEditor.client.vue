@@ -25,10 +25,13 @@
       root,
       features: {
         [Crepe.Feature.BlockEdit]: false,
-        [Crepe.Feature.CodeMirror]: false,
         [Crepe.Feature.Latex]: false,
         [Crepe.Feature.ImageBlock]: false,
-        [Crepe.Feature.Toolbar]: false
+        [Crepe.Feature.Toolbar]: false,
+        [Crepe.Feature.ListItem]: true,
+        [Crepe.Feature.LinkTooltip]: true,
+        [Crepe.Feature.CodeMirror]: true,
+        [Crepe.Feature.Table]: true
       },
       defaultValue: modelValue.value || ''
     })

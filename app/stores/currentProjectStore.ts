@@ -185,7 +185,8 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
 
     // update prop values in store
     targetWorkItem.title = workItem.title
-    targetWorkItem.content = workItem.content
+    targetWorkItem.description = workItem.description
+    targetWorkItem.notes = workItem.notes
     targetWorkItem.fgColor = workItem.fgColor
     targetWorkItem.bgColor = workItem.bgColor
     targetWorkItem.tags = workItem.tags.slice()

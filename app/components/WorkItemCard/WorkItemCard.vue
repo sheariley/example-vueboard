@@ -11,8 +11,8 @@
       <div class="text-sm font-semibold text-center">{{ workItem.title }}</div>
     </div>
     
-    <div class="text-xs" v-if="workItem.content">
-      {{ workItem.content }}
+    <div class="text-xs" v-if="workItem.description">
+      {{ workItem.description }}
     </div>
 
     <div class="flex gap-2">

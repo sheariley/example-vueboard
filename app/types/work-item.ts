@@ -23,6 +23,8 @@ export type WorkItem = zod.infer<typeof WorkItemSchema>
 export const DefaultWorkItemState: WorkItem = {
   uid: '',
   title: '',
+  description: null,
+  notes: null,
   tags: [],
   fgColor: undefined,
   bgColor: undefined,

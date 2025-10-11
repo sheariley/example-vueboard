@@ -40,7 +40,8 @@
           "projectColumnId": 2,
           "id": 3,
           "title": "Create wireframes",
-          "content": "Design wireframes for the new website layout.",
+          "description": "Design wireframes for the new website layout.",
+          "notes": "* **Wireframes** created in Figma.\n\n* _Pending review by UX team_.\n\n* ![Wireframe](https://via.placeholder.com/100x40?text=Wireframe)\n\n",
           "tags": ["design", "wireframe"],
           "index": 0
         }
@@ -60,7 +61,8 @@
           "projectColumnId": 1,
           "id": 1,
           "title": "Gather requirements",
-          "content": null,
+          "description": null,
+          "notes": "* **Kickoff meeting** scheduled for next week.\n\n* Stakeholders: Product, Design, Engineering.\n\n* _Checklist_:\n\n  * [ ] Collect user feedback\n\n  * [ ] Review current site analytics\n\n",
           "tags": ["planning", "meeting"],
           "index": 0
         },
@@ -69,7 +71,8 @@
           "projectColumnId": 1,
           "id": 2,
           "title": "Research competitors",
-          "content": "Analyze competitor websites for design inspiration.",
+          "description": "Analyze competitor websites for design inspiration.",
+          "notes": "* _Research summary_:\n\n  * [x] Top 5 competitors identified\n\n  * [ ] Inspiration board in Figma\n\n* **Next:** Schedule design review.\n\n",
           "tags": ["research", "design"],
           "index": 1,
           "fgColor": "#FFFFFF",
@@ -91,7 +94,8 @@
           "projectColumnId": 3,
           "id": 4,
           "title": "Review homepage mockup",
-          "content": "Get feedback on the homepage mockup from the team.",
+          "description": "Get feedback on the homepage mockup from the team.",
+          "notes": "* _Awaiting feedback from team_.\n\n* [ ] Approve homepage mockup\n\n* [ ] Collect comments in Google Docs\n\n",
           "tags": ["review", "homepage"],
           "index": 0
         }
@@ -111,7 +115,8 @@
           "projectColumnId": 4,
           "id": 5,
           "title": "Finalize color palette",
-          "content": "Confirm the color palette for the redesign.",
+          "description": "Confirm the color palette for the redesign.",
+          "notes": "* 🎉 Task completed!\n\n* Final assets uploaded to [Drive](#).\n\n* _Ready for next phase_.\n\n",
           "tags": ["design", "colors"],
           "index": 0
         }
@@ -131,7 +136,8 @@
           "projectColumnId": 5,
           "id": 6,
           "title": "Define MVP features",
-          "content": "List and prioritize features for the first app release.",
+          "description": "List and prioritize features for the first app release.",
+          "notes": "* **Initial planning**\n\n* [ ] Define MVP\n\n* [ ] Assign team members\n\n",
           "tags": ["planning", "features"],
           "index": 0
         },
@@ -140,7 +146,8 @@
           "projectColumnId": 5,
           "id": 7,
           "title": "Set up analytics",
-          "content": "Integrate analytics tools for user tracking.",
+          "description": "Integrate analytics tools for user tracking.",
+          "notes": "* **Analytics tools** integrated.\n\n* [ ] Set up dashboards\n\n* [ ] Review KPIs\n\n",
           "tags": ["setup", "analytics"],
           "index": 1
         }
@@ -160,7 +167,8 @@
           "projectColumnId": 6,
           "id": 8,
           "title": "Develop onboarding screens",
-          "content": "Create onboarding screens for new users.",
+          "description": "Create onboarding screens for new users.",
+          "notes": "* _Development started_.\n\n* [x] Repo initialized\n\n* [ ] Implement onboarding flow\n\n",
           "tags": ["development", "UI"],
           "index": 0
         }
@@ -180,7 +188,8 @@
           "projectColumnId": 7,
           "id": 9,
           "title": "Test push notifications",
-          "content": "Verify push notifications work on all devices.",
+          "description": "Verify push notifications work on all devices.",
+          "notes": "* _Testing in progress_.\n\n* [ ] Device matrix coverage\n\n* [ ] Log issues in Jira\n\n",
           "tags": ["testing", "notifications"],
           "index": 0
         }
@@ -200,7 +209,8 @@
           "projectColumnId": 8,
           "id": 10,
           "title": "Publish beta version",
-          "content": "Release the beta version to selected users.",
+          "description": "Release the beta version to selected users.",
+          "notes": "* **Beta released**\n\n* [x] Uploaded to TestFlight\n\n* [ ] Monitor user feedback\n\n",
           "tags": ["release", "beta"],
           "index": 0
         }
@@ -220,7 +230,8 @@
           "projectColumnId": 9,
           "id": 11,
           "title": "Brainstorm campaign ideas",
-          "content": "Gather creative ideas for the upcoming marketing campaign.",
+          "description": "Gather creative ideas for the upcoming marketing campaign.",
+          "notes": "* _Campaign ideas brainstormed_.\n\n* [ ] Finalize target audience\n\n* [ ] Prepare ad copy\n\n",
           "tags": ["brainstorm", "ideas"],
           "index": 0
         },
@@ -229,7 +240,8 @@
           "projectColumnId": 9,
           "id": 12,
           "title": "Identify target audience",
-          "content": "Define the target audience demographics and interests.",
+          "description": "Define the target audience demographics and interests.",
+          "notes": "* _Research summary_:\n\n  * [x] Target audience defined\n\n  * [ ] Create personas\n\n* **Next:** Prepare ad copy.\n\n",
           "tags": ["research", "audience"],
           "index": 1
         }
@@ -249,7 +261,8 @@
           "projectColumnId": 10,
           "id": 13,
           "title": "Design social media graphics",
-          "content": "Create engaging graphics for social media posts.",
+          "description": "Create engaging graphics for social media posts.",
+          "notes": "* **Graphics** created in Canva.\n\n* _Pending review by marketing team_.\n\n* ![Graphic](https://via.placeholder.com/100x40?text=Graphic)\n\n",
           "tags": ["design", "social media"],
           "index": 0
         }
@@ -269,7 +282,8 @@
           "projectColumnId": 11,
           "id": 14,
           "title": "Review ad copy",
-          "content": "Check and approve the copy for online ads.",
+          "description": "Check and approve the copy for online ads.",
+          "notes": "* _Ad copy drafted_.\n\n* [ ] Review with marketing\n\n* [ ] Final approval pending\n\n",
           "tags": ["review", "copywriting"],
           "index": 0
         }
@@ -289,7 +303,8 @@
           "projectColumnId": 12,
           "id": 15,
           "title": "Launch email newsletter",
-          "content": "Send out the campaign newsletter to subscribers.",
+          "description": "Send out the campaign newsletter to subscribers.",
+          "notes": "* 🎉 Task completed!\n\n* Final email sent to subscribers.\n\n* _Campaign metrics available in dashboard_.\n\n",
           "tags": ["email", "launch"],
           "index": 0
         }

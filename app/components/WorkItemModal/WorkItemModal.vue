@@ -37,8 +37,9 @@
               </UButton>
             </UFieldGroup>
           </UFormField>
+
           <UFormField
-            name="content"
+            name="description"
             :ui="{
               label: 'w-full'
             }"
@@ -49,17 +50,49 @@
                 <UButton
                   color="neutral"
                   variant="ghost"
-                  v-if="state.content !== original!.content"
-                  @click="state.content = original!.content"
+                  v-if="state.description !== original!.description"
+                  @click="state.description = original!.description"
                 >
                   <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
                 </UButton>
               </div>
             </template>
             <div class="w-full flex flex-nowrap items-start">
-              <MarkdownEditor v-model="state.content" class="w-full" />
+              <UTextarea
+                placeholder="Description"
+                v-model="state.description"
+                name="content"
+                variant="subtle"
+                color="neutral"
+                class="w-full"
+              />
             </div>
           </UFormField>
+
+          <UFormField
+            name="notes"
+            :ui="{
+              label: 'w-full'
+            }"
+          >
+            <template #label>
+              <div class="flex flex-nowrap justify-between items-center w-full h-[26px]">
+                <span>Notes</span>
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  v-if="state.notes !== original!.notes"
+                  @click="state.notes = original!.notes"
+                >
+                  <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+                </UButton>
+              </div>
+            </template>
+            <div class="w-full flex flex-nowrap items-start">
+              <MarkdownEditor v-model="state.notes" class="w-full" />
+            </div>
+          </UFormField>
+
           <UFormField name="fgColor" label="Foreground Color">
             <UFieldGroup>
               <ColorInputButton
@@ -84,6 +117,7 @@
               </UButton>
             </UFieldGroup>
           </UFormField>
+
           <UFormField name="bgColor" label="Background Color">
             <UFieldGroup>
               <ColorInputButton
@@ -108,6 +142,7 @@
               </UButton>
             </UFieldGroup>
           </UFormField>
+
           <UFormField name="tags" label="Tags">
             <UFieldGroup class="w-full">
               <UInputTags
