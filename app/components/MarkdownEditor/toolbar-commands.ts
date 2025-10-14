@@ -82,13 +82,23 @@ export const MarkdownToolbarCommands: Record<MarkdownToolbarCommandName, Markdow
       return checkNodeSchemaActive(cmdMgr, ctx, headingSchema)
     },
     run(cmdMgr: CommandManager, ctx: Ctx, payload: number) {
-      const heading = headingSchema.type(ctx)
-      cmdMgr.call(setBlockTypeCommand.key, {
-        nodeType: heading,
-        attrs: {
-          level: payload
-        }
-      });
+      if (this.isActive(cmdMgr, ctx)) {
+        const paragraph = paragraphSchema.type(ctx)
+        cmdMgr.call(setBlockTypeCommand.key, {
+          nodeType: paragraph,
+          attrs: {
+            level: undefined
+          }
+        });
+      } else {
+        const heading = headingSchema.type(ctx)
+        cmdMgr.call(setBlockTypeCommand.key, {
+          nodeType: heading,
+          attrs: {
+            level: payload
+          }
+        });
+      }
     }
   },
 
