@@ -1,6 +1,6 @@
 <template>
   <div
-    class="min-w-64 max-w-72 flex flex-col items-stretch divide-y divide-neutral-400 gap-2 p-2 bg-neutral-800 border-1 border-neutral-600 rounded-xl project-board-column"
+    class="min-w-64 max-w-80 flex flex-col items-stretch divide-y divide-neutral-400 gap-2 p-2 bg-neutral-800 border-1 border-neutral-600 rounded-xl project-board-column"
     :style="{ color: columnState.fgColor, backgroundColor: columnState.bgColor }"
   >
     <div class="flex flex-nowrap items-start gap-0.5 min-h-[33px]">
