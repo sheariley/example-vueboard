@@ -1,3 +1,34 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
-@import "./milkdown"
+@import "./milkdown";
+
+@plugin "tailwind-scrollbar";
+
+html {
+  @apply scrollbar-thin;
+}
+
+html, body, body > div#__nuxt {
+  @apply flex flex-col scrollbar-thumb-neutral-400 scrollbar-track-neutral-800;
+}
+
+html:has(*:is(.layout-fixed)) {
+  @apply justify-items-stretch items-stretch h-full;
+  @apply overflow-hidden;
+}
+
+body:has(*:is(.layout-fixed)),
+body:has(*:is(.layout-fixed)) > div#__nuxt,
+body:has(*:is(.layout-fixed)) #container-main {
+  @apply justify-items-stretch items-stretch basis-full;
+  @apply overflow-hidden;
+}
+
+body:has(*:is(.layout-fixed)) header:first {
+  @apply justify-self-start;
+}
+
+body:has(*:is(.layout-fixed)) main {
+  @apply basis-full justify-items-stretch items-stretch;
+  @apply overflow-hidden;
+}

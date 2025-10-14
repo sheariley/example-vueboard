@@ -1,16 +1,25 @@
 <template>
   <div
-    class="flex flex-col items-stretch divide-y divide-neutral-400 gap-2 p-2 bg-neutral-800 border-1 border-neutral-600 rounded-xl project-board-column"
+    class="min-w-64 max-w-72 flex flex-col items-stretch divide-y divide-neutral-400 gap-2 p-2 bg-neutral-800 border-1 border-neutral-600 rounded-xl project-board-column"
     :style="{ color: columnState.fgColor, backgroundColor: columnState.bgColor }"
   >
-    <div class="flex flex-nowrap items-center gap-2 h-[33px]">
+    <div class="flex flex-nowrap items-start gap-0.5 min-h-[33px]">
       <FontAwesomeIcon
-        class="drag-handle cursor-ew-resize"
+        class="drag-handle cursor-ew-resize mt-1.5 mr-0.5"
         icon="fa-solid fa-grip-vertical"
         width-auto
       />
       
       <span class="text-lg font-semibold flex-1">{{ columnState.name }}</span>
+
+      <UButton
+        color="neutral"
+        variant="link"
+        :style="{ color: columnState.fgColor }"
+        @click="emits('addWorkItemClick', column)"
+      >
+        <FontAwesomeIcon icon="fa-solid fa-plus" />
+      </UButton>
 
       <UModal
         v-model:open="isEditing"
@@ -27,7 +36,7 @@
           variant="link"
           :style="{ color: columnState.fgColor }"
         >
-          <FontAwesomeIcon icon="fa-solid fa-ellipsis-vertical" />
+          <FontAwesomeIcon icon="fa-solid fa-sliders" />
         </UButton>
 
         <template #header>
@@ -42,8 +51,17 @@
           />
         </template>
       </UModal>
+
+      <UButton
+        color="neutral"
+        variant="link"
+        :style="{ color: columnState.fgColor }"
+        @click="emits('removeClick', column)"
+      >
+        <FontAwesomeIcon icon="fa-solid fa-xmark" />
+      </UButton>
     </div>
-    <Draggable class="flex flex-col items-stretch gap-4 py-2 flex-1"
+    <Draggable class="flex flex-col items-stretch justify-start *:shrink-0 gap-4 py-2 flex-1 overflow-y-auto scrollbar-thin"
       group="workItems"
       v-model="workItems"
       ghostClass="work-item-drag-placeholder"
@@ -68,7 +86,9 @@
   })
 
   const emits = defineEmits<{
-    change: [column: ProjectColumn]
+    change: [column: ProjectColumn],
+    removeClick: [column: ProjectColumn],
+    addWorkItemClick: [column: ProjectColumn]
   }>()
 
   const props = defineProps<{
@@ -109,7 +129,11 @@
   
   function onWorkItemDragged() {
     // refresh index properties on work items after drag op
-    workItems.value = workItems.value!.map((x, index) => ({ ...x, index }))
+    workItems.value = workItems.value!.map((x, index) => ({
+      ...x,
+      projectColumnId: columnState.id,
+      index
+    }))
   }
 
   function onWorkItemClick(workItem: WorkItem) {

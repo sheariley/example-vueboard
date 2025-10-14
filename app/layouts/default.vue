@@ -1,13 +1,7 @@
 <template>
-  <UHeader>
-    <template #title>
-      <div class="text-lg text-nowrap">
-        <span class="text-primary">Vue</span><span class="text-secondary">Board</span>
-      </div>
-    </template>
-  </UHeader>
+  <AppHeader />
 
-  <UMain class="flex flex-col">
+  <UMain class="flex flex-col flex-1">
     <slot />
   </UMain>
 </template>
@@ -15,7 +9,3 @@
 <script lang="ts" setup>
 
 </script>
-
-<style>
-
-</style>

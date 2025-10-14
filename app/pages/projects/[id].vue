@@ -1,5 +1,5 @@
 <template>
-  <UContainer class="flex flex-col flex-1 py-6 items-stretch gap-4">
+  <UContainer id="container-main" class="flex flex-col flex-1 py-6 items-stretch gap-4">
     <template v-if="currentProjectStore.loading">
       <USkeleton class="h-[150px]" />
       <div class="flex items-stretch flex-nowrap gap-4 flex-1 *:flex-1">

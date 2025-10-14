@@ -10,3 +10,4 @@
 - [ ] Allow removing columns
 - [ ] Add list of projects to main nav menu
 - [ ] Allow saving of projects
+- [ ] Add undo functionality at project level???

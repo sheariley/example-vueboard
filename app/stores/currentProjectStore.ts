@@ -1,7 +1,7 @@
 import sortBy from 'lodash/sortBy';
 import { defineStore } from 'pinia';
 
-import { DefaultProjectState, type Project, type ProjectColumn, ProjectSchema, type WorkItem } from '~/types';
+import { DefaultProjectColumnState, DefaultProjectState, DefaultWorkItemState, type Project, type ProjectColumn, ProjectSchema, type WorkItem } from '~/types';
 import coerceErrorMessage from '~/util/coerceErrorMessage';
 import { prepareProjectEntityForSave } from '~/util/prepareProjectEntitiesForSave';
 
@@ -141,6 +141,40 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
 
   }
 
+  function generateNewColumnName() {
+    const existingNames = projectColumns.value.map(x => x.name)
+    let newName = 'Column 1'
+    if (!existingNames.includes(newName)) return newName
+
+    let suffix = 1
+    while (existingNames.includes(newName)) {
+      suffix++
+      newName = `Column ${suffix}`
+    }
+
+    return newName
+  }
+
+  function addNewColumn() {
+    const index = Math.max(0, ...projectColumns.value?.map(x => x.index))
+
+    const newCol: ProjectColumn = {
+      ...DefaultProjectColumnState,
+      uid: crypto.randomUUID(),
+      name: generateNewColumnName(),
+      index,
+      workItems: []
+    }
+
+    projectColumns.value = projectColumns.value.concat([newCol])
+
+    return newCol
+  }
+
+  function removeColumn(columnUid: string) {
+    projectColumns.value = projectColumns.value.filter(x => x.uid === columnUid)
+  }
+
   const _editingWorkItem = ref<{
     parentColumnUid: string,
     workItem: WorkItem
@@ -198,6 +232,44 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     _editingWorkItem.value = undefined
   }
 
+  function generateNewWorkItemTitle(column: ProjectColumn) {
+    const existingTitles = column.workItems?.map(x => x.title) || []
+    let newTitle = 'Work Item 1'
+    if (!existingTitles.includes(newTitle)) return newTitle
+
+    let suffix = 1
+    while (existingTitles.includes(newTitle)) {
+      suffix++
+      newTitle = `Work Item ${suffix}`
+    }
+
+    return newTitle
+  }
+
+  function addNewWorkItem(columnUid: string, showEditModal = false) {
+    const column = projectColumns.value.find(x => x.uid === columnUid)
+    if (!column) {
+      // TODO: Display error
+      return
+    }
+
+    const title = generateNewWorkItemTitle(column)
+    const index = Math.max(0, ...column.workItems?.map(x => x.index) || [])
+    const newItem: WorkItem = {
+      ...DefaultWorkItemState,
+      uid: crypto.randomUUID(),
+      projectColumnId: column.id,
+      index,
+      title,
+      tags: []
+    }
+    column.workItems = (column.workItems || []).concat([newItem])
+
+    if (showEditModal) startWorkItemEdit(newItem, columnUid)
+    
+    return newItem
+  }
+
   return {
     loading,
     loadError,
@@ -217,6 +289,11 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
 
     fetchProject,
     saveProject,
+
+    generateNewColumnName,
+    addNewColumn,
+    removeColumn,
+    addNewWorkItem,
 
     editingWorkItem,
     workItemEditTarget,
