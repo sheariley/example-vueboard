@@ -70,7 +70,12 @@
       :disabled="isEditing"
     >
       <template #item="{ element }">
-        <WorkItemCard :workItem="element" @click="() => onWorkItemClick(element)" />
+        <WorkItemCard
+          :workItem="element"
+          :defaultCardFgColor
+          :defaultCardBgColor
+          @click="() => onWorkItemClick(element)"
+        />
       </template>
     </Draggable>
   </div>
@@ -80,6 +85,8 @@
   import type { ProjectColumn, ProjectColumnOptions, WorkItem } from '~/types';
 
   const currentProjectStore = useCurrentProjectStore()
+
+  const { defaultCardFgColor, defaultCardBgColor } = storeToRefs(currentProjectStore)
 
   const workItems = defineModel<WorkItem[] | undefined>('workItems', { 
     required: true

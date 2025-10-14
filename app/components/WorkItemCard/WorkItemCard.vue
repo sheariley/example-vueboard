@@ -31,22 +31,20 @@
 <script lang="ts" setup>
   import type { StyleValue } from 'vue'
   import type { WorkItem } from '~/types'
-
-  const currentProjectStore = useCurrentProjectStore()
-
-  const { defaultCardFgColor, defaultCardBgColor } = storeToRefs(currentProjectStore)
-
+  
   const FallbackBgColor = '#0F172B'
   const FallbackFgColor = '#FFFFFF'
 
-  const { workItem } = defineProps<{
-    workItem: WorkItem
+  const { workItem, defaultCardBgColor, defaultCardFgColor } = defineProps<{
+    workItem: WorkItem,
+    defaultCardFgColor?: string,
+    defaultCardBgColor?: string
   }>()
 
   const emits = defineEmits(['click'])
 
-  const fgColor = computed(() => workItem.fgColor || defaultCardFgColor.value || FallbackFgColor)
-  const bgColor = computed(() => workItem.bgColor || defaultCardBgColor.value || FallbackBgColor)
+  const fgColor = computed(() => workItem.fgColor || defaultCardFgColor || FallbackFgColor)
+  const bgColor = computed(() => workItem.bgColor || defaultCardBgColor || FallbackBgColor)
   const borderColor = computed(() => `${fgColor.value}66`)
 
   const cardStyle = computed(() => ({
