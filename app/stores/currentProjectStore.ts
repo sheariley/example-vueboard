@@ -172,7 +172,48 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   }
 
   function removeColumn(columnUid: string) {
-    projectColumns.value = projectColumns.value.filter(x => x.uid === columnUid)
+    projectColumns.value = projectColumns.value.filter(x => x.uid !== columnUid)
+  }
+
+  const _editingColumn = ref<ProjectColumn>()
+
+  const editingColumn = computed(() => _editingColumn.value)
+
+  const columnEditTarget = computed(() => {
+    if (!_editingColumn.value) return undefined
+
+    const uid = _editingColumn.value?.uid
+
+    return projectColumns.value.find(x => x.uid === uid)
+  })
+
+  function startColumnEdit(column: ProjectColumn) {
+    _editingColumn.value = {
+      ...column,
+      workItems: column.workItems?.slice() || []
+    }
+  }
+
+  function commitColumnEdit() {
+    if (!_editingColumn.value) return
+
+    const columnState = _editingColumn.value
+    const targetColumn = columnEditTarget.value
+
+    if (!targetColumn) {
+      // TODO: Show error message
+      return
+    }
+
+    targetColumn.name = columnState.name
+    targetColumn.fgColor = columnState.fgColor
+    targetColumn.bgColor = columnState.bgColor
+    
+    _editingColumn.value = undefined
+  }
+
+  function cancelColumnEdit() {
+    _editingColumn.value = undefined
   }
 
   const _editingWorkItem = ref<{
@@ -183,7 +224,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   const editingWorkItem = computed(() => _editingWorkItem.value?.workItem)
 
   const workItemEditTarget = computed(() => {
-    if (!_editingWorkItem.value?.workItem) return undefined;
+    if (!_editingWorkItem.value?.workItem) return undefined
 
     const uid = _editingWorkItem.value?.workItem.uid
 
@@ -208,9 +249,9 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   function commitWorkItemEdit() {
     if (!_editingWorkItem.value?.workItem) return
 
-    const { workItem } = _editingWorkItem.value;
+    const { workItem } = _editingWorkItem.value
 
-    const targetWorkItem = workItemEditTarget.value;
+    const targetWorkItem = workItemEditTarget.value
     
     if (!targetWorkItem) {
       // TODO: Show error message
@@ -225,7 +266,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     targetWorkItem.bgColor = workItem.bgColor
     targetWorkItem.tags = workItem.tags.slice()
 
-    _editingWorkItem.value = undefined;
+    _editingWorkItem.value = undefined
   }
 
   function cancelWorkItemEdit() {
@@ -294,6 +335,12 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     addNewColumn,
     removeColumn,
     addNewWorkItem,
+
+    editingColumn,
+    columnEditTarget,
+    startColumnEdit,
+    commitColumnEdit,
+    cancelColumnEdit,
 
     editingWorkItem,
     workItemEditTarget,

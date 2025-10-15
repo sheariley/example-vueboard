@@ -1,82 +1,96 @@
 <template>
-  <UForm
-    :state
-    :schema="ProjectColumnOptionsSchema"
-    class="flex flex-col items-stretch divide-y divide-neutral-800"
+  <UModal
+    :open="!!currentProjectStore.editingColumn"
+    :close="false"
+    title="Column Options"
+    description="Customize column options, such as name, foreground color, or background color."
+    :ui="{
+      footer: 'flex flex-nowrap justify-stretch sm:justify-between p-4 gap-4'
+    }"
   >
-    <div class="flex flex-col items-stretch gap-4 p-4 pb-8">
-      <UFormField name="name" label="Name" required>
-        <UFieldGroup class="w-full">
-          <UInput
-            placeholder="Name"
-            v-model="state.name"
-            name="name"
-            variant="subtle"
-            color="neutral"
-            class="w-full"
-          />
-          <UButton
-            color="neutral"
-            variant="subtle"
-            v-if="state.name !== columnOptions.name"
-            @click="state.name = columnOptions.name"
-          >
-            <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
-          </UButton>
-        </UFieldGroup>
-      </UFormField>
-      
-      <UFormField name="fgColor" label="Foreground Color">
-        <UFieldGroup>
-          <ColorInputButton
-            v-model="state.fgColor"
-            color="neutral"
-            variant="subtle"
-          />
-          <UInput
-            name="fgColor"
-            v-model="state.fgColor"
-            color="neutral"
-            variant="subtle"
-            class="w-full"
-          />
-          <UButton
-            color="neutral"
-            variant="subtle"
-            v-if="state.fgColor !== columnOptions.fgColor"
-            @click="state.fgColor = columnOptions.fgColor"
-          >
-            <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
-          </UButton>
-        </UFieldGroup>
-      </UFormField>
+    <template #header>Column Options</template>
 
-      <UFormField name="bgColor" label="Background Color">
-        <UFieldGroup>
-          <ColorInputButton
-            v-model="state.bgColor"
-            color="neutral"
-            variant="subtle"
-          />
-          <UInput
-            name="bgColor"
-            v-model="state.bgColor"
-            color="neutral"
-            variant="subtle"
-            class="w-full"
-          />
-          <UButton
-            color="neutral"
-            variant="subtle"
-            v-if="state.bgColor !== columnOptions.bgColor"
-            @click="state.bgColor = columnOptions.bgColor"
-          >
-            <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
-          </UButton>
-        </UFieldGroup>
-      </UFormField>
-    </div>
-    <div class="flex flex-nowrap justify-stretch sm:justify-between p-4 gap-4">
+    <template #body>
+      <UForm
+        v-if="state"
+        :state
+        :schema="ProjectColumnOptionsSchema"
+        class="flex flex-col items-stretch divide-y divide-neutral-800"
+      >
+        <UFormField name="name" label="Name" required>
+          <UFieldGroup class="w-full">
+            <UInput
+              placeholder="Name"
+              v-model="state.name"
+              name="name"
+              variant="subtle"
+              color="neutral"
+              class="w-full"
+            />
+            <UButton
+              color="neutral"
+              variant="subtle"
+              v-if="state.name !== original!.name"
+              @click="state.name = original!.name"
+            >
+              <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+            </UButton>
+          </UFieldGroup>
+        </UFormField>
+
+        <UFormField name="fgColor" label="Foreground Color">
+          <UFieldGroup>
+            <ColorInputButton
+              v-model="state.fgColor"
+              color="neutral"
+              variant="subtle"
+            />
+            <UInput
+              name="fgColor"
+              v-model="state.fgColor"
+              color="neutral"
+              variant="subtle"
+              class="w-full"
+            />
+            <UButton
+              color="neutral"
+              variant="subtle"
+              v-if="state.fgColor !== original!.fgColor"
+              @click="state.fgColor = original!.fgColor"
+            >
+              <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+            </UButton>
+          </UFieldGroup>
+        </UFormField>
+
+        <UFormField name="bgColor" label="Background Color">
+          <UFieldGroup>
+            <ColorInputButton
+              v-model="state.bgColor"
+              color="neutral"
+              variant="subtle"
+            />
+            <UInput
+              name="bgColor"
+              v-model="state.bgColor"
+              color="neutral"
+              variant="subtle"
+              class="w-full"
+            />
+            <UButton
+              color="neutral"
+              variant="subtle"
+              v-if="state.bgColor !== original!.bgColor"
+              @click="state.bgColor = original!.bgColor"
+            >
+              <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+            </UButton>
+          </UFieldGroup>
+        </UFormField>
+      </UForm>
+    </template>
+      
+    <template #footer>
       <UButton
         @click="cancel"
         color="neutral"
@@ -93,50 +107,31 @@
       >
         <FontAwesomeIcon icon="fa-solid fa-check"/> Done
       </UButton>
-    </div>
-  </UForm>
+    </template>
+    
+  </UModal>
 </template>
 
 <script lang="ts" setup>
-  import { ProjectColumnOptionsSchema, type ProjectColumnOptions } from '~/types'
+  import { ProjectColumnOptionsSchema } from '~/types'
 
-  const emits = defineEmits<{
-    done: [columnOptions: ProjectColumnOptions],
-    cancel: []
-  }>()
+  const currentProjectStore = useCurrentProjectStore()
 
-  const columnOptions = defineModel<ProjectColumnOptions>({ required: true })
-
-  // local state for handling resetting of values
-  const state = reactive<ProjectColumnOptions>({
-    name: columnOptions.value.name,
-    fgColor: columnOptions.value.fgColor,
-    bgColor: columnOptions.value.bgColor
-  })
+  const { editingColumn: state, columnEditTarget: original } = storeToRefs(currentProjectStore)
 
   const isValid = ref(false)
 
-  watch(() => state, async state => {
+  watch(() => currentProjectStore.editingColumn, async state => {
     const result = await ProjectColumnOptionsSchema.safeParseAsync(state)
     isValid.value = result.success
   }, { deep: true, immediate: true })
 
   function done() {
-    columnOptions.value = {
-      name: state.name,
-      fgColor: state.fgColor,
-      bgColor: state.bgColor
-    }
-
-    emits('done', columnOptions.value)
+    currentProjectStore.commitColumnEdit()
   }
 
   function cancel() {
-    state.name = columnOptions.value.name
-    state.fgColor = columnOptions.value.fgColor
-    state.bgColor = columnOptions.value.bgColor
-
-    emits('cancel')
+    currentProjectStore.cancelColumnEdit()
   }
 </script>
 

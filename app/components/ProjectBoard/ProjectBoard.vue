@@ -58,20 +58,19 @@
       <ProjectBoardColumn
         :column="element"
         v-model:workItems="element.workItems"
-        @change="onColumnChange"
+        @editClick="onEditColumnClick"
         @removeClick="onRemoveColumnClick"
-        @addWorkItemClick="addWorkItem"
+        @addWorkItemClick="onAddWorkItemClick"
       />
     </template>
   </Draggable>
 
   <WorkItemModal />
+  <ProjectColumnOptionsModal />
   <ConfirmModal ref="confirmModal" />
 </template>
 
 <script lang="ts" setup>
-  import sortBy from 'lodash/sortBy'
-
   import type { ProjectColumn } from '~/types'
   import ConfirmModal from '../ConfirmModal/ConfirmModal.vue'
 
@@ -87,6 +86,10 @@
     currentProjectStore.addNewColumn()
   }
 
+  function onEditColumnClick(column: ProjectColumn) {
+    currentProjectStore.startColumnEdit(column)
+  }
+
   async function onRemoveColumnClick(column: ProjectColumn) {
     const confirmResult = await confirmModalRef.value?.show('Confirm Remove Column', `Are you sure you want to delete the column named "${column.name}" and all of its work items?`)
     if (confirmResult === 'confirm') {
@@ -94,22 +97,12 @@
     }
   }
 
-  function addWorkItem(column: ProjectColumn) {
+  function onAddWorkItemClick(column: ProjectColumn) {
     currentProjectStore.addNewWorkItem(column.uid, true)
   }
   
   function onColumnDragged() {
     columns.value = columns.value.map((x, index) => ({ ...x, index }))
-  }
-
-  // update column state
-  function onColumnChange(column: ProjectColumn) {
-    columns.value = sortBy(
-      columns.value
-        .filter(x => x.uid !== column.uid)
-        .concat([column]),
-      'index'
-    )
   }
 </script>
 

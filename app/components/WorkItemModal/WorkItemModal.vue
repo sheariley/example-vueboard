@@ -197,8 +197,6 @@
 
   const isValid = ref(false)
 
-  
-
   watch(() => currentProjectStore.editingWorkItem, async state => {
     const result = await WorkItemOptionsSchema.safeParseAsync(state)
     isValid.value = result.success

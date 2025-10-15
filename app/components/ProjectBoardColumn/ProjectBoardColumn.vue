@@ -1,7 +1,7 @@
 <template>
   <div
     class="min-w-64 max-w-80 flex flex-col items-stretch divide-y divide-neutral-400 gap-2 p-2 bg-neutral-800 border-1 border-neutral-600 rounded-xl project-board-column"
-    :style="{ color: columnState.fgColor, backgroundColor: columnState.bgColor }"
+    :style="{ color: column.fgColor, backgroundColor: column.bgColor }"
   >
     <div class="flex flex-nowrap items-start gap-0.5 min-h-[33px]">
       <FontAwesomeIcon
@@ -10,52 +10,30 @@
         width-auto
       />
       
-      <span class="text-lg font-semibold flex-1">{{ columnState.name }}</span>
+      <span class="text-lg font-semibold flex-1">{{ column.name }}</span>
 
       <UButton
         color="neutral"
         variant="link"
-        :style="{ color: columnState.fgColor }"
+        :style="{ color: column.fgColor }"
         @click="emits('addWorkItemClick', column)"
       >
         <FontAwesomeIcon icon="fa-solid fa-plus" />
       </UButton>
 
-      <UModal
-        v-model:open="isEditing"
-        :close="false"
-        title="Column Options"
-        description="Customize column options, such as name, foreground color, or background color."
-        :ui="{
-          content: 'mx-1 sm:w-80 sm:mx-auto',
-          body: 'p-0 sm:p-0'
-        }"
+      <UButton
+        color="neutral"
+        variant="link"
+        :style="{ color: column.fgColor }"
+        @click="emits('editClick', column)"
       >
-        <UButton
-          color="neutral"
-          variant="link"
-          :style="{ color: columnState.fgColor }"
-        >
-          <FontAwesomeIcon icon="fa-solid fa-sliders" />
-        </UButton>
-
-        <template #header>
-          <h2 class="text-xl">Column Options</h2>
-        </template>
-
-        <template #body>
-          <ProjectColumnOptionsModal
-            v-model="columnState"
-            @done="doneEditing"
-            @cancel="cancelEditing"
-          />
-        </template>
-      </UModal>
+        <FontAwesomeIcon icon="fa-solid fa-sliders" />
+      </UButton>
 
       <UButton
         color="neutral"
         variant="link"
-        :style="{ color: columnState.fgColor }"
+        :style="{ color: column.fgColor }"
         @click="emits('removeClick', column)"
       >
         <FontAwesomeIcon icon="fa-solid fa-xmark" />
@@ -67,7 +45,7 @@
       ghostClass="work-item-drag-placeholder"
       itemKey="uid"
       @change="onWorkItemDragged"
-      :disabled="isEditing"
+      :disabled="!!editingColumn"
     >
       <template #item="{ element }">
         <WorkItemCard
@@ -82,69 +60,37 @@
 </template>
 
 <script lang="ts" setup>
-  import type { ProjectColumn, ProjectColumnOptions, WorkItem } from '~/types';
+  import type { ProjectColumn, WorkItem } from '~/types';
 
   const currentProjectStore = useCurrentProjectStore()
 
-  const { defaultCardFgColor, defaultCardBgColor } = storeToRefs(currentProjectStore)
+  const { defaultCardFgColor, defaultCardBgColor, editingColumn } = storeToRefs(currentProjectStore)
 
   const workItems = defineModel<WorkItem[] | undefined>('workItems', { 
     required: true
   })
 
   const emits = defineEmits<{
-    change: [column: ProjectColumn],
+    editClick: [column: ProjectColumn],
     removeClick: [column: ProjectColumn],
     addWorkItemClick: [column: ProjectColumn]
   }>()
 
-  const props = defineProps<{
+  const { column } = defineProps<{
     column: ProjectColumn
   }>()
 
-  const isEditing = ref(false)
-  const columnState = reactive({
-    ...props.column
-  })
-  
-  function toggleIsEditing(value?: boolean) {
-    if (typeof value !== 'undefined') {
-      isEditing.value = value
-      return
-    }
-    isEditing.value = !isEditing.value
-  }
-
-  function doneEditing(updatedState: ProjectColumnOptions) {
-    // commit changes to client-side state
-    columnState.name = updatedState.name
-    columnState.fgColor = updatedState.fgColor
-    columnState.bgColor = updatedState.bgColor
-    emits('change', columnState)
-
-    toggleIsEditing(false)
-  }
-
-  function cancelEditing() {
-    // revert
-    columnState.name = props.column.name
-    columnState.fgColor = props.column.fgColor
-    columnState.bgColor = props.column.bgColor
-
-    toggleIsEditing(false)
-  }
-  
   function onWorkItemDragged() {
     // refresh index properties on work items after drag op
     workItems.value = workItems.value!.map((x, index) => ({
       ...x,
-      projectColumnId: columnState.id,
+      projectColumnId: column.id,
       index
     }))
   }
 
   function onWorkItemClick(workItem: WorkItem) {
-    currentProjectStore.startWorkItemEdit(workItem, props.column.uid)
+    currentProjectStore.startWorkItemEdit(workItem, column.uid)
   }
 </script>
 
