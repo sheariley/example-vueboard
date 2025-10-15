@@ -14,3 +14,10 @@ export const ProjectOptionsSchema = zod.object({
 })
 
 export type ProjectOptions = zod.infer<typeof ProjectOptionsSchema>
+
+export const DefaultProjectOptionsState: ProjectOptions = {
+  title: 'New Project',
+  description: '',
+  defaultCardBgColor: '#005C36',
+  defaultCardFgColor: '#FFFFFF'
+}

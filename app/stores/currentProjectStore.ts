@@ -1,6 +1,7 @@
 import sortBy from 'lodash/sortBy';
 import { defineStore } from 'pinia';
 
+import createProjectsApiClient from '~/api-clients/projects-api-client';
 import {
   DefaultProjectColumnState,
   DefaultProjectState,
@@ -12,17 +13,18 @@ import {
   type WorkItem,
 } from '~/types';
 import coerceErrorMessage from '~/util/coerceErrorMessage';
-import { prepareProjectEntityForSave } from '~/util/prepareProjectEntitiesForSave';
 
 export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   const config = useRuntimeConfig();
+  const projectsApiClient = createProjectsApiClient(config)
 
   const loading = ref(true);
   const loadError = ref<string | null>(null);
-  const isValid = ref(false);
+  const _isValid = ref(false);
+  const isValid = computed(() => _isValid.value)
 
-  const uid = ref<string>(crypto.randomUUID());
   const id = ref<number | undefined>();
+  const uid = ref<string>(crypto.randomUUID());
   const title = ref<string>('');
   const description = ref<string>();
   const defaultCardFgColor = ref<string>();
@@ -32,7 +34,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   watch(
     () => toEntity(),
     async entity => {
-      isValid.value = await validate(entity);
+      _isValid.value = await validate(entity);
     },
     { deep: true, immediate: true }
   );
@@ -89,17 +91,9 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     const url = `${config.public.projectsApiBase}/projectByUid/${projectUid}`;
 
     try {
-      const resp = await fetch(url);
-      if (!resp.ok) {
-        throw new Error(`Error fetching project: ${resp.statusText} (${resp.status})`, { cause: resp });
-      }
-      const results: Project[] = await resp.json();
+      const result = await projectsApiClient.fetchProject(projectUid)
 
-      if (!results?.length) {
-        throw new Error(`Project not found (uid: ${projectUid})`)
-      }
-      
-      hydrateFromEntity(results[0]!);
+      hydrateFromEntity(result);
     } catch (error) {
       loadError.value = coerceErrorMessage(error);
     } finally {
@@ -121,32 +115,8 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     saveError.value = null;
     saving.value = true;
 
-    let method = 'POST';
-    let url = `${config.public.projectsApiBase}/projects`;
-
-    if (project?.id) {
-      url += `/${project.id}`;
-      method = 'PUT';
-    }
-
-    const body = JSON.stringify(prepareProjectEntityForSave(project));
-
     try {
-      const resp = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        method,
-        body,
-      });
-
-      if (!resp.ok) {
-        throw new Error(`Error saving project: ${resp.statusText} (${resp.status})`, { cause: resp });
-      }
-
-      const savedEntity: Project = await resp.json();
-
-      return savedEntity;
+      return await projectsApiClient.saveProject(project)
     } catch (error) {
       saveError.value = coerceErrorMessage(error);
       return null;
@@ -189,42 +159,20 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     projectColumns.value = projectColumns.value.filter(x => x.uid !== columnUid);
   }
 
-  const _editingProjectOptions = ref(false)
-  const editingProjectOptions = computed(() => _editingProjectOptions.value)
-  const projectOptionsEditState = ref<ProjectOptions>()
-
-  function startEditingProjectOptions() {
-    projectOptionsEditState.value = {
+  function getProjectOptions(): ProjectOptions {
+    return {
       title: title.value,
       description: description.value,
-      defaultCardFgColor: defaultCardFgColor.value,
       defaultCardBgColor: defaultCardBgColor.value,
-    };
-
-    _editingProjectOptions.value = true;
+      defaultCardFgColor: defaultCardFgColor.value
+    }
   }
 
-  function commitProjectOptionsEdit() {
-    if (!projectOptionsEditState.value) return;
-
-    const {
-      title: updatedTitle,
-      description: updatedDescription,
-      defaultCardFgColor: updatedDefaultCardFgColor,
-      defaultCardBgColor: updatedDefaultCardBgColor,
-    } = projectOptionsEditState.value;
-
-    title.value = updatedTitle;
-    description.value = updatedDescription;
-    defaultCardFgColor.value = updatedDefaultCardFgColor;
-    defaultCardBgColor.value = updatedDefaultCardBgColor;
-
-    _editingProjectOptions.value = false;
-  }
-
-  function cancelProjectOptionsEdit() {
-    projectOptionsEditState.value = undefined;
-    _editingProjectOptions.value = false;
+  function setProjectOptions(options: ProjectOptions) {
+    title.value = options.title
+    description.value = options.description
+    defaultCardBgColor.value = options.defaultCardBgColor
+    defaultCardFgColor.value = options.defaultCardFgColor
   }
 
   const _editingColumn = ref<ProjectColumn>();
@@ -393,12 +341,9 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     fetchProject,
     saveProject,
 
-    editingProjectOptions,
-    projectOptionsEditState,
-    startEditingProjectOptions,
-    commitProjectOptionsEdit,
-    cancelProjectOptionsEdit,
-
+    getProjectOptions,
+    setProjectOptions,
+    
     generateNewColumnName,
     addNewColumn,
     removeColumn,

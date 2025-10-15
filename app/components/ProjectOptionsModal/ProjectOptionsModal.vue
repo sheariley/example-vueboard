@@ -2,13 +2,13 @@
   <UModal
     :open
     :close="false"
-    title="Project Options"
+    :title="modalTitle"
     description="Customize project options, such as title and description."
     :ui="{
       footer: 'flex flex-nowrap justify-stretch sm:justify-between p-4 gap-4'
     }"
   >
-    <template #header>Project Options</template>
+    <template #header>{{ modalTitle }}</template>
 
     <template #body>
       <UForm
@@ -30,7 +30,7 @@
             <UButton
               color="neutral"
               variant="subtle"
-              v-if="state.title !== currentProjectStore.title"
+              v-if="!state.isNewProject && state.title !== currentProjectStore.title"
               @click="state.title = currentProjectStore.title"
             >
               <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
@@ -49,7 +49,7 @@
               <UButton
                 color="neutral"
                 variant="ghost"
-                v-if="state.description !== currentProjectStore.description"
+                v-if="!state.isNewProject && state.description !== currentProjectStore.description"
                 @click="state.description = currentProjectStore.description"
               >
                 <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
@@ -84,7 +84,7 @@
             <UButton
               color="neutral"
               variant="subtle"
-              v-if="state.defaultCardFgColor !== currentProjectStore.defaultCardFgColor"
+              v-if="!state.isNewProject && state.defaultCardFgColor !== currentProjectStore.defaultCardFgColor"
               @click="state.defaultCardFgColor = currentProjectStore.defaultCardFgColor"
             >
               <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
@@ -108,7 +108,7 @@
             <UButton
               color="neutral"
               variant="subtle"
-              v-if="state.defaultCardBgColor !== currentProjectStore.defaultCardBgColor"
+              v-if="!state.isNewProject && state.defaultCardBgColor !== currentProjectStore.defaultCardBgColor"
               @click="state.defaultCardBgColor = currentProjectStore.defaultCardBgColor"
             >
               <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
@@ -143,21 +143,14 @@
   import { ProjectOptionsSchema } from '~/types'
 
   const currentProjectStore = useCurrentProjectStore()
+  const state = useProjectOptionsModal()
 
-  const { editingProjectOptions: open, projectOptionsEditState: state } = storeToRefs(currentProjectStore)
+  const { cancel, done } = state
 
-  const isValid = ref(false)
+  const {
+    isValid,
+    open,
+    modalTitle
+  } = storeToRefs(state)
 
-  watch(() => state.value, async state => {
-    const result = await ProjectOptionsSchema.safeParseAsync(state)
-    isValid.value = result.success
-  }, { deep: true, immediate: true })
-
-  function done() {
-    currentProjectStore.commitProjectOptionsEdit()
-  }
-
-  function cancel() {
-    currentProjectStore.cancelProjectOptionsEdit()
-  }
 </script>

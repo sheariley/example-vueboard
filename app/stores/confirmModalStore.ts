@@ -8,51 +8,43 @@ export const useConfirmModal = defineStore('ConfirmModalStore', () => {
   const title = ref<string>()
   const body = ref<string>()
 
-  let resolver: ((modalResult: ModalResult) => void) | null = null
-  let rejector: ((reason?: any) => void ) | null = null
+  let deferred: PromiseWithResolvers<ModalResult> | undefined
 
   const open = computed(() => _open.value)
 
   async function show(titleText: string, bodyText: string) {
-    const promise = new Promise<ModalResult>((res, rej) => {
-      resolver = (modalResult: ModalResult) => {
-        res(modalResult)
-        resetState()
-      }
-      rejector = (reason?: any) => {
-        rej(reason)
-        resetState()
-      }
-    })
+    deferred = Promise.withResolvers<ModalResult>()
 
     title.value = titleText
     body.value = bodyText
     _open.value = true
 
-    return promise
+    return deferred.promise
+      .then((result) => {
+        resetState()
+        return result
+      })
   }
 
   function cancel() {
-    resolver!('cancel')
+    deferred!.resolve('cancel')
   }
 
   function confirm() {
-    resolver!('confirm')
+    deferred!.resolve('confirm')
   }
 
   function resetState() {
     _open.value = false
     title.value = ''
     body.value = ''
-    resolver = null
-    rejector = null
+    deferred = undefined
   }
 
   function abort(reason?: any) {
-    if (rejector) {
-      rejector(reason || 'abort')
+    if (deferred) {
+      deferred.reject(reason || 'abort')
     }
-    resetState()
   }
 
   return {

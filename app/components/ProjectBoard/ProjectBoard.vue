@@ -7,7 +7,7 @@
           variant="ghost"
           color="neutral"
           size="xs"
-          @click="() => currentProjectStore.startEditingProjectOptions()"
+          @click="onEditProjectOptionsClick"
         >
           <FontAwesomeIcon icon="fa-solid fa-sliders" size="lg" />
         </UButton>
@@ -17,7 +17,7 @@
         <UButton
           color="primary"
           variant="solid"
-          @click="addColumn"
+          @click="onAddColumnClick"
         >
           <FontAwesomeIcon icon="fa-solid fa-plus" />&nbsp;Add Column
         </UButton>
@@ -57,11 +57,21 @@
   import type { ProjectColumn } from '~/types'
 
   const { show: showConfirmModal } = useConfirmModal()
+  const projectOptionsModal = useProjectOptionsModal()
   const currentProjectStore = useCurrentProjectStore()
 
   const { title, description, projectColumns: columns } = storeToRefs(currentProjectStore)
 
-  function addColumn() {
+  async function onEditProjectOptionsClick() {
+    const options = currentProjectStore.getProjectOptions()
+    const modalResult = await projectOptionsModal.show(options)
+
+    if (modalResult.type === 'done') {
+      currentProjectStore.setProjectOptions(modalResult.payload)
+    }
+  }
+
+  function onAddColumnClick() {
     currentProjectStore.addNewColumn()
   }
 

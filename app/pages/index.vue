@@ -12,6 +12,7 @@
           <USkeleton class="h-52 w-full sm:w-3xs" />
         </div>
       </template>
+
       <template v-else-if="projectListItemsStore.loadError">
         <UAlert class="select-none" color="error" variant="subtle">
           <template #title>
@@ -28,30 +29,70 @@
           </template>
         </UAlert>
       </template>
-      <template v-else-if="!projectListItemsStore.listItems?.length">
+
+      <template v-else>
         <ProseH2>Create a new project to begin.</ProseH2>
-        <UButton size="xl">
+        <UButton
+          color="primary"
+          size="xl"
+          @click="onAddNewProjectClick"
+        >
           <FontAwesomeIcon icon="fa-solid fa-rocket" size="xl" /> Create New Project
         </UButton>
-      </template>
-      <template v-else-if="projectListItemsStore.listItems?.length">
-        <ProseH2>Select a project to view or edit its work items.</ProseH2>
-        <div class="flex flex-wrap gap-4">
-          <NuxtLink v-for="project of projectListItemsStore.listItems"
-            no-prefetch
-            :to="{ name: 'projects-uid', params: { uid: project.uid} }"
-            class="flex w-full sm:w-3xs">
-            <ProjectCard :project
-              class="flex-1 bg-accented/60 transition ease-in-out duration-200 cursor-pointer hover:bg-accented hover:shadow-lg hover:shadow-black/70 hover:-translate-0.5"/>
-          </NuxtLink>
-        </div>
+
+        <template v-if="projectListItemsStore.listItems?.length">
+          <ProseH2>Or select a project to view or edit its work items.</ProseH2>
+          <div class="flex flex-wrap gap-4">
+            <NuxtLink v-for="project of projectListItemsStore.listItems"
+              no-prefetch
+              :to="{ name: 'projects-uid', params: { uid: project.uid} }"
+              class="flex w-full sm:w-3xs">
+              <ProjectCard :project
+                class="flex-1 bg-accented/60 transition ease-in-out duration-200 cursor-pointer hover:bg-accented hover:shadow-lg hover:shadow-black/70 hover:-translate-0.5"/>
+            </NuxtLink>
+          </div>
+        </template>
       </template>
     </div>
   </UContainer>
+
+  <ProjectOptionsModal />
 </template>
 
 <script lang="ts" setup>
+  import createProjectsApiClient from '~/api-clients/projects-api-client';
+  import { DefaultProjectOptionsState } from '~/types';
+
   const projectListItemsStore = useProjectListItemsStore()
+  const projectOptionsModal = useProjectOptionsModal()
+  const config = useRuntimeConfig();
+  const projectsApiClient = createProjectsApiClient(config)
+  const router = useRouter()
+
+  async function onAddNewProjectClick() {
+    const modalResult = await projectOptionsModal.show(DefaultProjectOptionsState, true)
+
+    if (modalResult.type === 'done') {
+      // Save new project to back-end
+      const result = await projectsApiClient.saveProject({
+        ...modalResult.payload,
+        uid: crypto.randomUUID(),
+        projectColumns: []
+      })
+
+      if (!result) {
+        // TODO: Display alert indicating failure to save
+      }
+
+      // redirect to new project's page
+      router.push({
+        name: 'projects-uid',
+        params: {
+          uid: result.uid
+        }
+      })
+    }
+  }
 
   function fetchListItems() {
     projectListItemsStore.fetchProjectListItems()
