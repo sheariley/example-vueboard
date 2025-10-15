@@ -21,23 +21,19 @@
 
   const route = useRoute()
 
-  const projectId = Number(route.params.id);
+  const projectUid = route.params.uid as string;
 
   function saveProject() {
     alert(JSON.stringify(currentProjectStore.toEntity()));
   }
   
-  async function fetchProject() {
-    currentProjectStore.fetchProject(projectId)
-  }
-
   onMounted(() => {
-    if (!isNaN(projectId)) {
-      fetchProject()
-    } else {
+    if (projectUid === 'new') {
       // reset to "new project" state
       currentProjectStore.reset()
       currentProjectStore.loading = false
+    } else if (!!projectUid) {
+      currentProjectStore.fetchProject(projectUid)
     }
   })
 </script>

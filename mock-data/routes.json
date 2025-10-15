@@ -1,0 +1,3 @@
+{
+  "/projectByUid/:uid": "/projects?_embed=projectColumns&uid=:uid"
+}

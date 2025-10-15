@@ -39,7 +39,7 @@
         <div class="flex flex-wrap gap-4">
           <NuxtLink v-for="project of projectListItemsStore.listItems"
             no-prefetch
-            :to="{ name: 'projects-id', params: { id: project.id} }"
+            :to="{ name: 'projects-uid', params: { uid: project.uid} }"
             class="flex w-full sm:w-3xs">
             <ProjectCard :project
               class="flex-1 bg-accented/60 transition ease-in-out duration-200 cursor-pointer hover:bg-accented hover:shadow-lg hover:shadow-black/70 hover:-translate-0.5"/>

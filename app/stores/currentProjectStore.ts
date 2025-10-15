@@ -82,20 +82,24 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     return result.success;
   }
 
-  async function fetchProject(projectId: number) {
+  async function fetchProject(projectUid: string) {
     loadError.value = null; // clear previous error
     loading.value = true;
 
-    const url = `${config.public.projectsApiBase}/projects/${projectId}?_embed=projectColumns`;
+    const url = `${config.public.projectsApiBase}/projectByUid/${projectUid}`;
 
     try {
       const resp = await fetch(url);
       if (!resp.ok) {
         throw new Error(`Error fetching project: ${resp.statusText} (${resp.status})`, { cause: resp });
       }
-      const project: Project = await resp.json();
+      const results: Project[] = await resp.json();
 
-      hydrateFromEntity(project);
+      if (!results?.length) {
+        throw new Error(`Project not found (uid: ${projectUid})`)
+      }
+      
+      hydrateFromEntity(results[0]!);
     } catch (error) {
       loadError.value = coerceErrorMessage(error);
     } finally {
