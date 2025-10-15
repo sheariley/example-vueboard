@@ -3,31 +3,14 @@
     <div class="flex flex-nowrap justify-between">
       <div class="flex items-baseline gap-1">
         <h1 class="text-2xl">{{ title }}</h1>
-      
-        <UModal
-          v-model:open="isEditingProject"
-          :close="false"
-          title="Project Options"
-          description="Customize project options, such as title and description."
-          :ui="{
-            content: 'mx-1 sm:w-[420px] sm:mx-auto',
-            body: 'p-0 sm:p-0'
-          }"
+        <UButton
+          variant="ghost"
+          color="neutral"
+          size="xs"
+          @click="() => currentProjectStore.startEditingProjectOptions()"
         >
-          <UButton
-            variant="ghost"
-            color="neutral"
-            size="xs"
-          >
-            <FontAwesomeIcon icon="fa-solid fa-sliders" size="lg" />
-          </UButton>
-          <template #header>
-            <h2 class="text-xl">Project Options</h2>
-          </template>
-          <template #body>
-            <ProjectOptionsModal @close="isEditingProject = false" />
-          </template>
-        </UModal>
+          <FontAwesomeIcon icon="fa-solid fa-sliders" size="lg" />
+        </UButton>
       </div>
       
       <UFieldGroup>
@@ -65,8 +48,9 @@
     </template>
   </Draggable>
 
-  <WorkItemModal />
+  <ProjectOptionsModal />
   <ProjectColumnOptionsModal />
+  <WorkItemModal />
   <ConfirmModal ref="confirmModal" />
 </template>
 
@@ -77,8 +61,6 @@
   const currentProjectStore = useCurrentProjectStore()
 
   const { title, description, projectColumns: columns } = storeToRefs(currentProjectStore)
-
-  const isEditingProject = ref(false)
 
   const confirmModalRef = useTemplateRef<InstanceType<typeof ConfirmModal>>('confirmModal')
 

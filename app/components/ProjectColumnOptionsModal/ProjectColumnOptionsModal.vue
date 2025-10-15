@@ -15,7 +15,7 @@
         v-if="state"
         :state
         :schema="ProjectColumnOptionsSchema"
-        class="flex flex-col items-stretch divide-y divide-neutral-800"
+        class="flex flex-col items-stretch gap-4"
       >
         <UFormField name="name" label="Name" required>
           <UFieldGroup class="w-full">

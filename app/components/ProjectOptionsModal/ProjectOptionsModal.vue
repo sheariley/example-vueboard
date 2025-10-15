@@ -1,112 +1,124 @@
 <template>
-  <UForm
-    :state
-    :schema="ProjectOptionsSchema"
-    class="flex flex-col items-stretch divide-y divide-neutral-800"
+  <UModal
+    :open
+    :close="false"
+    title="Project Options"
+    description="Customize project options, such as title and description."
+    :ui="{
+      footer: 'flex flex-nowrap justify-stretch sm:justify-between p-4 gap-4'
+    }"
   >
-    <div class="flex flex-col items-stretch gap-4 p-4 pb-8">
-      <UFormField name="title" label="Title" required>
-        <UFieldGroup class="w-full">
-          <UInput
-            placeholder="Title"
-            v-model="state.title"
-            name="title"
-            variant="subtle"
-            color="neutral"
-            class="w-full"
-          />
-          <UButton
-            color="neutral"
-            variant="subtle"
-            v-if="state.title !== currentProjectStore.title"
-            @click="state.title = currentProjectStore.title"
-          >
-            <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
-          </UButton>
-        </UFieldGroup>
-      </UFormField>
+    <template #header>Project Options</template>
 
-      <UFormField
-        name="description"
-        :ui="{
-          label: 'w-full'
-        }"
+    <template #body>
+      <UForm
+        v-if="state"
+        :state
+        :schema="ProjectOptionsSchema"
+        class="flex flex-col items-stretch gap-4"
       >
-        <template #label>
-          <div class="flex flex-nowrap justify-between items-baseline w-full">
-            <span>Description</span>
+        <UFormField name="title" label="Title" required>
+          <UFieldGroup class="w-full">
+            <UInput
+              placeholder="Title"
+              v-model="state.title"
+              name="title"
+              variant="subtle"
+              color="neutral"
+              class="w-full"
+            />
             <UButton
               color="neutral"
-              variant="ghost"
-              v-if="state.description !== currentProjectStore.description"
-              @click="state.description = currentProjectStore.description"
+              variant="subtle"
+              v-if="state.title !== currentProjectStore.title"
+              @click="state.title = currentProjectStore.title"
             >
               <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
             </UButton>
+          </UFieldGroup>
+        </UFormField>
+        <UFormField
+          name="description"
+          :ui="{
+            label: 'w-full'
+          }"
+        >
+          <template #label>
+            <div class="flex flex-nowrap justify-between items-baseline w-full">
+              <span>Description</span>
+              <UButton
+                color="neutral"
+                variant="ghost"
+                v-if="state.description !== currentProjectStore.description"
+                @click="state.description = currentProjectStore.description"
+              >
+                <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+              </UButton>
+            </div>
+          </template>
+          <div class="w-full flex flex-nowrap items-start">
+            <UTextarea
+              placeholder="Description"
+              v-model="state.description"
+              name="description"
+              variant="subtle"
+              color="neutral"
+              class="w-full"
+            />
           </div>
-        </template>
-        <div class="w-full flex flex-nowrap items-start">
-          <UTextarea
-            placeholder="Description"
-            v-model="state.description"
-            name="description"
-            variant="subtle"
-            color="neutral"
-            class="w-full"
-          />
-        </div>
-      </UFormField>
+        </UFormField>
+        <UFormField name="defaultCardFgColor" label="Default Card Foreground Color">
+          <UFieldGroup>
+            <ColorInputButton
+              v-model="state.defaultCardFgColor"
+              color="neutral"
+              variant="subtle"
+            />
+            <UInput
+              name="defaultCardFgColor"
+              v-model="state.defaultCardFgColor"
+              color="neutral"
+              variant="subtle"
+              class="w-full"
+            />
+            <UButton
+              color="neutral"
+              variant="subtle"
+              v-if="state.defaultCardFgColor !== currentProjectStore.defaultCardFgColor"
+              @click="state.defaultCardFgColor = currentProjectStore.defaultCardFgColor"
+            >
+              <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+            </UButton>
+          </UFieldGroup>
+        </UFormField>
+        <UFormField name="defaultCardBgColor" label="Default Card Background Color">
+          <UFieldGroup>
+            <ColorInputButton
+              v-model="state.defaultCardBgColor"
+              color="neutral"
+              variant="subtle"
+            />
+            <UInput
+              name="defaultCardBgColor"
+              v-model="state.defaultCardBgColor"
+              color="neutral"
+              variant="subtle"
+              class="w-full"
+            />
+            <UButton
+              color="neutral"
+              variant="subtle"
+              v-if="state.defaultCardBgColor !== currentProjectStore.defaultCardBgColor"
+              @click="state.defaultCardBgColor = currentProjectStore.defaultCardBgColor"
+            >
+              <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
+            </UButton>
+          </UFieldGroup>
+        </UFormField>
+      </UForm>
+    </template>
 
-      <UFormField name="defaultCardFgColor" label="Default Card Foreground Color">
-        <UFieldGroup>
-          <ColorInputButton
-            v-model="state.defaultCardFgColor"
-            color="neutral"
-            variant="subtle"
-          />
-          <UInput
-            name="defaultCardFgColor"
-            v-model="state.defaultCardFgColor"
-            color="neutral"
-            variant="subtle"
-            class="w-full"
-          />
-          <UButton
-            color="neutral"
-            variant="subtle"
-            v-if="state.defaultCardFgColor !== currentProjectStore.defaultCardFgColor"
-            @click="state.defaultCardFgColor = currentProjectStore.defaultCardFgColor"
-          >
-            <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
-          </UButton>
-        </UFieldGroup>
-      </UFormField>
-      <UFormField name="defaultCardBgColor" label="Default Card Background Color">
-        <UFieldGroup>
-          <ColorInputButton
-            v-model="state.defaultCardBgColor"
-            color="neutral"
-            variant="subtle"
-          />
-          <UInput
-            name="defaultCardBgColor"
-            v-model="state.defaultCardBgColor"
-            color="neutral"
-            variant="subtle"
-            class="w-full"
-          />
-          <UButton
-            color="neutral"
-            variant="subtle"
-            v-if="state.defaultCardBgColor !== currentProjectStore.defaultCardBgColor"
-            @click="state.defaultCardBgColor = currentProjectStore.defaultCardBgColor"
-          >
-            <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
-          </UButton>
-        </UFieldGroup>
-      </UFormField>
-    </div>
-    <div class="flex flex-nowrap justify-stretch sm:justify-between p-4 gap-4">
+    <template #footer>
       <UButton
         @click="cancel"
         color="neutral"
@@ -123,46 +135,29 @@
       >
         <FontAwesomeIcon icon="fa-solid fa-check"/> Done
       </UButton>
-    </div>
-  </UForm>
+    </template>
+  </UModal>
 </template>
 
 <script lang="ts" setup>
-  import { ProjectOptionsSchema, type ProjectOptions } from '~/types'
-
-  const emits = defineEmits(['close'])
+  import { ProjectOptionsSchema } from '~/types'
 
   const currentProjectStore = useCurrentProjectStore()
 
-  const state = reactive<ProjectOptions>({
-    title: currentProjectStore.title,
-    description: currentProjectStore.description,
-    defaultCardFgColor: currentProjectStore.defaultCardFgColor,
-    defaultCardBgColor: currentProjectStore.defaultCardBgColor
-  })
+  const { editingProjectOptions: open, projectOptionsEditState: state } = storeToRefs(currentProjectStore)
 
   const isValid = ref(false)
 
-  watch(() => state, async state => {
+  watch(() => state.value, async state => {
     const result = await ProjectOptionsSchema.safeParseAsync(state)
     isValid.value = result.success
   }, { deep: true, immediate: true })
 
   function done() {
-    currentProjectStore.title = state.title
-    currentProjectStore.description = state.description
-    currentProjectStore.defaultCardFgColor = state.defaultCardFgColor
-    currentProjectStore.defaultCardBgColor = state.defaultCardBgColor
-
-    emits('close')
+    currentProjectStore.commitProjectOptionsEdit()
   }
 
   function cancel() {
-    state.title = currentProjectStore.title
-    state.description = currentProjectStore.description
-    state.defaultCardFgColor = currentProjectStore.defaultCardFgColor
-    state.defaultCardBgColor = currentProjectStore.defaultCardBgColor
-
-    emits('close')
+    currentProjectStore.cancelProjectOptionsEdit()
   }
 </script>
