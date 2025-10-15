@@ -359,6 +359,16 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     return newItem;
   }
 
+  function removeWorkItem(parentColumnUid: string, workItemUid: string) {
+    const parentColumn = projectColumns.value.find(x => x.uid === parentColumnUid)
+    if (!parentColumn) {
+      // TODO: Show error
+      return
+    }
+
+    parentColumn.workItems = (parentColumn.workItems || []).filter(x => x.uid !== workItemUid)
+  }
+
   return {
     loading,
     loadError,
@@ -389,6 +399,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     addNewColumn,
     removeColumn,
     addNewWorkItem,
+    removeWorkItem,
 
     editingColumn,
     columnEditTarget,

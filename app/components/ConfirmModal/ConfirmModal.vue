@@ -1,15 +1,15 @@
 <template>
   <UModal
-    :open="state.open"
+    :open
     :close="false"
-    :title="state.title"
+    :title
     description="confirm action"
     :ui="{
       footer: 'flex flex-nowrap justify-stretch sm:justify-between p-4 gap-4' 
     }"
   >
-    <template #header>{{ state.title }}</template>
-    <template #body>{{ state.body }}</template>
+    <template #header>{{ title }}</template>
+    <template #body>{{ body }}</template>
     <template #footer>
       <UButton
         @click="cancel"
@@ -31,62 +31,14 @@
 </template>
 
 <script lang="ts" setup>
-  type ModalResult = 'cancel' | 'confirm'
+  const modalStore = useConfirmModal()
 
-  const state = reactive({
-    open: false,
-    title: '',
-    body: ''
-  })
+  const { cancel, confirm } = modalStore
 
-  defineExpose({
-    show,
-    abort
-  })
-
-  let resolver: ((modalResult: ModalResult) => void) | null = null
-  let rejector: ((reason?: any) => void ) | null = null
-
-  async function show(title: string, body: string) {
-    const promise = new Promise<ModalResult>((res, rej) => {
-      resolver = (modalResult: ModalResult) => {
-        res(modalResult)
-        resetState()
-      }
-      rejector = (reason?: any) => {
-        rej(reason)
-        resetState()
-      }
-    })
-
-    state.title = title
-    state.body = body
-    state.open = true
-
-    return promise
-  }
-
-  function cancel() {
-    resolver!('cancel')
-  }
-
-  function confirm() {
-    resolver!('confirm')
-  }
-
-  function resetState() {
-    state.open = false
-    state.title = ''
-    state.body = ''
-    resolver = null
-    rejector = null
-  }
-
-  function abort(reason?: any) {
-    if (rejector) {
-      rejector(reason || 'abort')
-    }
-    resetState()
-  }
+  const {
+    open,
+    title,
+    body
+  } = storeToRefs(modalStore)
 
 </script>

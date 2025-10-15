@@ -5,10 +5,17 @@
     @click="() => emits('click')"
   >
     <div
-      class="flex flex-col gap-0.5"
+      class="flex items-center justify-between gap-0.5"
       :style="cardHeaderStyle"
     >
       <div class="text-sm font-semibold text-center">{{ workItem.title }}</div>
+      <UButton
+        variant="link"
+        :style="cardButtonStyle"
+        @click.stop="emits('removeClick')"
+      >
+        <FontAwesomeIcon icon="fa-solid fa-xmark" />
+      </UButton>
     </div>
     
     <div class="text-xs" v-if="workItem.description">
@@ -41,7 +48,7 @@
     defaultCardBgColor?: string
   }>()
 
-  const emits = defineEmits(['click'])
+  const emits = defineEmits(['click', 'removeClick'])
 
   const fgColor = computed(() => workItem.fgColor || defaultCardFgColor || FallbackFgColor)
   const bgColor = computed(() => workItem.bgColor || defaultCardBgColor || FallbackBgColor)
@@ -62,4 +69,8 @@
     backgroundColor: fgColor.value,
     color: bgColor.value
   } as StyleValue))
+
+  const cardButtonStyle = computed(() => ({
+    color: fgColor.value
+  }))
 </script>

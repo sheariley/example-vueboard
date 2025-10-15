@@ -51,18 +51,15 @@
   <ProjectOptionsModal />
   <ProjectColumnOptionsModal />
   <WorkItemModal />
-  <ConfirmModal ref="confirmModal" />
 </template>
 
 <script lang="ts" setup>
   import type { ProjectColumn } from '~/types'
-  import ConfirmModal from '../ConfirmModal/ConfirmModal.vue'
 
+  const { show: showConfirmModal } = useConfirmModal()
   const currentProjectStore = useCurrentProjectStore()
 
   const { title, description, projectColumns: columns } = storeToRefs(currentProjectStore)
-
-  const confirmModalRef = useTemplateRef<InstanceType<typeof ConfirmModal>>('confirmModal')
 
   function addColumn() {
     currentProjectStore.addNewColumn()
@@ -73,7 +70,11 @@
   }
 
   async function onRemoveColumnClick(column: ProjectColumn) {
-    const confirmResult = await confirmModalRef.value?.show('Confirm Remove Column', `Are you sure you want to delete the column named "${column.name}" and all of its work items?`)
+    const confirmResult = await showConfirmModal(
+      'Confirm Remove Column',
+      `Are you sure you want to delete the column named "${column.name}" and all of its work items?`
+    )
+
     if (confirmResult === 'confirm') {
       currentProjectStore.removeColumn(column.uid)
     }

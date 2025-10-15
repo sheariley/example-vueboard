@@ -6,8 +6,10 @@
 - [x] Allow editing of work item cards
 - [x] Allow work item content to contain markdown and add rich editor
   - [x] Add a separate field for rich content called "Notes" and rename "content" property to "description".
-- [ ] Allow adding new columns
-- [ ] Allow removing columns
+- [x] Allow adding new columns
+- [x] Allow removing columns
+- [x] Allow removing work items
 - [ ] Add list of projects to main nav menu
 - [ ] Allow saving of projects
 - [ ] Add undo functionality at project level???
+- [ ] Add tooltips to all buttons

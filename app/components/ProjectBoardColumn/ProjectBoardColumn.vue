@@ -53,6 +53,7 @@
           :defaultCardFgColor
           :defaultCardBgColor
           @click="() => onWorkItemClick(element)"
+          @removeClick="() => onWorkItemRemoveClick(element)"
         />
       </template>
     </Draggable>
@@ -62,6 +63,7 @@
 <script lang="ts" setup>
   import type { ProjectColumn, WorkItem } from '~/types';
 
+  const { show: showConfirmModal } = useConfirmModal()
   const currentProjectStore = useCurrentProjectStore()
 
   const { defaultCardFgColor, defaultCardBgColor, editingColumn } = storeToRefs(currentProjectStore)
@@ -91,6 +93,17 @@
 
   function onWorkItemClick(workItem: WorkItem) {
     currentProjectStore.startWorkItemEdit(workItem, column.uid)
+  }
+
+  async function onWorkItemRemoveClick(workItem: WorkItem) {
+    const confirmResult = await showConfirmModal(
+      'Confirm Remove Work Item',
+      `Are you sure you want to delete the work item titled "${workItem.title}"?`
+    )
+
+    if (confirmResult === 'confirm') {
+      currentProjectStore.removeWorkItem(column.uid, workItem.uid)
+    }
   }
 </script>
 
