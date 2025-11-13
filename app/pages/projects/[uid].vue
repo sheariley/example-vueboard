@@ -30,7 +30,7 @@
   onMounted(() => {
     if (projectUid === 'new') {
       // reset to "new project" state
-      currentProjectStore.reset()
+      currentProjectStore.initNewProject()
       currentProjectStore.loading = false
     } else if (!!projectUid) {
       currentProjectStore.fetchProject(projectUid)

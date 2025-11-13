@@ -24,9 +24,6 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   const _isValid = ref(false);
   const isValid = computed(() => _isValid.value)
 
-  // TODO: Add logic to set originalState where applicable
-  // TODO: Revamp the logic in the reset method to reset to the values in originalState
-
   const _originalState = ref<Project>()
   const originalState = computed(() => _originalState.value)
 
@@ -58,17 +55,17 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     { deep: true, immediate: true }
   );
 
-  function hydrateFromEntity(project: Project) {
-    uid.value = project.uid;
-    id.value = project.id;
-    title.value = project.title;
-    description.value = project.description;
-    defaultCardFgColor.value = project.defaultCardFgColor;
-    defaultCardBgColor.value = project.defaultCardBgColor;
+  function hydrateFromEntity(projectEntity: Project) {
+    if (projectEntity.uid?.length) uid.value = projectEntity.uid;
+    if (projectEntity.id) id.value = projectEntity.id;
+    title.value = projectEntity.title;
+    description.value = projectEntity.description;
+    defaultCardFgColor.value = projectEntity.defaultCardFgColor;
+    defaultCardBgColor.value = projectEntity.defaultCardBgColor;
 
     // ensure project columns and their work items are sorted by index
     projectColumns.value = sortBy(
-      (project.projectColumns || []).map(x => ({
+      (projectEntity.projectColumns || []).map(x => ({
         ...x,
         workItems: sortBy(x.workItems, 'index'),
       })),
@@ -76,11 +73,17 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     );
   }
 
-  function reset() {
+  function initNewProject() {
     hydrateFromEntity({
       ...DefaultProjectState,
       uid: crypto.randomUUID(),
       projectColumns: [],
+    });
+  }
+
+  function reset() {
+    hydrateFromEntity({
+      ...(originalState.value || DefaultProjectState)
     });
   }
 
@@ -106,6 +109,10 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     }
   }
 
+  function commitChanges() {
+    _originalState.value = entity.value
+  }
+
   const saving = ref(false);
   const saveError = ref<string | null>(null);
 
@@ -121,7 +128,17 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     saving.value = true;
 
     try {
-      return await projectsApiClient.saveProject(project)
+      const result = await projectsApiClient.saveProject(project)
+      
+      // update local values with values from server
+      id.value = result.id
+      uid.value = result.uid
+      setProjectOptions(result)
+      
+      // commit changes to originalState for change detection
+      commitChanges()
+
+      return result
     } catch (error) {
       saveError.value = coerceErrorMessage(error);
       return null;
@@ -343,6 +360,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     projectColumns,
 
     hydrateFromEntity,
+    initNewProject,
     reset,
 
     fetchProject,
