@@ -24,7 +24,7 @@
   const projectUid = route.params.uid as string;
 
   function saveProject() {
-    alert(JSON.stringify(currentProjectStore.toEntity()));
+    alert(JSON.stringify(currentProjectStore.entity));
   }
   
   onMounted(() => {

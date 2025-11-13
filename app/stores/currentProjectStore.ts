@@ -1,4 +1,5 @@
 import sortBy from 'lodash/sortBy';
+import isEqual from 'lodash/isEqual';
 import { defineStore } from 'pinia';
 
 import createProjectsApiClient from '~/api-clients/projects-api-client';
@@ -23,6 +24,12 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   const _isValid = ref(false);
   const isValid = computed(() => _isValid.value)
 
+  // TODO: Add logic to set originalState where applicable
+  // TODO: Revamp the logic in the reset method to reset to the values in originalState
+
+  const _originalState = ref<Project>()
+  const originalState = computed(() => _originalState.value)
+
   const id = ref<number | undefined>();
   const uid = ref<string>(crypto.randomUUID());
   const title = ref<string>('');
@@ -31,8 +38,20 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   const defaultCardBgColor = ref<string>();
   const projectColumns = ref<ProjectColumn[]>([]);
 
+  const entity = computed(() => ({
+    uid: uid.value,
+    id: id.value,
+    title: title.value,
+    description: description.value,
+    defaultCardFgColor: defaultCardFgColor.value,
+    defaultCardBgColor: defaultCardBgColor.value,
+    projectColumns: projectColumns.value
+  }))
+
+  const hasChanges = computed(() => !isEqual(entity.value, originalState.value))
+
   watch(
-    () => toEntity(),
+    () => entity.value,
     async entity => {
       _isValid.value = await validate(entity);
     },
@@ -55,20 +74,6 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
       })),
       'index'
     );
-  }
-
-  function toEntity(): Project {
-    const project: Project = {
-      uid: uid.value,
-      id: id.value,
-      title: title.value,
-      description: description.value,
-      defaultCardFgColor: defaultCardFgColor.value,
-      defaultCardBgColor: defaultCardBgColor.value,
-      projectColumns: projectColumns.value,
-    };
-
-    return project;
   }
 
   function reset() {
@@ -105,7 +110,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   const saveError = ref<string | null>(null);
 
   async function saveProject() {
-    const project = toEntity();
+    const project = entity.value;
 
     if (!project) {
       saveError.value = 'Error saving project: No project loaded yet.';
@@ -327,6 +332,9 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     saving,
     saveError,
     isValid,
+    entity,
+    originalState,
+    hasChanges,
 
     title,
     description,
@@ -335,7 +343,6 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     projectColumns,
 
     hydrateFromEntity,
-    toEntity,
     reset,
 
     fetchProject,
