@@ -8,7 +8,9 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "mock:db": "json-server ./mock-data/db.json -w -c ./mock-data/json-server-config.json"
+    "mock:db": "json-server ./mock-data/db.json -w -c ./mock-data/json-server-config.json",
+    "db:start": "npx supabase start -x vector",
+    "db:stop": "npx supabase stop"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
@@ -47,6 +49,7 @@
     "json-server": "0.17.4",
     "nuxt-lodash": "^2.5.3",
     "playwright-core": "^1.55.1",
+    "supabase": "^2.58.5",
     "tailwind-scrollbar": "^4.0.2",
     "vitest": "^3.2.4"
   }
