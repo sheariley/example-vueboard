@@ -24,7 +24,10 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   const _isValid = ref(false);
   const isValid = computed(() => _isValid.value)
 
-  const _originalState = ref<Project>()
+  const _originalState = ref<Project>({
+    ...DefaultProjectState,
+    projectColumns: []
+  })
   const originalState = computed(() => _originalState.value)
 
   const id = ref<number | undefined>();
@@ -45,7 +48,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     projectColumns: projectColumns.value
   }))
 
-  const hasChanges = computed(() => !isEqual(entity.value, originalState.value))
+  const hasChanges = computed(() => !isEqual(toRaw(entity.value), toRaw(originalState.value)))
 
   watch(
     () => entity.value,
@@ -83,7 +86,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
 
   function reset() {
     hydrateFromEntity({
-      ...(originalState.value || DefaultProjectState)
+      ...toRaw(originalState.value || DefaultProjectState)
     });
   }
 
@@ -102,6 +105,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
       const result = await projectsApiClient.fetchProject(projectUid)
 
       hydrateFromEntity(result);
+      commitChanges();
     } catch (error) {
       loadError.value = coerceErrorMessage(error);
     } finally {
@@ -110,7 +114,18 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   }
 
   function commitChanges() {
-    _originalState.value = entity.value
+    const rawEntity = toRaw(entity.value)
+    // deep copy into _originalState
+    _originalState.value = {
+      ...rawEntity,
+      projectColumns: rawEntity.projectColumns.map(col => ({
+        ...col,
+        workItems: col.workItems?.map(workItem => ({
+          ...workItem,
+          tags: workItem.tags.slice()
+        }))
+      }))
+    }
   }
 
   const saving = ref(false);
@@ -145,6 +160,10 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     } finally {
       saving.value = false;
     }
+  }
+
+  function dismissSaveError() {
+    saveError.value = null
   }
 
   function generateNewColumnName() {
@@ -365,6 +384,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
 
     fetchProject,
     saveProject,
+    dismissSaveError,
 
     getProjectOptions,
     setProjectOptions,

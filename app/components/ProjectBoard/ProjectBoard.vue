@@ -15,11 +15,20 @@
       
       <UFieldGroup>
         <UButton
-          color="primary"
+          color="neutral"
           variant="solid"
           @click="onAddColumnClick"
         >
-          <FontAwesomeIcon icon="fa-solid fa-plus" />&nbsp;Add Column
+          <FontAwesomeIcon icon="fa-solid fa-plus" /><span class="hidden sm:inline">&nbsp;Add Column</span>
+        </UButton>
+
+        <UButton
+          color="success"
+          variant="solid"
+          :disabled="!currentProjectStore.hasChanges"
+          @click="onSaveProjectClick"
+        >
+          <FontAwesomeIcon icon="fa-solid fa-save" /><span class="hidden sm:inline">&nbsp;Save Project</span>
         </UButton>
       </UFieldGroup>
     </div>
@@ -55,12 +64,33 @@
 
 <script lang="ts" setup>
   import type { ProjectColumn } from '~/types'
-
+import { createFontAwesomeIcon } from '~/util/createFontAwesomeIcon'
+  
   const { show: showConfirmModal } = useConfirmModal()
+  const toast = useToast()
   const projectOptionsModal = useProjectOptionsModal()
   const currentProjectStore = useCurrentProjectStore()
 
   const { title, description, projectColumns: columns } = storeToRefs(currentProjectStore)
+
+  watch(() => currentProjectStore.saveError, (value, oldValue) => {
+    if (value && !oldValue) {
+      toast.add({
+        title: 'Error Saving Project',
+        description: value,
+        duration: 5000,
+        color: 'error',
+        close: true,
+        icon: createFontAwesomeIcon({
+          icon: 'fa-solid fa-exclamation-triangle',
+          class: 'translate-y-0.5'
+        }),
+        "onUpdate:open": (open) => {
+          if (!open) currentProjectStore.dismissSaveError()
+        }
+      })
+    }
+  })
 
   async function onEditProjectOptionsClick() {
     const options = currentProjectStore.getProjectOptions()
@@ -96,6 +126,20 @@
   
   function onColumnDragged() {
     columns.value = columns.value.map((x, index) => ({ ...x, index }))
+  }
+
+  async function onSaveProjectClick() {
+    const result = await currentProjectStore.saveProject()
+    if (result?.id) {
+      toast.add({
+        title: 'Project Save Successful',
+        color: 'success',
+        icon: createFontAwesomeIcon({
+          icon: 'fa-solid fa-thumbs-up',
+          class: 'translate-y-0.5'
+        })
+      })
+    }
   }
 </script>
 
