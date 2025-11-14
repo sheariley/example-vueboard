@@ -9,8 +9,8 @@
 - [x] Allow adding new columns
 - [x] Allow removing columns
 - [x] Allow removing work items
-- [ ] Allow adding of new projects
+- [x] Allow adding of new projects
 - [ ] Add list of projects to main nav menu
-- [ ] Allow saving of projects
+- [x] Allow saving of projects
 - [ ] Add undo functionality at project level???
 - [ ] Add tooltips to all buttons
