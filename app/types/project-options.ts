@@ -6,6 +6,7 @@ export const ProjectOptionsSchema = zod.object({
     .min(3, { message: 'This is required' })
     .max(200, { error: 'Too long (max: 200)' }),
   description: zod.string()
+    .max(600, { error: 'Too long (max: 600)' })
     .optional(),
   defaultCardFgColor: hexColor
     .optional(),
