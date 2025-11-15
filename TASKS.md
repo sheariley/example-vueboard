@@ -1,5 +1,9 @@
 # Project Tasks
 
+## General Development Tasks
+- [ ] Restructure repo to move the Vue web app into subfolder
+- [ ] Outline new repo structure in markdown document; describing location of various high-level components (Vue web app, containerized .NET web API, etc...)
+
 ## UI Tasks
 - [x] Add default card color properties to project objects in mock data JSON file
 - [x] Add optional color properties to work item objects in mock data JSON file
