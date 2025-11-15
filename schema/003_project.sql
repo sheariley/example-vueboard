@@ -4,7 +4,7 @@ CREATE TABLE user_data.project (
   created timestamp DEFAULT CURRENT_TIMESTAMP,
   updated timestamp DEFAULT CURRENT_TIMESTAMP,
   is_deleted boolean DEFAULT false,
-  user_id integer NOT NULL REFERENCES auth.users (id),
+  user_id uuid NOT NULL REFERENCES auth.users (id),
   
   title varchar(200) NOT NULL,
   description varchar(600) NULL,

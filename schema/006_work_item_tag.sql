@@ -1,7 +1,7 @@
 CREATE TABLE user_data.work_item_tag (
   id integer NOT NULL GENERATED ALWAYS AS IDENTITY (INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1),
   uid uuid NOT NULL DEFAULT gen_random_uuid(),
-  user_id INTEGER NOT NULL REFERENCES auth.users (id),
+  user_id uuid NOT NULL REFERENCES auth.users (id),
 
   tag_text varchar(30) NOT NULL,
 
