@@ -11,6 +11,7 @@ CREATE TABLE user_data.work_item (
   notes text NULL,
   fg_color varchar(12) NULL,
   bg_color varchar(12) NULL,
+  index integer NOT NULL DEFAULT 0,
 
   PRIMARY KEY (id)
 );

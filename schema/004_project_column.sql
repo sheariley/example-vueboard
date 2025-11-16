@@ -9,6 +9,7 @@ CREATE TABLE user_data.project_column (
   name varchar(32) NOT NULL,
   fg_color varchar(12) NULL,
   bg_color varchar(12) NULL,
+  index integer NOT NULL DEFAULT 0,
 
   PRIMARY KEY (id)
 );

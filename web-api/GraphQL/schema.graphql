@@ -1,0 +1,70 @@
+# GraphQL schema for Vueboard API
+
+type Query {
+  projects: [Project!]!
+  project(uid: UUID!): Project
+}
+
+type Mutation {
+  createProject(input: CreateProjectInput!): Project!
+  addColumn(projectUid: UUID!, input: CreateColumnInput!): Project!
+}
+
+type Project {
+  id: Int!
+  uid: UUID!
+  created: DateTime!
+  updated: DateTime!
+  isDeleted: Boolean!
+  userId: UUID!
+  title: String!
+  description: String
+  defaultCardFgColor: String
+  defaultCardBgColor: String
+  columns: [ProjectColumn!]!
+}
+
+type ProjectColumn {
+  id: Int!
+  uid: UUID!
+  created: DateTime!
+  updated: DateTime!
+  isDeleted: Boolean!
+  projectId: Int!
+  name: String!
+  isDefault: Boolean!
+  index: Int!
+  workItems: [WorkItem!]!
+}
+
+type WorkItem {
+  id: Int!
+  uid: UUID!
+  created: DateTime!
+  updated: DateTime!
+  isDeleted: Boolean!
+  projectColumnId: Int!
+  title: String!
+  description: String
+  notes: String
+  fgColor: String
+  bgColor: String
+  index: Int!
+  tags: [String!]!
+}
+
+input CreateProjectInput {
+  title: String!
+  description: String
+  defaultCardFgColor: String
+  defaultCardBgColor: String
+}
+
+input CreateColumnInput {
+  title: String!
+  isDefault: Boolean
+  index: Int
+}
+
+scalar UUID
+scalar DateTime

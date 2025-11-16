@@ -1,0 +1,45 @@
+# .NET build results
+bin/
+obj/
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+# VS Code
+.vscode/
+# Rider
+.idea/
+# NuGet
+*.nupkg
+# Logs
+*.log
+# OS generated files
+.DS_Store
+Thumbs.db
+# Test results
+TestResults/
+# Others
+*.vspscc
+*.vssscc
+# Docker
+*.dockerignore
+# Environment files
+.env
+.env.*
+# Publish output
+publish/
+# Temporary files
+*.tmp
+# Backup files
+*.bak
+# Visual Studio Code settings
+.vscode/
+# JetBrains Rider settings
+.idea/
+# Resharper
+_ReSharper*/
+# DotCover
+*.dotCover
+# dotnet tool restore
+.dotnet-tools.json
