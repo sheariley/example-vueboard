@@ -14,9 +14,12 @@ namespace Vueboard.Api.GraphQL
       _projectRepo = projectRepo;
     }
 
-    public Project CreateProject(CreateProjectInput input, Guid userId)
+    public Project CreateProject(CreateProjectInput input)
     {
       var projectUid = String.IsNullOrWhiteSpace(input.Uid) ? Guid.NewGuid() : Guid.Parse(input.Uid);
+
+      // TODO: Replace with Supabase User ID
+      var userId = Guid.Parse("e971375a-2a56-4661-84bb-ec88b6e88b05");
 
       var project = new Project
       {
