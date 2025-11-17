@@ -64,20 +64,20 @@ namespace Vueboard.DataAccess.Repositories.InMemory
 
     public bool Update(Project project)
     {
-      var existing = _projects.FirstOrDefault(p => p.Uid == project.Uid);
-      if (existing == null) return false;
-      existing.Title = project.Title;
-      existing.Description = project.Description;
-      existing.DefaultCardFgColor = project.DefaultCardFgColor;
-      existing.DefaultCardBgColor = project.DefaultCardBgColor;
-      existing.Updated = DateTime.UtcNow;
+      var existingProj = _projects.FirstOrDefault(p => p.Uid == project.Uid);
+      if (existingProj == null) return false;
+      existingProj.Title = project.Title;
+      existingProj.Description = project.Description;
+      existingProj.DefaultCardFgColor = project.DefaultCardFgColor;
+      existingProj.DefaultCardBgColor = project.DefaultCardBgColor;
+      existingProj.Updated = DateTime.UtcNow;
       if (project.Columns != null)
       {
         foreach (var column in project.Columns)
         {
           if (column.Id == 0)
           {
-            _columnRepo.Add(existing.Id, column);
+            _columnRepo.Add(existingProj.Id, column);
           }
           else
           {
@@ -89,11 +89,11 @@ namespace Vueboard.DataAccess.Repositories.InMemory
             {
               if (workItem.Id == 0)
               {
-                _workItemRepo.CreateWorkItem(workItem, existing.UserId);
+                _workItemRepo.CreateWorkItem(workItem, existingProj.UserId);
               }
               else
               {
-                _workItemRepo.UpdateWorkItem(workItem, existing.UserId);
+                _workItemRepo.UpdateWorkItem(workItem, existingProj.UserId);
               }
             }
           }

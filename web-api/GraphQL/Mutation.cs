@@ -14,8 +14,10 @@ namespace Vueboard.Api.GraphQL
       _projectRepo = projectRepo;
     }
 
-    public Project CreateProject(CreateProjectInput input)
+    public Project CreateProject(CreateProjectInput input, Guid userId)
     {
+      var projectUid = String.IsNullOrWhiteSpace(input.Uid) ? Guid.NewGuid() : Guid.Parse(input.Uid);
+
       var project = new Project
       {
         Title = input.Title,
@@ -25,8 +27,8 @@ namespace Vueboard.Api.GraphQL
         Created = DateTime.UtcNow,
         Updated = DateTime.UtcNow,
         IsDeleted = false,
-        Uid = Guid.NewGuid(),
-        UserId = Guid.NewGuid(), // Replace with actual user context
+        Uid = projectUid,
+        UserId = userId, // Replace with actual user context
         Columns = new List<ProjectColumn>()
       };
       return _projectRepo.Add(project);
