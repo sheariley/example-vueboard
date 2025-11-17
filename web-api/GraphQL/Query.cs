@@ -3,14 +3,21 @@ using HotChocolate.Types;
 
 namespace Vueboard.Api.GraphQL
 {
-    public class Query
+  public class Query
+  {
+    private readonly IProjectRepository _projectRepo;
+    private readonly IProjectColumnRepository _projectColumnRepo;
+    private readonly IWorkItemRepository _workItemRepo;
+    public Query(IProjectRepository projRepo, IProjectColumnRepository colRepo, IWorkItemRepository workItemRepo)
     {
-        private readonly IProjectRepository _repo;
-        public Query(IProjectRepository repo) => _repo = repo;
-
-        [UsePaging]
-        public IEnumerable<Project> Projects() => _repo.GetAll();
-
-        public Project? Project(string uid) => _repo.GetByUid(uid);
+      _projectRepo = projRepo;
+      _projectColumnRepo = colRepo;
+      _workItemRepo = workItemRepo;
     }
+
+    [UsePaging]
+    public IEnumerable<Project> Projects() => _projectRepo.GetAll();
+
+    public Project? Project(string uid) => _projectRepo.GetByUid(uid);
+  }
 }

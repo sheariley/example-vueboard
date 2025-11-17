@@ -39,6 +39,8 @@ builder.Services.AddAuthentication(options =>
 
 // Register application services and simple in-memory repositories
 builder.Services.AddSingleton<IProjectRepository, InMemoryProjectRepository>();
+builder.Services.AddSingleton<IProjectColumnRepository, InMemoryProjectColumnRepository>();
+builder.Services.AddSingleton<IWorkItemRepository, InMemoryWorkItemRepository>();
 
 // Configure GraphQL
 builder.Services.AddAuthorization();

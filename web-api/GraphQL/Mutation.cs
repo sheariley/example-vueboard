@@ -7,8 +7,8 @@ namespace Vueboard.Api.GraphQL
     {
         private readonly IProjectRepository _projectRepo;
         private readonly IProjectColumnRepository _columnRepo;
-        private readonly InMemoryWorkItemRepository _workItemRepo;
-        public Mutation(IProjectRepository projectRepo, IProjectColumnRepository columnRepo, InMemoryWorkItemRepository workItemRepo)
+        private readonly IWorkItemRepository _workItemRepo;
+        public Mutation(IProjectRepository projectRepo, IProjectColumnRepository columnRepo, IWorkItemRepository workItemRepo)
         {
             _projectRepo = projectRepo;
             _columnRepo = columnRepo;
