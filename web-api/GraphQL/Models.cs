@@ -45,7 +45,6 @@ namespace Vueboard.Api.GraphQL
         public string? FgColor { get; set; }
         public string? BgColor { get; set; }
         public int Index { get; set; }
-        public List<int> TagIds { get; set; } = new();
         public List<string> Tags { get; set; } = new(); // Abstract tags as strings
     }
 
