@@ -1,5 +1,7 @@
 using HotChocolate;
 using HotChocolate.Types;
+using Vueboard.DataAccess.Models;
+using Vueboard.DataAccess.Repositories;
 
 namespace Vueboard.Api.GraphQL
 {

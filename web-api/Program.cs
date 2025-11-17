@@ -6,6 +6,8 @@ using HotChocolate.Execution.Configuration;
 using System.Text;
 using Vueboard.Api;
 using Vueboard.Api.GraphQL;
+using Vueboard.DataAccess.Repositories;
+using Vueboard.DataAccess.Repositories.InMemory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,22 +21,22 @@ var jwtSecret = builder.Configuration["JWT:Secret"] ?? "ReplaceWithSupabaseJWTSe
 
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+  options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+  options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidIssuer = jwtIssuer,
-        ValidateAudience = true,
-        ValidAudience = jwtAudience,
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
-        ValidateLifetime = true,
-        ClockSkew = TimeSpan.FromSeconds(30)
-    };
+  options.RequireHttpsMetadata = false;
+  options.TokenValidationParameters = new TokenValidationParameters
+  {
+    ValidateIssuer = true,
+    ValidIssuer = jwtIssuer,
+    ValidateAudience = true,
+    ValidAudience = jwtAudience,
+    ValidateIssuerSigningKey = true,
+    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+    ValidateLifetime = true,
+    ClockSkew = TimeSpan.FromSeconds(30)
+  };
 });
 
 // Register application services and simple in-memory repositories
