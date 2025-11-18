@@ -47,6 +47,7 @@ builder.Services.AddSingleton<IWorkItemRepository, InMemoryWorkItemRepository>()
 // Register DataLoaders
 builder.Services.AddDataLoader<ProjectByIdDataLoader>();
 builder.Services.AddDataLoader<ProjectColumnsByProjectIdDataLoader>();
+builder.Services.AddDataLoader<WorkItemsByProjectColumnIdDataLoader>();
 
 // Configure GraphQL
 builder.Services.AddAuthorization();
@@ -58,6 +59,7 @@ builder.Services.AddGraphQLServer()
     .AddType<WorkItemType>()
     .AddDataLoader<ProjectByIdDataLoader>()
     .AddDataLoader<ProjectColumnsByProjectIdDataLoader>()
+    .AddDataLoader<WorkItemsByProjectColumnIdDataLoader>()
     .ModifyRequestOptions(opts => opts.IncludeExceptionDetails = true);
 
 var app = builder.Build();

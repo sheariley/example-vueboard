@@ -38,8 +38,25 @@ namespace Vueboard.Api.GraphQL
 
         protected override Task<ILookup<int, ProjectColumn>> LoadGroupedBatchAsync(IReadOnlyList<int> keys, CancellationToken cancellationToken)
         {
-            var columns = keys.SelectMany(id => _columnRepo.GetAllForProject(id)).ToLookup(c => c.ProjectId);
+            var columns = keys.SelectMany(_columnRepo.GetAllForProject).ToLookup(c => c.ProjectId);
             return Task.FromResult(columns);
+        }
+    }
+
+    // Group DataLoader for WorkItems by ProjectColumnId
+    public class WorkItemsByProjectColumnIdDataLoader : GroupedDataLoader<int, WorkItem>
+    {
+        private readonly IWorkItemRepository _workItemRepo;
+        public WorkItemsByProjectColumnIdDataLoader(IBatchScheduler batchScheduler, IWorkItemRepository workItemRepo)
+            : base(batchScheduler, new DataLoaderOptions())
+        {
+            _workItemRepo = workItemRepo;
+        }
+
+        protected override Task<ILookup<int, WorkItem>> LoadGroupedBatchAsync(IReadOnlyList<int> keys, CancellationToken cancellationToken)
+        {
+            var workItems = keys.SelectMany(_workItemRepo.GetAllForProjectColumn).ToLookup(w => w.ProjectColumnId);
+            return Task.FromResult(workItems);
         }
     }
 }
