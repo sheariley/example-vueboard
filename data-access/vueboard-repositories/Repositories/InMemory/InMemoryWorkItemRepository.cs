@@ -11,6 +11,21 @@ namespace Vueboard.DataAccess.Repositories.InMemory
     private int _nextTagId = 1;
     private int _nextWorkItemId = 1;
 
+    public IEnumerable<WorkItem> GetAllForProjectColumn(int projectColumnId)
+    {
+      return _workItems.Where(w => w.ProjectColumnId == projectColumnId && !w.IsDeleted);
+    }
+
+    public WorkItem? GetById(int id)
+    {
+      return _workItems.FirstOrDefault(w => w.Id == id && !w.IsDeleted);
+    }
+
+    public WorkItem? GetByUid(Guid uid)
+    {
+      return _workItems.FirstOrDefault(w => w.Uid == uid && !w.IsDeleted);
+    }
+
     public WorkItem CreateWorkItem(WorkItem item, Guid userId)
     {
       item.Id = _nextWorkItemId++;

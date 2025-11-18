@@ -17,28 +17,12 @@ namespace Vueboard.DataAccess.Repositories.InMemory
 
     public IEnumerable<Project> GetAll()
     {
-      foreach (var project in _projects.Where(p => !p.IsDeleted))
-      {
-        project.Columns = _columnRepo.GetAllForProject(project.Id).ToList();
-        foreach (var column in project.Columns)
-        {
-          column.WorkItems = _workItemRepo.GetWorkItemsForColumn(column.Id);
-        }
-      }
       return _projects.Where(p => !p.IsDeleted);
     }
 
     public Project? GetByUid(string uid)
     {
       var project = _projects.FirstOrDefault(p => p.Uid.Equals(Guid.Parse(uid)) && !p.IsDeleted);
-      if (project != null)
-      {
-        project.Columns = _columnRepo.GetAllForProject(project.Id).ToList();
-        foreach (var column in project.Columns)
-        {
-          column.WorkItems = _workItemRepo.GetWorkItemsForColumn(column.Id);
-        }
-      }
       return project;
     }
 

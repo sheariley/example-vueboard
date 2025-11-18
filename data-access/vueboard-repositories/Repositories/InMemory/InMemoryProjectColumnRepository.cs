@@ -18,6 +18,11 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       return _columns.FirstOrDefault(c => c.Id == id && !c.IsDeleted);
     }
 
+    public ProjectColumn? GetByUid(Guid uid)
+    {
+      return _columns.FirstOrDefault(c => c.Uid == uid && !c.IsDeleted);
+    }
+
     public ProjectColumn Add(int projectId, ProjectColumn column)
     {
       column.Id = _nextColumnId++;

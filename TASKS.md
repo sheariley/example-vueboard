@@ -22,7 +22,7 @@
 
 
 ## Architectural Tasks
-- [ ] Create containerized **.NET 8** GraphQL web API.
+- [x] Create containerized **.NET 8** GraphQL web API.
 - [ ] Add Hot Chocolate and configure schema + DataLoader.
 - [ ] Add JWT middleware configured with Supabase JWT secret and issuer.
 - [ ] Prototype one resolver that validates token → forwards to PostgREST endpoint with the same JWT and returns data (verify RLS behavior).

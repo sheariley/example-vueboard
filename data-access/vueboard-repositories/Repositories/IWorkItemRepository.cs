@@ -4,6 +4,9 @@ namespace Vueboard.DataAccess.Repositories
 {
   public interface IWorkItemRepository
   {
+    IEnumerable<WorkItem> GetAllForProjectColumn(int projectId);
+    WorkItem? GetById(int id);
+    WorkItem? GetByUid(Guid uid);
     WorkItem CreateWorkItem(WorkItem item, Guid userId);
     bool UpdateWorkItem(WorkItem item, Guid userId);
     bool DeleteWorkItem(int workItemId);
