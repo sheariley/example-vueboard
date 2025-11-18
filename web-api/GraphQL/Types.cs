@@ -18,7 +18,9 @@ namespace Vueboard.Api.GraphQL
       descriptor.Field(f => f.Description).Type<StringType>();
       descriptor.Field(f => f.DefaultCardFgColor).Type<StringType>();
       descriptor.Field(f => f.DefaultCardBgColor).Type<StringType>();
-      descriptor.Field(f => f.Columns).Type<ListType<ProjectColumnType>>();
+      descriptor.Field(f => f.Columns)
+        .ResolveWith<ProjectResolvers>(r => r.GetColumnsAsync(default!, default!, default))
+        .Type<ListType<ProjectColumnType>>();
     }
   }
 
@@ -58,6 +60,18 @@ namespace Vueboard.Api.GraphQL
       descriptor.Field(f => f.BgColor).Type<StringType>();
       descriptor.Field(f => f.Index).Type<NonNullType<IntType>>();
       descriptor.Field(f => f.Tags).Type<ListType<NonNullType<StringType>>>(); // Expose tags as string array
+    }
+  }
+
+  public class ProjectResolvers
+  {
+    public async Task<IEnumerable<ProjectColumn>> GetColumnsAsync(
+      [Parent] Project project,
+      ProjectColumnsByProjectIdDataLoader dataLoader,
+      CancellationToken cancellationToken)
+    {
+      var columns = await dataLoader.LoadAsync(project.Id, cancellationToken);
+      return columns;
     }
   }
 }

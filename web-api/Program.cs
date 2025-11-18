@@ -44,6 +44,10 @@ builder.Services.AddSingleton<IProjectRepository, InMemoryProjectRepository>();
 builder.Services.AddSingleton<IProjectColumnRepository, InMemoryProjectColumnRepository>();
 builder.Services.AddSingleton<IWorkItemRepository, InMemoryWorkItemRepository>();
 
+// Register DataLoaders
+builder.Services.AddDataLoader<ProjectByIdDataLoader>();
+builder.Services.AddDataLoader<ProjectColumnsByProjectIdDataLoader>();
+
 // Configure GraphQL
 builder.Services.AddAuthorization();
 builder.Services.AddGraphQLServer()
@@ -52,6 +56,8 @@ builder.Services.AddGraphQLServer()
     .AddType<ProjectType>()
     .AddType<ProjectColumnType>()
     .AddType<WorkItemType>()
+    .AddDataLoader<ProjectByIdDataLoader>()
+    .AddDataLoader<ProjectColumnsByProjectIdDataLoader>()
     .ModifyRequestOptions(opts => opts.IncludeExceptionDetails = true);
 
 var app = builder.Build();
@@ -61,8 +67,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGraphQL();
-app.MapBananaCakePop("/graphql-ui");
-
 // Playground for local dev
 app.MapGet("/", () => Results.Redirect("/graphql"));
 
