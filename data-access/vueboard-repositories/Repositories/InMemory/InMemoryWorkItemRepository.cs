@@ -4,11 +4,14 @@ namespace Vueboard.DataAccess.Repositories.InMemory
 {
   public class InMemoryWorkItemRepository : IWorkItemRepository
   {
+    private readonly IWorkItemTagRepository _tagRepo;
     private readonly List<WorkItem> _workItems = new();
-    private readonly List<(int workItemId, int tagId)> _workItemTagRefs = new();
-    private readonly List<WorkItemTag> _tags = new();
-    private int _nextTagId = 1;
     private int _nextWorkItemId = 1;
+
+    public InMemoryWorkItemRepository(IWorkItemTagRepository tagRepo)
+    {
+      _tagRepo = tagRepo;
+    }
 
     public IEnumerable<WorkItem> GetAllForProjectColumn(int projectColumnId)
     {
@@ -36,6 +39,10 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       item.Uid = Guid.NewGuid();
       item.Created = DateTime.UtcNow;
       item.Updated = DateTime.UtcNow;
+      if (item.WorkItemTags?.Count > 0)
+      {
+        item.WorkItemTags.ForEach(x => _tagRepo.Create(x));
+      }
       _workItems.Add(item);
       return item;
     }
@@ -54,6 +61,10 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       existing.ProjectColumnId = item.ProjectColumnId;
       existing.IsDeleted = item.IsDeleted;
       existing.WorkItemTags = item.WorkItemTags;
+      if (existing.WorkItemTags?.Count > 0)
+      {
+        existing.WorkItemTags.ForEach(x => _tagRepo.Create(x));
+      }
       return true;
     }
 
@@ -77,10 +88,7 @@ namespace Vueboard.DataAccess.Repositories.InMemory
 
     public List<WorkItemTag> GetTagsForWorkItem(int workItemId)
     {
-      return _workItemTagRefs
-        .Where(r => r.workItemId == workItemId)
-        .Select(x => _tags.First(y => y.Id == x.tagId))
-        .ToList();
+      return _workItems.First(x => x.Id == workItemId).WorkItemTags;
     }
   }
 }

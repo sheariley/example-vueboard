@@ -4,6 +4,7 @@ using System.Text;
 using Vueboard.Api.GraphQL;
 using Vueboard.DataAccess.EntityFramework;
 using Vueboard.DataAccess.EntityFramework.Config;
+using Vueboard.DataAccess.EntityFramework.Repositories;
 using Vueboard.DataAccess.Repositories;
 using Vueboard.DataAccess.Repositories.EntityFramework.QueryRoots;
 using Vueboard.DataAccess.Repositories.InMemory;
@@ -44,14 +45,21 @@ builder.Services.AddScoped<IVueboardDbContext, VueboardDbContext>();
 
 // TODO: Implement EF repositories and replace in-memory ones here.
 // Register Repositories
-builder.Services.AddScoped<IProjectRepository, InMemoryProjectRepository>();
-builder.Services.AddScoped<IProjectColumnRepository, InMemoryProjectColumnRepository>();
-builder.Services.AddScoped<IWorkItemRepository, InMemoryWorkItemRepository>();
+builder.Services.AddSingleton<IProjectRepository, InMemoryProjectRepository>();
+builder.Services.AddSingleton<IProjectColumnRepository, InMemoryProjectColumnRepository>();
+builder.Services.AddSingleton<IWorkItemRepository, InMemoryWorkItemRepository>();
+builder.Services.AddSingleton<IWorkItemTagRepository, InMemoryWorkItemTagRepository>();
+
+// builder.Services.AddScoped<IProjectRepository, EFProjectRepository>();
+// builder.Services.AddScoped<IProjectColumnRepository, EFProjectColumnRepository>();
+// builder.Services.AddScoped<IWorkItemRepository, EFWorkItemRepository>();
+// builder.Services.AddScoped<IWorkItemTagRepository, EFWorkItemTagRepository>();
 
 // Register QueryRoots
 builder.Services.AddScoped<IProjectQueryRoot, ProjectQueryRoot>();
 builder.Services.AddScoped<IProjectColumnQueryRoot, ProjectColumnQueryRoot>();
 builder.Services.AddScoped<IWorkItemQueryRoot, WorkItemQueryRoot>();
+builder.Services.AddScoped<IWorkItemTagQueryRoot, WorkItemTagQueryRoot>();
 
 // Register DataLoaders
 builder.Services.AddDataLoader<ProjectByIdDataLoader>();
