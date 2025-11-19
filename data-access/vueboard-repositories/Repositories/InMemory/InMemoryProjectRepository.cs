@@ -32,17 +32,6 @@ namespace Vueboard.DataAccess.Repositories.InMemory
           query = query.Where(specification.Criteria);
         }
 
-        // Apply Includes (simulate by loading navigation properties if needed)
-        if (specification.Includes != null)
-        {
-          foreach (var include in specification.Includes)
-          {
-            // TODO: Figure this out for InMemory implementations
-            // In-memory, navigation properties are already loaded if present.
-            // No action needed unless lazy loading is implemented.
-          }
-        }
-
         // Apply OrderBy
         if (specification.OrderBy != null)
         {
