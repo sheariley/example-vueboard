@@ -1,19 +1,32 @@
+using System;
 using Microsoft.EntityFrameworkCore;
+using Vueboard.DataAccess.EntityFramework.Config;
 using Vueboard.DataAccess.Models;
 
 namespace Vueboard.DataAccess.EntityFramework
 {
   public class VueboardDbContext : DbContext, IVueboardDbContext
   {
-    public VueboardDbContext(DbContextOptions<VueboardDbContext> options)
+    private readonly IVueboardDbContextConfig _config;
+
+    public VueboardDbContext(DbContextOptions<VueboardDbContext> options, IVueboardDbContextConfig config)
         : base(options)
     {
+      _config = config;
     }
 
     public DbSet<Project> Projects { get; set; }
     public DbSet<ProjectColumn> ProjectColumns { get; set; }
     public DbSet<WorkItem> WorkItems { get; set; }
     public DbSet<WorkItemTag> WorkItemTags { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+      if (!optionsBuilder.IsConfigured)
+      {
+        _config.Apply(optionsBuilder);
+      }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

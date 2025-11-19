@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Vueboard.Api.GraphQL;
 using Vueboard.DataAccess.EntityFramework;
+using Vueboard.DataAccess.EntityFramework.Config;
 using Vueboard.DataAccess.Repositories;
 using Vueboard.DataAccess.Repositories.EntityFramework.QueryRoots;
 using Vueboard.DataAccess.Repositories.InMemory;
@@ -37,7 +38,8 @@ builder.Services.AddAuthentication(options =>
   };
 });
 
-// Register EF Context
+// Register EF Context and config provider
+builder.Services.AddSingleton<IVueboardDbContextConfigProvider, VueboardDbContextEnvConfigProvider>();
 builder.Services.AddSingleton<IVueboardDbContext, VueboardDbContext>();
 
 // TODO: Implement EF repositories and replace in-memory ones here.
