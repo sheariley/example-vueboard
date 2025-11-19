@@ -40,18 +40,18 @@ builder.Services.AddAuthentication(options =>
 
 // Register EF Context and config provider
 builder.Services.AddSingleton<IVueboardDbContextConfigProvider, VueboardDbContextEnvConfigProvider>();
-builder.Services.AddSingleton<IVueboardDbContext, VueboardDbContext>();
+builder.Services.AddScoped<IVueboardDbContext, VueboardDbContext>();
 
 // TODO: Implement EF repositories and replace in-memory ones here.
 // Register Repositories
-builder.Services.AddSingleton<IProjectRepository, InMemoryProjectRepository>();
-builder.Services.AddSingleton<IProjectColumnRepository, InMemoryProjectColumnRepository>();
-builder.Services.AddSingleton<IWorkItemRepository, InMemoryWorkItemRepository>();
+builder.Services.AddScoped<IProjectRepository, InMemoryProjectRepository>();
+builder.Services.AddScoped<IProjectColumnRepository, InMemoryProjectColumnRepository>();
+builder.Services.AddScoped<IWorkItemRepository, InMemoryWorkItemRepository>();
 
 // Register QueryRoots
-builder.Services.AddSingleton<IProjectQueryRoot, ProjectQueryRoot>();
-builder.Services.AddSingleton<IProjectColumnQueryRoot, ProjectColumnQueryRoot>();
-builder.Services.AddSingleton<IWorkItemQueryRoot, WorkItemQueryRoot>();
+builder.Services.AddScoped<IProjectQueryRoot, ProjectQueryRoot>();
+builder.Services.AddScoped<IProjectColumnQueryRoot, ProjectColumnQueryRoot>();
+builder.Services.AddScoped<IWorkItemQueryRoot, WorkItemQueryRoot>();
 
 // Register DataLoaders
 builder.Services.AddDataLoader<ProjectByIdDataLoader>();
