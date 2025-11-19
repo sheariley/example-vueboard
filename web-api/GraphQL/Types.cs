@@ -1,5 +1,3 @@
-using HotChocolate;
-using HotChocolate.Types;
 using Vueboard.DataAccess.Models;
 
 namespace Vueboard.Api.GraphQL
@@ -61,31 +59,7 @@ namespace Vueboard.Api.GraphQL
       descriptor.Field(f => f.FgColor).Type<StringType>();
       descriptor.Field(f => f.BgColor).Type<StringType>();
       descriptor.Field(f => f.Index).Type<NonNullType<IntType>>();
-      descriptor.Field(f => f.Tags).Type<ListType<NonNullType<StringType>>>(); // Expose tags as string array
-    }
-  }
-
-  public class ProjectResolvers
-  {
-    public async Task<IEnumerable<ProjectColumn>> GetColumnsAsync(
-      [Parent] Project project,
-      ProjectColumnsByProjectIdDataLoader dataLoader,
-      CancellationToken cancellationToken)
-    {
-      var columns = await dataLoader.LoadAsync(project.Id, cancellationToken);
-      return columns ?? Enumerable.Empty<ProjectColumn>();
-    }
-  }
-
-  public class ProjectColumnResolvers
-  {
-    public async Task<IEnumerable<WorkItem>> GetWorkItemsAsync(
-      [Parent] ProjectColumn column,
-      WorkItemsByProjectColumnIdDataLoader dataLoader,
-      CancellationToken cancellationToken)
-    {
-      var workItems = await dataLoader.LoadAsync(column.Id, cancellationToken);
-      return workItems ?? Enumerable.Empty<WorkItem>();
+      descriptor.Field(f => f.WorkItemTags).Type<ListType<NonNullType<StringType>>>();
     }
   }
 }

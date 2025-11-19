@@ -8,9 +8,9 @@ namespace Vueboard.DataAccess.Repositories
     IEnumerable<TOut> Get<TOut>(Expression<Func<Project, TOut>> selector, FetchSpecification<Project>? specification = null);
     IEnumerable<Project> Get(FetchSpecification<Project> spec);
     IEnumerable<Project> Get(Expression<Func<Project, bool>> criteria);
-    Project? GetByUid(string uid);
+    Project? GetByUid(Guid uid);
     Project Add(Project project);
     bool Update(Project project);
-    bool Delete(string uid);
+    bool Delete(Guid uid);
   }
 }

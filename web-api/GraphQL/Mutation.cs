@@ -16,7 +16,7 @@ namespace Vueboard.Api.GraphQL
     {
       var projectUid = String.IsNullOrWhiteSpace(input.Uid) ? Guid.NewGuid() : Guid.Parse(input.Uid);
 
-      // TODO: Replace with Supabase User ID
+      // TODO: Replace with Supabase User ID obtained via Supabase using JWT
       var userId = Guid.Parse("e971375a-2a56-4661-84bb-ec88b6e88b05");
 
       var project = new Project
@@ -44,7 +44,8 @@ namespace Vueboard.Api.GraphQL
 
     public bool DeleteProject(string uid)
     {
-      return _projectRepo.Delete(uid);
+      var guid = Guid.Parse(uid);
+      return _projectRepo.Delete(guid);
     }
   }
 }

@@ -13,6 +13,6 @@ namespace Vueboard.DataAccess.Repositories
     bool DeleteWorkItem(int workItemId);
     WorkItem? GetWorkItem(int workItemId);
     List<WorkItem> GetWorkItemsForColumn(int projectColumnId);
-    List<string> GetTagsForWorkItem(int workItemId);
+    List<WorkItemTag> GetTagsForWorkItem(int workItemId);
   }
 }

@@ -18,7 +18,7 @@ namespace Vueboard.DataAccess.Repositories.InMemory
 
     public IEnumerable<Project> Get(FetchSpecification<Project> spec) => Get(x => x, spec);
 
-    public IEnumerable<Project> Get(Expression<Func<Project, bool>> predicate) => Get(new FetchSpecification<Project> { Criteria = predicate });
+    public IEnumerable<Project> Get(Expression<Func<Project, bool>> predicate) => Get(x => x, new FetchSpecification<Project> { Criteria = predicate });
 
     public IEnumerable<TOut> Get<TOut>(Expression<Func<Project, TOut>> selector, FetchSpecification<Project>? specification = null)
     {
@@ -26,27 +26,15 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       
       if (specification != null)
       {
-        // Apply Criteria
-        if (specification.Criteria != null)
-        {
-          query = query.Where(specification.Criteria);
-        }
-
-        // Apply OrderBy
-        if (specification.OrderBy != null)
-        {
-          query = specification.OrderBy(query);
-        }
+        query = specification.Apply(query);
       }
 
       return query.Select(selector).ToList();
-    }
+    }    
 
-    
-
-    public Project? GetByUid(string uid)
+    public Project? GetByUid(Guid uid)
     {
-      var project = _projects.FirstOrDefault(p => p.Uid.Equals(Guid.Parse(uid)) && !p.IsDeleted);
+      var project = _projects.FirstOrDefault(p => p.Uid.Equals(uid) && !p.IsDeleted);
       return project;
     }
 
@@ -110,9 +98,9 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       return true;
     }
 
-    public bool Delete(string uid)
+    public bool Delete(Guid uid)
     {
-      var project = _projects.FirstOrDefault(p => p.Uid.Equals(Guid.Parse(uid)));
+      var project = _projects.FirstOrDefault(p => p.Uid.Equals(uid));
       if (project == null) return false;
       project.IsDeleted = true;
       if (project.Columns != null)

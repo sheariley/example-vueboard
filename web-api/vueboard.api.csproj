@@ -13,7 +13,7 @@
     <PackageReference Include="System.Text.Json" Version="8.0.6" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../data-access/vueboard-repositories/vueboard-repositories.csproj" />
+    <ProjectReference Include="..\data-access\vueboard-repositories\vueboard-repositories.csproj" />
     <ProjectReference Include="..\data-access\vueboard-repositories-entity-framework\vueboard-repositories-entity-framework.csproj" />
   </ItemGroup>
 </Project>

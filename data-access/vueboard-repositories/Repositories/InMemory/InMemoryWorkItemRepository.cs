@@ -37,7 +37,6 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       item.Uid = Guid.NewGuid();
       item.Created = DateTime.UtcNow;
       item.Updated = DateTime.UtcNow;
-      SaveWorkItem(item, userId);
       _workItems.Add(item);
       return item;
     }
@@ -47,7 +46,6 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       var existing = _workItems.FirstOrDefault(w => w.Id == item.Id);
       if (existing == null) return false;
       item.Updated = DateTime.UtcNow;
-      SaveWorkItem(item, userId);
       existing.Title = item.Title;
       existing.Description = item.Description;
       existing.Notes = item.Notes;
@@ -56,7 +54,7 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       existing.Index = item.Index;
       existing.ProjectColumnId = item.ProjectColumnId;
       existing.IsDeleted = item.IsDeleted;
-      existing.Tags = item.Tags;
+      existing.WorkItemTags = item.WorkItemTags;
       return true;
     }
 
@@ -78,25 +76,12 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       return _workItems.Where(w => w.ProjectColumnId == projectColumnId && !w.IsDeleted).ToList();
     }
 
-    public void SaveWorkItem(WorkItem item, Guid userId)
+    public List<WorkItemTag> GetTagsForWorkItem(int workItemId)
     {
-      _workItemTagRefs.RemoveAll(r => r.workItemId == item.Id);
-      foreach (var tag in item.Tags.Distinct())
-      {
-        var existingTag = _tags.FirstOrDefault(t => t.TagText == tag && t.UserId == userId);
-        if (existingTag == null)
-        {
-          existingTag = new WorkItemTag { Id = _nextTagId++, Uid = Guid.NewGuid(), TagText = tag, UserId = userId };
-          _tags.Add(existingTag);
-        }
-        _workItemTagRefs.Add((item.Id, existingTag.Id));
-      }
-    }
-
-    public List<string> GetTagsForWorkItem(int workItemId)
-    {
-      var tagIds = _workItemTagRefs.Where(r => r.workItemId == workItemId).Select(r => r.tagId);
-      return _tags.Where(t => tagIds.Contains(t.Id)).Select(t => t.TagText).ToList();
+      return _workItemTagRefs
+        .Where(r => r.workItemId == workItemId)
+        .Select(x => _tags.First(y => y.Id == x.tagId))
+        .ToList();
     }
   }
 }
