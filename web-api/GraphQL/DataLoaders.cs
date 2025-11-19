@@ -1,61 +1,61 @@
 using Vueboard.DataAccess.Models;
-using Vueboard.DataAccess.Repositories;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Linq;
-using GreenDonut;
-using HotChocolate.Execution;
+using Vueboard.DataAccess.Repositories.EntityFramework.QueryRoots;
 
 namespace Vueboard.Api.GraphQL
 {
   // Batch DataLoader for Projects by Id
   public class ProjectByIdDataLoader : BatchDataLoader<int, Project>
   {
-    private readonly IProjectRepository _projectRepo;
-    public ProjectByIdDataLoader(IBatchScheduler batchScheduler, IProjectRepository projectRepo)
+    private readonly IProjectQueryRoot _queryRoot;
+    public ProjectByIdDataLoader(IBatchScheduler batchScheduler, IProjectQueryRoot queryRoot)
         : base(batchScheduler, new DataLoaderOptions())
     {
-      _projectRepo = projectRepo;
+      _queryRoot = queryRoot;
     }
 
     protected override Task<IReadOnlyDictionary<int, Project>> LoadBatchAsync(IReadOnlyList<int> keys, CancellationToken cancellationToken)
     {
-      var projects = _projectRepo.Get(p => keys.Contains(p.Id)).ToDictionary(p => p.Id);
+      var projects = _queryRoot.Query.Where(p => keys.Contains(p.Id)).ToDictionary(p => p.Id);
       return Task.FromResult((IReadOnlyDictionary<int, Project>)projects);
     }
   }
 
   // Group DataLoader for ProjectColumns by ProjectId
-  public class ProjectColumnsByProjectIdDataLoader : GroupedDataLoader<int, ProjectColumn>
+  public class ProjectColumnsByProjectIdDataLoader : GroupedDataLoader<int, IEnumerable<ProjectColumn>>
   {
-    private readonly IProjectColumnRepository _columnRepo;
-    public ProjectColumnsByProjectIdDataLoader(IBatchScheduler batchScheduler, IProjectColumnRepository columnRepo)
+    private readonly IProjectColumnQueryRoot _queryRoot;
+    public ProjectColumnsByProjectIdDataLoader(IBatchScheduler batchScheduler, IProjectColumnQueryRoot queryRoot)
         : base(batchScheduler, new DataLoaderOptions())
     {
-      _columnRepo = columnRepo;
+      _queryRoot = queryRoot;
     }
 
-    protected override Task<ILookup<int, ProjectColumn>> LoadGroupedBatchAsync(IReadOnlyList<int> keys, CancellationToken cancellationToken)
+    protected override Task<ILookup<int, IEnumerable<ProjectColumn>>> LoadGroupedBatchAsync(IReadOnlyList<int> keys, CancellationToken cancellationToken)
     {
-      var columns = _columnRepo.GetAllForProjects(keys).ToLookup(c => c.ProjectId);
+      var columns = _queryRoot.Query
+        .Where(x => keys.Contains(x.ProjectId))
+        .GroupBy(x => x.ProjectId)
+        .ToLookup(g => g.Key, g => g.AsEnumerable());
       return Task.FromResult(columns);
     }
   }
 
   // Group DataLoader for WorkItems by ProjectColumnId
-  public class WorkItemsByProjectColumnIdDataLoader : GroupedDataLoader<int, WorkItem>
+  public class WorkItemsByProjectColumnIdDataLoader : GroupedDataLoader<int, IEnumerable<WorkItem>>
   {
-    private readonly IWorkItemRepository _workItemRepo;
-    public WorkItemsByProjectColumnIdDataLoader(IBatchScheduler batchScheduler, IWorkItemRepository workItemRepo)
+    private readonly IWorkItemQueryRoot _queryRoot;
+    public WorkItemsByProjectColumnIdDataLoader(IBatchScheduler batchScheduler, IWorkItemQueryRoot queryRoot)
         : base(batchScheduler, new DataLoaderOptions())
     {
-      _workItemRepo = workItemRepo;
+      _queryRoot = queryRoot;
     }
 
-    protected override Task<ILookup<int, WorkItem>> LoadGroupedBatchAsync(IReadOnlyList<int> keys, CancellationToken cancellationToken)
+    protected override Task<ILookup<int, IEnumerable<WorkItem>>> LoadGroupedBatchAsync(IReadOnlyList<int> keys, CancellationToken cancellationToken)
     {
-      var workItems = _workItemRepo.GetAllForProjectColumns(keys).ToLookup(w => w.ProjectColumnId);
+      var workItems = _queryRoot.Query
+        .Where(x => keys.Contains(x.ProjectColumnId))
+        .GroupBy(x => x.ProjectColumnId)
+        .ToLookup(g => g.Key, g => g.AsEnumerable());
       return Task.FromResult(workItems);
     }
   }

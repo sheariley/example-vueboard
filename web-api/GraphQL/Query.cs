@@ -1,21 +1,23 @@
-using HotChocolate;
-using HotChocolate.Types;
 using Vueboard.DataAccess.Models;
-using Vueboard.DataAccess.Repositories;
+using Vueboard.DataAccess.Repositories.EntityFramework.QueryRoots;
 
 namespace Vueboard.Api.GraphQL
 {
   public class Query
   {
-    private readonly IProjectRepository _projectRepo;
-    public Query(IProjectRepository projRepo)
+    private readonly IProjectQueryRoot _projectQueryRoot;
+
+    public Query(IProjectQueryRoot projectQueryRoot)
     {
-      _projectRepo = projRepo;
+      _projectQueryRoot = projectQueryRoot;
     }
 
     [UsePaging]
-    public IEnumerable<Project> Projects() => _projectRepo.Get().Where(p => !p.IsDeleted);
+    public IQueryable<Project> Projects() => _projectQueryRoot.Query
+      .Where(p => !p.IsDeleted);
 
-    public Project? Project(string uid) => _projectRepo.GetByUid(uid);
+    public Project? Project(Guid uid) => _projectQueryRoot.Query
+      .Where(p => !p.IsDeleted && p.Uid.Equals(uid))
+      .FirstOrDefault();
   }
 }

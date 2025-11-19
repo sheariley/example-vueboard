@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using HotChocolate;
-using HotChocolate.AspNetCore;
-using HotChocolate.Execution.Configuration;
 using System.Text;
-using Vueboard.Api;
 using Vueboard.Api.GraphQL;
+using Vueboard.DataAccess.EntityFramework;
 using Vueboard.DataAccess.Repositories;
+using Vueboard.DataAccess.Repositories.EntityFramework.QueryRoots;
 using Vueboard.DataAccess.Repositories.InMemory;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,10 +37,19 @@ builder.Services.AddAuthentication(options =>
   };
 });
 
-// Register application services and simple in-memory repositories
+// Register EF Context
+builder.Services.AddSingleton<IVueboardDbContext, VueboardDbContext>();
+
+// TODO: Implement EF repositories and replace in-memory ones here.
+// Register Repositories
 builder.Services.AddSingleton<IProjectRepository, InMemoryProjectRepository>();
 builder.Services.AddSingleton<IProjectColumnRepository, InMemoryProjectColumnRepository>();
 builder.Services.AddSingleton<IWorkItemRepository, InMemoryWorkItemRepository>();
+
+// Register QueryRoots
+builder.Services.AddSingleton<IProjectQueryRoot, ProjectQueryRoot>();
+builder.Services.AddSingleton<IProjectColumnQueryRoot, ProjectColumnQueryRoot>();
+builder.Services.AddSingleton<IWorkItemQueryRoot, WorkItemQueryRoot>();
 
 // Register DataLoaders
 builder.Services.AddDataLoader<ProjectByIdDataLoader>();

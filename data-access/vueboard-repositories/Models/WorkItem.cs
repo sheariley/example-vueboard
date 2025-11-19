@@ -14,6 +14,6 @@ namespace Vueboard.DataAccess.Models
     public string? FgColor { get; set; }
     public string? BgColor { get; set; }
     public int Index { get; set; }
-    public List<string> Tags { get; set; } = new(); // Abstract tags as strings
+    public List<WorkItemTag> WorkItemTags { get; set; } = new();
   }
 }
