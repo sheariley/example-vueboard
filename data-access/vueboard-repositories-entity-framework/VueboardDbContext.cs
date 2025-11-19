@@ -1,4 +1,3 @@
-using System;
 using Microsoft.EntityFrameworkCore;
 using Vueboard.DataAccess.EntityFramework.Config;
 using Vueboard.DataAccess.Models;

@@ -1,5 +1,4 @@
 using Vueboard.DataAccess.Models;
-using Vueboard.DataAccess.Repositories;
 
 namespace Vueboard.DataAccess.Repositories.InMemory
 {
