@@ -4,7 +4,8 @@ namespace Vueboard.DataAccess.Repositories
 {
   public interface IWorkItemRepository
   {
-    IEnumerable<WorkItem> GetAllForProjectColumn(int projectId);
+    IEnumerable<WorkItem> GetAllForProjectColumn(int projectColumnId);
+    IEnumerable<WorkItem> GetAllForProjectColumns(IEnumerable<int> projectColumnIds);
     WorkItem? GetById(int id);
     WorkItem? GetByUid(Guid uid);
     WorkItem CreateWorkItem(WorkItem item, Guid userId);

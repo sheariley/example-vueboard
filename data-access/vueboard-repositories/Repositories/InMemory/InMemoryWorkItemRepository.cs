@@ -16,6 +16,11 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       return _workItems.Where(w => w.ProjectColumnId == projectColumnId && !w.IsDeleted);
     }
 
+    public IEnumerable<WorkItem> GetAllForProjectColumns(IEnumerable<int> projectColumnIds)
+    {
+      return _workItems.Where(w => projectColumnIds.Contains(w.ProjectColumnId) && !w.IsDeleted);
+    }
+
     public WorkItem? GetById(int id)
     {
       return _workItems.FirstOrDefault(w => w.Id == id && !w.IsDeleted);

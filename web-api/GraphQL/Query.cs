@@ -14,7 +14,7 @@ namespace Vueboard.Api.GraphQL
     }
 
     [UsePaging]
-    public IEnumerable<Project> Projects() => _projectRepo.GetAll().Where(p => !p.IsDeleted);
+    public IEnumerable<Project> Projects() => _projectRepo.Get().Where(p => !p.IsDeleted);
 
     public Project? Project(string uid) => _projectRepo.GetByUid(uid);
   }

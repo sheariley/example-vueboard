@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Vueboard.DataAccess.Models;
 using Vueboard.DataAccess.Repositories;
 
@@ -15,10 +16,44 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       _workItemRepo = workItemRepo;
     }
 
-    public IEnumerable<Project> GetAll()
+    public IEnumerable<Project> Get(FetchSpecification<Project> spec) => Get(x => x, spec);
+
+    public IEnumerable<Project> Get(Expression<Func<Project, bool>> predicate) => Get(new FetchSpecification<Project> { Criteria = predicate });
+
+    public IEnumerable<TOut> Get<TOut>(Expression<Func<Project, TOut>> selector, FetchSpecification<Project>? specification = null)
     {
-      return _projects.Where(p => !p.IsDeleted);
+      var query = _projects.Where(p => !p.IsDeleted).AsQueryable();
+      
+      if (specification != null)
+      {
+        // Apply Criteria
+        if (specification.Criteria != null)
+        {
+          query = query.Where(specification.Criteria);
+        }
+
+        // Apply Includes (simulate by loading navigation properties if needed)
+        if (specification.Includes != null)
+        {
+          foreach (var include in specification.Includes)
+          {
+            // TODO: Figure this out for InMemory implementations
+            // In-memory, navigation properties are already loaded if present.
+            // No action needed unless lazy loading is implemented.
+          }
+        }
+
+        // Apply OrderBy
+        if (specification.OrderBy != null)
+        {
+          query = specification.OrderBy(query);
+        }
+      }
+
+      return query.Select(selector).ToList();
     }
+
+    
 
     public Project? GetByUid(string uid)
     {
