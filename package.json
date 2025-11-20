@@ -6,7 +6,8 @@
     "db:stop": "npx supabase stop",
     "db:restart": "npm run db:stop && npm run db:start",
     "smtp:start": "docker compose -f ./smtp-dev-server/docker-compose.yml up -d",
-    "smtp:stop": "docker compose -f ./smtp-dev-server/docker-compose.yml down"
+    "smtp:stop": "docker compose -f ./smtp-dev-server/docker-compose.yml down",
+    "smtp:restart": "npm run smtp:stop && npm run smtp:start"
   },
   "dependencies": {
     "json-server": "0.17.4",

@@ -12,5 +12,10 @@ services:
       - MAILDEV_WEB_PORT=1080
     volumes:
       - ./maildata:/maildata
-    command: ["maildev", "--mail-directory", "/maildata"]
+    command: [
+      "maildev",
+      "--mail-directory", "/maildata",
+      "--incoming-user", "${SMTP_USER}",
+      "--incoming-pass", "${SMTP_PASS}"
+    ]
     restart: unless-stopped
