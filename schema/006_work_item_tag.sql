@@ -14,14 +14,18 @@ ON "user_data"."work_item_tag"
 AS PERMISSIVE
 FOR SELECT
 TO anon
-USING (true);
+USING (
+  (current_setting('request.jwt.claims', true)::json ->> 'sub') = user_id::text
+);
 
 CREATE POLICY "Allow anon to insert into work_item_tag"
 ON "user_data"."work_item_tag"
 AS PERMISSIVE
 FOR INSERT
 TO anon
-WITH CHECK (true);
+WITH CHECK (
+  (current_setting('request.jwt.claims', true)::json ->> 'sub') = user_id::text
+);
 
 -- Remove default privileges
 REVOKE ALL PRIVILEGES

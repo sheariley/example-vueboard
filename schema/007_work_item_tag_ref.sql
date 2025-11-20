@@ -11,14 +11,30 @@ ON "user_data"."work_item_tag_ref"
 AS PERMISSIVE
 FOR SELECT
 TO anon
-USING (true);
+USING (
+  EXISTS (
+    SELECT 1 FROM user_data.work_item wi
+    JOIN user_data.project_column pc ON wi.project_column_id = pc.id
+    JOIN user_data.project p ON pc.project_id = p.id
+    WHERE wi.id = work_item_id
+      AND (current_setting('request.jwt.claims', true)::json ->> 'sub') = p.user_id::text
+  )
+);
 
 CREATE POLICY "Allow anon to insert into work_item_tag_ref"
 ON "user_data"."work_item_tag_ref"
 AS PERMISSIVE
 FOR INSERT
 TO anon
-WITH CHECK (true);
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM user_data.work_item wi
+    JOIN user_data.project_column pc ON wi.project_column_id = pc.id
+    JOIN user_data.project p ON pc.project_id = p.id
+    WHERE wi.id = work_item_id
+      AND (current_setting('request.jwt.claims', true)::json ->> 'sub') = p.user_id::text
+  )
+);
 
 -- Remove default privileges
 REVOKE ALL PRIVILEGES

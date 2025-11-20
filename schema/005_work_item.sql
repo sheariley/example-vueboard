@@ -22,21 +22,42 @@ ON "user_data"."work_item"
 AS PERMISSIVE
 FOR SELECT
 TO anon
-USING (true);
+USING (
+  EXISTS (
+    SELECT 1 FROM user_data.project_column pc
+    JOIN user_data.project p ON pc.project_id = p.id
+    WHERE pc.id = project_column_id
+      AND (current_setting('request.jwt.claims', true)::json ->> 'sub') = p.user_id::text
+  )
+);
 
 CREATE POLICY "Allow anon to insert into work_item"
 ON "user_data"."work_item"
 AS PERMISSIVE
 FOR INSERT
 TO anon
-WITH CHECK (true);
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM user_data.project_column pc
+    JOIN user_data.project p ON pc.project_id = p.id
+    WHERE pc.id = project_column_id
+      AND (current_setting('request.jwt.claims', true)::json ->> 'sub') = p.user_id::text
+  )
+);
 
 CREATE POLICY "Allow anon to update work_item"
 ON "user_data"."work_item"
 AS PERMISSIVE
 FOR UPDATE
 TO anon
-WITH CHECK (true);
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM user_data.project_column pc
+    JOIN user_data.project p ON pc.project_id = p.id
+    WHERE pc.id = project_column_id
+      AND (current_setting('request.jwt.claims', true)::json ->> 'sub') = p.user_id::text
+  )
+);
 
 -- Remove default privileges
 REVOKE ALL PRIVILEGES

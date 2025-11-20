@@ -20,21 +20,39 @@ ON "user_data"."project_column"
 AS PERMISSIVE
 FOR SELECT
 TO anon
-USING (true);
+USING (
+  EXISTS (
+    SELECT 1 FROM user_data.project p
+    WHERE p.id = project_id
+      AND (current_setting('request.jwt.claims', true)::json ->> 'sub') = p.user_id::text
+  )
+);
 
 CREATE POLICY "Allow anon to insert into project_column"
 ON "user_data"."project_column"
 AS PERMISSIVE
 FOR INSERT
 TO anon
-WITH CHECK (true);
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM user_data.project p
+    WHERE p.id = project_id
+      AND (current_setting('request.jwt.claims', true)::json ->> 'sub') = p.user_id::text
+  )
+);
 
 CREATE POLICY "Allow anon to update project_column"
 ON "user_data"."project_column"
 AS PERMISSIVE
 FOR UPDATE
 TO anon
-WITH CHECK (true);
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM user_data.project p
+    WHERE p.id = project_id
+      AND (current_setting('request.jwt.claims', true)::json ->> 'sub') = p.user_id::text
+  )
+);
 
 -- Remove default privileges
 REVOKE ALL PRIVILEGES
