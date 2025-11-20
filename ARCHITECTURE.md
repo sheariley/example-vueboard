@@ -25,7 +25,7 @@
 ### 1) **Preserve Postgres RLS**
 
 * **Do this:** Validate the Supabase JWT in .NET, then connect to Postgres as a *regular DB connection* but send the user’s JWT to Postgres so the DB can apply RLS.
-  * Use Supabase PostgREST / GraphQL endpoint directly from server and pass Authorization: Bearer <user_jwt>.
+  * Add an DbConnectionInterceptor implementation that sets the user's claims when the Entity Framework context establishes a connection.
 * **Avoid:** Using the service role key for ordinary requests — that bypasses RLS.
 
 ### 2) **JWT handling & refresh**
@@ -64,9 +64,7 @@
 1. User logs in with Supabase OAuth (PKCE) → receives JWT.
 2. Vue sends GraphQL request to .NET GraphQL server with `Authorization: Bearer <jwt>`.
 3. .NET middleware validates JWT signature & claims.
-4. .NET either:
-   * Forwards user JWT to Supabase PostgREST/GraphQL (so RLS runs), OR
-   * Sets DB session variables from token claims and runs SQL queries that rely on those claims for RLS.
+4. .NET Sets DB session variables from token claims and runs SQL queries that rely on those claims for RLS.
 5. Postgres enforces RLS, returns rows.
 6. Hot Chocolate resolves and returns GraphQL response to client.
 
