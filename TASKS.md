@@ -20,7 +20,7 @@
 - [ ] Add tooltips to all buttons
 
 
-## Architectural Tasks
+## Web API Tasks
 - [x] Create containerized **.NET 8** GraphQL web API.
 - [x] Add Hot Chocolate and configure schema + DataLoader.
 - [x] Add JWT middleware configured with Supabase JWT secret and issuer.
@@ -31,3 +31,6 @@
 - [ ] Add Redis for caching and use it for heavy read queries. (TBD later)
 - [ ] Add logging, rate limiting, and health endpoints.
 - [ ] Run security review: ensure no service-role key exposure in client code or build logs.
+
+## Configuration/Infrastructure Tasks
+- [ ] Configure OAuth in Supabase config and setup providers
