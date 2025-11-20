@@ -34,6 +34,8 @@ namespace Vueboard.DataAccess.EntityFramework
         .HasMany(wi => wi.WorkItemTags)
         .WithMany(wt => wt.WorkItems)
         .UsingEntity("WorkItemTagRef");
+
+      modelBuilder.Entity<WorkItemTag>();
     }
   }
 }
