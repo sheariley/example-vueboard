@@ -33,4 +33,5 @@
 - [ ] Run security review: ensure no service-role key exposure in client code or build logs.
 
 ## Configuration/Infrastructure Tasks
+- [x] Configure local SMTP server for development purposes
 - [ ] Configure OAuth in Supabase config and setup providers
