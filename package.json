@@ -4,7 +4,9 @@
     "db:mock": "json-server ./mock-data/db.json -w -c ./mock-data/json-server-config.json",
     "db:start": "npx supabase start -x vector",
     "db:stop": "npx supabase stop",
-    "db:restart": "npm run db:stop && npm run db:start"
+    "db:restart": "npm run db:stop && npm run db:start",
+    "smtp:start": "docker compose -f ./smtp-dev-server/docker-compose.yml up -d",
+    "smtp:stop": "docker compose -f ./smtp-dev-server/docker-compose.yml down"
   },
   "dependencies": {
     "json-server": "0.17.4",

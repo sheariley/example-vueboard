@@ -1,0 +1,16 @@
+name: vueboard-smtp-dev-server
+version: '3.8'
+services:
+  maildev:
+    image: maildev/maildev:latest
+    container_name: maildev
+    ports:
+      - "1080:1080"   # Web UI
+      - "1025:1025"   # SMTP server
+    environment:
+      - MAILDEV_SMTP_PORT=1025
+      - MAILDEV_WEB_PORT=1080
+    volumes:
+      - ./maildata:/maildata
+    command: ["maildev", "--mail-directory", "/maildata"]
+    restart: unless-stopped
