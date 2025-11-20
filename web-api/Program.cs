@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Vueboard.Api.Auth;
 using Vueboard.Api.GraphQL;
 using Vueboard.DataAccess.EntityFramework;
 using Vueboard.DataAccess.EntityFramework.Config;
@@ -38,10 +39,22 @@ builder.Services.AddAuthentication(options =>
     ClockSkew = TimeSpan.FromSeconds(30)
   };
 });
+builder.Services.AddAuthorization();
+builder.Services.AddSingleton<JwtSessionInterceptor>();
 
 // Register EF Context and config provider
 builder.Services.AddSingleton<IVueboardDbContextConfigProvider, VueboardDbContextEnvConfigProvider>();
-builder.Services.AddScoped<IVueboardDbContext, VueboardDbContext>();
+builder.Services.AddDbContext<IVueboardDbContext, VueboardDbContext>((serviceProvider, options) =>
+{
+  // Establish DB connection params using injected config provider
+  var configProvider = serviceProvider.GetRequiredService<IVueboardDbContextConfigProvider>();
+  var dbConfig = configProvider.Provide();
+  dbConfig.Apply(options);
+
+  // Configure interceptor to forward JWT claims to Postgres
+  var interceptor = serviceProvider.GetRequiredService<JwtSessionInterceptor>();
+  options.AddInterceptors(interceptor);
+});
 
 // TODO: Implement EF repositories and replace in-memory ones here.
 // Register Repositories
@@ -67,17 +80,16 @@ builder.Services.AddDataLoader<ProjectColumnsByProjectIdDataLoader>();
 builder.Services.AddDataLoader<WorkItemsByProjectColumnIdDataLoader>();
 
 // Configure GraphQL
-builder.Services.AddAuthorization();
 builder.Services.AddGraphQLServer()
-    .AddQueryType<Query>()
-    .AddMutationType<Mutation>()
-    .AddType<ProjectType>()
-    .AddType<ProjectColumnType>()
-    .AddType<WorkItemType>()
-    .AddDataLoader<ProjectByIdDataLoader>()
-    .AddDataLoader<ProjectColumnsByProjectIdDataLoader>()
-    .AddDataLoader<WorkItemsByProjectColumnIdDataLoader>()
-    .ModifyRequestOptions(opts => opts.IncludeExceptionDetails = true);
+  .AddQueryType<Query>()
+  .AddMutationType<Mutation>()
+  .AddType<ProjectType>()
+  .AddType<ProjectColumnType>()
+  .AddType<WorkItemType>()
+  .AddDataLoader<ProjectByIdDataLoader>()
+  .AddDataLoader<ProjectColumnsByProjectIdDataLoader>()
+  .AddDataLoader<WorkItemsByProjectColumnIdDataLoader>()
+  .ModifyRequestOptions(opts => opts.IncludeExceptionDetails = true);
 
 var app = builder.Build();
 
