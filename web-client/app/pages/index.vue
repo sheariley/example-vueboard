@@ -1,5 +1,6 @@
 <template>
   <UContainer>
+    <AuthStatus />
     <div class="flex justify-center mt-6">
       <ProseH1>Welcome to VueBoard!</ProseH1>
     </div>

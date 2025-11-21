@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxt/test-utils/module',
     '@nuxt/scripts',
-    // '@nuxtjs/supabase'
+    '@nuxtjs/supabase',
     // '@nuxt/icon'
     '@pinia/nuxt',
     '@vueuse/nuxt'
@@ -39,7 +39,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      projectsApiBase: ''
+      projectsApiBase: '',
+      siteBaseUrl: ''
     }
   },
   
@@ -48,6 +49,14 @@ export default defineNuxtConfig({
       htmlAttrs: {
         style: 'background-color: #0F172B; color: #FFFFFF;'
       }
+    }
+  },
+
+  supabase: {
+    redirectOptions: {
+      login: '/login',
+      callback: '/auth-callback',
+      saveRedirectToCookie: true
     }
   },
 
