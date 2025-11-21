@@ -18,6 +18,9 @@
 - [x] Allow saving of projects
 - [ ] Add undo functionality at Project entity level???
 - [ ] Add tooltips to all buttons
+- [ ] Implement front-end auth components
+- [ ] Implement client-side GraphQL services and ensure JWT is forwarded
+- [ ] Wire up client-side GraphQL services to UI components
 
 
 ## Web API Tasks
@@ -34,4 +37,4 @@
 
 ## Configuration/Infrastructure Tasks
 - [x] Configure local SMTP server for development purposes
-- [ ] Configure OAuth in Supabase config and setup providers
+- [x] Configure OAuth in Supabase config and setup providers
