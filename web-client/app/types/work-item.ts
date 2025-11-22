@@ -6,12 +6,10 @@ export const WorkItemSchema = WorkItemOptionsSchema.extend({
   uid: zod.uuidv4(),
   projectColumnId: zod.number()
     .int()
-    .nonnegative()
-    .optional(),
+    .nonnegative(),
   id: zod.number()
     .int()
-    .nonnegative()
-    .optional(),
+    .nonnegative(),
   index: zod.number()
     .int()
     .nonnegative(),
@@ -20,7 +18,9 @@ export const WorkItemSchema = WorkItemOptionsSchema.extend({
 export type WorkItem = zod.infer<typeof WorkItemSchema>
 
 export const DefaultWorkItemState: WorkItem = {
+  id: 0,
   uid: '',
+  projectColumnId: 0,
   title: '',
   description: null,
   notes: null,

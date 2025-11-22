@@ -14,6 +14,7 @@ namespace Vueboard.DataAccess.Models
     public string? FgColor { get; set; }
     public string? BgColor { get; set; }
     public int Index { get; set; }
+    public ProjectColumn? ProjectColumn { get; set; }
     public List<WorkItemTag> WorkItemTags { get; set; } = new();
   }
 }

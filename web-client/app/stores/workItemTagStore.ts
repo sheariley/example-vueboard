@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 import { useProjectsGraphQLClient } from '~/api-clients/projects-graphql-client'
-import type { WorkItemTag } from '~/types/work-item-tag'
+import { DefaultWorkItemTagState, type WorkItemTag } from '~/types/work-item-tag'
 
 export const useWorkItemTagStore = defineStore('workItemTagStore', () => {
   const workItemTags = ref<WorkItemTag[]>([])
@@ -29,6 +29,7 @@ export const useWorkItemTagStore = defineStore('workItemTagStore', () => {
 
     if (!tag) {
       tag = {
+        ...DefaultWorkItemTagState,
         uid: crypto.randomUUID(),
         tagText
       } 

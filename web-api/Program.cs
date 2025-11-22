@@ -43,6 +43,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<JwtSessionInterceptor>();
+builder.Services.AddScoped<IUserIdAccessor, SupabaseUserIdAccessor>();
 
 // CORS configuration
 var allowedOrigins = builder.Configuration["CORS_ALLOWED_ORIGINS"] ?? "";
@@ -99,21 +100,26 @@ builder.Services.AddScoped<IProjectColumnQueryRoot, ProjectColumnQueryRoot>();
 builder.Services.AddScoped<IWorkItemQueryRoot, WorkItemQueryRoot>();
 builder.Services.AddScoped<IWorkItemTagQueryRoot, WorkItemTagQueryRoot>();
 
+// TODO: Remove these lines if not needed, due to data loader reg below
 // Register DataLoaders
-builder.Services.AddDataLoader<ProjectByIdDataLoader>();
-builder.Services.AddDataLoader<ProjectColumnsByProjectIdDataLoader>();
-builder.Services.AddDataLoader<WorkItemsByProjectColumnIdDataLoader>();
+// builder.Services.AddDataLoader<ProjectByIdDataLoader>();
+// builder.Services.AddDataLoader<ProjectColumnsByProjectIdDataLoader>();
+// builder.Services.AddDataLoader<WorkItemsByProjectColumnIdDataLoader>();
+// builder.Services.AddDataLoader<WorkItemTagsByWorkItemIdDataLoader>();
 
 // Configure GraphQL
 builder.Services.AddGraphQLServer()
   .AddQueryType<Query>()
   .AddMutationType<Mutation>()
+  .AddType(new UuidType('D'))
   .AddType<ProjectType>()
   .AddType<ProjectColumnType>()
   .AddType<WorkItemType>()
+  .AddType<WorkItemTagType>()
   .AddDataLoader<ProjectByIdDataLoader>()
   .AddDataLoader<ProjectColumnsByProjectIdDataLoader>()
   .AddDataLoader<WorkItemsByProjectColumnIdDataLoader>()
+  .AddDataLoader<WorkItemTagsByWorkItemIdDataLoader>()
   .ModifyRequestOptions(opts =>
   {
     // TODO: Only enable this when in dev mode (use env vars to determine this)

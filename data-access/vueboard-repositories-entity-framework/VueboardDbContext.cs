@@ -21,14 +21,14 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
       modelBuilder.Entity<Project>()
         .ToTable(p => p.Metadata.SetSchema("user_data"))
         .HasMany(p => p.ProjectColumns)
-        .WithOne()
+        .WithOne(p => p.Project)
         .HasForeignKey(pc => pc.ProjectId);
 
       // ProjectColumn -> WorkItems
       modelBuilder.Entity<ProjectColumn>()
         .ToTable(p => p.Metadata.SetSchema("user_data"))
         .HasMany(pc => pc.WorkItems)
-        .WithOne()
+        .WithOne(w => w.ProjectColumn)
         .HasForeignKey(wi => wi.ProjectColumnId);
 
       // WorkItem <-> WorkItemTag (Many-to-Many using WorkItemTagRef table)
@@ -36,10 +36,16 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
         .ToTable(p => p.Metadata.SetSchema("user_data"))
         .HasMany(wi => wi.WorkItemTags)
         .WithMany(wt => wt.WorkItems)
-        .UsingEntity("WorkItemTagRef");
+        .UsingEntity<WorkItemTagRef>();
 
       modelBuilder.Entity<WorkItemTag>()
-        .ToTable(p => p.Metadata.SetSchema("user_data"));
+        .ToTable(t => t.Metadata.SetSchema("user_data"));
+
+      modelBuilder.Entity<WorkItemTagRef>()
+        .ToTable(r => {
+          r.Metadata.SetTableName("work_item_tag_refs");
+          r.Metadata.SetSchema("user_data");
+        });
     }
   }
 }

@@ -7,6 +7,7 @@ export const ProjectColumnOptionsSchema = zod.object({
   name: zod.string()
     .min(3, { message: 'This is required and must be at least 3 characters long.' })
     .max(32, { error: 'Too long (max: 32)' }),
+  isDefault: zod.boolean(),
   fgColor: hexColor
     .optional(),
   bgColor: hexColor

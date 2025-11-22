@@ -29,7 +29,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   })
   const originalState = computed(() => _originalState.value)
 
-  const id = ref<number | undefined>()
+  const id = ref<number>(DefaultProjectState.id)
   const uid = ref<string>(crypto.randomUUID())
   const title = ref<string>('')
   const description = ref<string>()
@@ -182,6 +182,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
 
     const newCol: ProjectColumn = {
       ...DefaultProjectColumnState,
+      projectId: id.value,
       uid: crypto.randomUUID(),
       name: generateNewColumnName(),
       index,

@@ -12,6 +12,7 @@ export type Project = zod.infer<typeof ProjectSchema>
 
 export const DefaultProjectState: Project = {
   ...DefaultProjectOptionsState,
+  id: 0,
   uid: '',
   projectColumns: []
 }

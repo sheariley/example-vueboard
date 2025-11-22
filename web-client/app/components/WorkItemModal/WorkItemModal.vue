@@ -229,7 +229,7 @@
     if (workItemTagStore.loaded)
       return workItemTagStore.getOrAddNewTag(value)
     else
-      return { uid: crypto.randomUUID(), tagText: value }
+      return { id: 0, uid: crypto.randomUUID(), tagText: value }
   }
 
   function displayTagValue(value: WorkItemTag) {

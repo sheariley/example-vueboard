@@ -1,89 +1,51 @@
-import { ApolloClient, InMemoryCache, gql, HttpLink } from '@apollo/client/core'
-import { SetContextLink } from '@apollo/client/link/context'
-import { useRuntimeConfig } from '#imports'
-import type { Project } from '~/types'
-import type { ProjectListItem } from '~/types/project-list-item'
-import type { WorkItemTag } from '~/types/work-item-tag'
+import { ApolloClient, ApolloLink, gql, HttpLink, InMemoryCache } from '@apollo/client/core';
+import { SetContextLink } from '@apollo/client/link/context';
+import { RemoveTypenameFromVariablesLink } from '@apollo/client/link/remove-typename';
+
+import type { Project } from '~/types';
+import type { ProjectListItem } from '~/types/project-list-item';
+import type { WorkItemTag } from '~/types/work-item-tag';
 
 // TypeScript types for GraphQL responses
-interface ProjectColumn {
-  id: number;
-  uid: string;
-  name: string;
-  index: number;
-  fgColor?: string;
-  bgColor?: string;
-  projectId?: number;
-  workItems?: Array<{
-    id: number;
-    uid: string;
-    title: string;
-    index: number;
-    description?: string;
-    notes?: string;
-    tags?: string[];
-    fgColor?: string;
-    bgColor?: string;
-    projectColumnId?: number;
-  }>;
-}
-
 interface ProjectResponse {
-  project: {
-    id: number;
-    uid: string;
-    created: string;
-    updated: string;
-    isDeleted: boolean;
-    userId: string;
-    title: string;
-    description?: string;
-    defaultCardFgColor?: string;
-    defaultCardBgColor?: string;
-    projectColumns: ProjectColumn[];
-  } | null;
+  project: Project | null
 }
 
 interface UpdateProjectResponse {
-  updateProject: Project;
+  updateProject: Project
 }
 
 interface DeleteProjectResponse {
-  deleteProject: boolean;
+  deleteProject: boolean
 }
 
 export function useProjectsGraphQLClient() {
-  const config = useRuntimeConfig();
-  const endpoint = config.public.projectsGraphqlBase || '/graphql';
-  const supabase = useSupabaseClient()
+  const config = useRuntimeConfig()
+  const endpoint = config.public.projectsGraphqlBase || '/graphql'
+  const authStore = useAuthStore()
 
   // use SetContextLink to forward JWT access token
   const authLink = new SetContextLink(async ({ headers }) => {
-    const getSessionResult = await supabase.auth.getSession()
-    if (getSessionResult.error) {
-      throw new Error('Error obtaining auth session', {
-        cause: getSessionResult.error
-      })
-    }
-
-    const token = getSessionResult.data.session?.access_token
+    const token = authStore.accessToken
     return {
       headers: {
         ...headers,
         Authorization: token ? `Bearer ${token}` : '',
       },
-    };
-  });
+    }
+  })
+
+  const removeTypenameLink = new RemoveTypenameFromVariablesLink();
 
   const httpLink = new HttpLink({
     uri: endpoint,
     credentials: 'include',
-  });
+  })
 
   const client = new ApolloClient({
-    link: authLink.concat(httpLink),
+    link: ApolloLink.from([authLink, removeTypenameLink, httpLink]),
     cache: new InMemoryCache(),
-  });
+  })
 
   async function fetchAllProjects(): Promise<Project[]> {
     const query = gql`
@@ -94,7 +56,6 @@ export function useProjectsGraphQLClient() {
           created
           updated
           isDeleted
-          userId
           title
           description
           defaultCardFgColor
@@ -117,18 +78,23 @@ export function useProjectsGraphQLClient() {
               tags
               fgColor
               bgColor
-              projectColumnId
+              projectColumnId,
+              workItemTags {
+                id
+                uid
+                tagText
+              }
             }
           }
         }
       }
-    `;
+    `
     const result = await client.query<{ projects: Project[] }>({
       query,
       fetchPolicy: 'network-only',
-    });
-    if (!result.data?.projects) throw new Error('No projects found');
-    return result.data.projects;
+    })
+    if (!result.data?.projects) throw new Error('No projects found')
+    return result.data.projects
   }
 
   async function fetchProject(projectUid: string): Promise<Project> {
@@ -140,7 +106,6 @@ export function useProjectsGraphQLClient() {
           created
           updated
           isDeleted
-          userId
           title
           description
           defaultCardFgColor
@@ -150,6 +115,7 @@ export function useProjectsGraphQLClient() {
             uid
             name
             index
+            isDefault
             fgColor
             bgColor
             projectId
@@ -167,21 +133,19 @@ export function useProjectsGraphQLClient() {
                 id
                 uid
                 tagText
-                userId
               }
             }
           }
         }
       }
-    `;
+    `
     const result = await client.query<ProjectResponse>({
       query,
       variables: { uid: projectUid },
       fetchPolicy: 'network-only',
-    });
-    if (!result.data?.project) throw new Error(`Project not found (uid: ${projectUid})`);
-    // No mapping needed, projectColumns is now returned directly
-    return result.data.project as Project;
+    })
+    if (!result.data?.project) throw new Error(`Project not found (uid: ${projectUid})`)
+    return result.data.project as Project
   }
 
   async function fetchProjectListItems(): Promise<ProjectListItem[]> {
@@ -190,90 +154,25 @@ export function useProjectsGraphQLClient() {
         projects {
           uid
           id
-          userId,
           title
           description
         }
       }
-    `;
+    `
     const result = await client.query<{ projects: ProjectListItem[] }>({
       query,
       fetchPolicy: 'network-only',
-    });
-    if (!result.data?.projects) throw new Error('No project list items found');
-    return result.data.projects;
-  }
-
-  async function saveProject(project: Project): Promise<Project> {
-    const mutation = gql`
-      mutation SaveProject($project: ProjectInput!) {
-        updateProject(project: $project) {
-          id
-          uid
-          updated
-          isDeleted
-          userId
-          title
-          description
-          defaultCardFgColor
-          defaultCardBgColor
-          projectColumns {
-            id
-            uid
-            name
-            index
-            fgColor
-            bgColor
-            projectId
-            workItems {
-              id
-              uid
-              title
-              index
-              description
-              notes
-              fgColor
-              bgColor
-              projectColumnId
-              workItemTags {
-                id
-                uid
-                tagText
-                userId
-              }
-            }
-          }
-        }
-      }
-    `;
-    const result = await client.mutate<UpdateProjectResponse>({
-      mutation,
-      variables: { project },
-    });
-    if (!result.data?.updateProject) throw new Error('Error saving project');
-    return result.data.updateProject as Project;
-  }
-
-  async function deleteProject(projectUid: string): Promise<boolean> {
-    const mutation = gql`
-      mutation DeleteProject($uid: UUID!) {
-        deleteProject(uid: $uid)
-      }
-    `;
-    const result = await client.mutate<DeleteProjectResponse>({
-      mutation,
-      variables: { uid: projectUid },
-    });
-    if (!result.data) throw new Error('Error deleting project');
-    return result.data.deleteProject === true;
+    })
+    if (!result.data?.projects) throw new Error('No project list items found')
+    return result.data.projects
   }
 
   async function createProject(input: {
-    uid?: string;
-    title: string;
-    description?: string;
-    defaultCardFgColor?: string;
-    defaultCardBgColor?: string;
+    uid?: string
+    title: string
+    description?: string
+    defaultCardFgColor?: string
+    defaultCardBgColor?: string
   }): Promise<Project> {
     const mutation = gql`
       mutation CreateProject($input: CreateProjectInput!) {
@@ -285,13 +184,77 @@ export function useProjectsGraphQLClient() {
           defaultCardBgColor
         }
       }
-    `;
+    `
     const result = await client.mutate<{ createProject: Project }>({
       mutation,
       variables: { input },
-    });
-    if (!result.data?.createProject) throw new Error('Error creating project');
-    return result.data.createProject;
+    })
+    if (!result.data?.createProject) throw new Error('Error creating project')
+    return result.data.createProject
+  }
+
+  async function saveProject(input: Project): Promise<Project> {
+    const mutation = gql`
+      mutation UpdateProject($input: UpdateProjectInput!) {
+        updateProject(input: $input) {
+          id
+          uid
+          updated
+          isDeleted
+          title
+          description
+          defaultCardFgColor
+          defaultCardBgColor
+          projectColumns {
+            id
+            uid
+            projectId
+            name
+            index
+            isDefault
+            fgColor
+            bgColor
+            projectId
+            workItems {
+              id
+              uid
+              title
+              index
+              description
+              notes
+              fgColor
+              bgColor
+              projectColumnId
+              workItemTags {
+                id
+                uid
+                tagText
+              }
+            }
+          }
+        }
+      }
+    `
+    const result = await client.mutate<UpdateProjectResponse>({
+      mutation,
+      variables: { input },
+    })
+    if (!result.data?.updateProject) throw new Error('Error saving project')
+    return result.data.updateProject as Project
+  }
+
+  async function deleteProject(projectUid: string): Promise<boolean> {
+    const mutation = gql`
+      mutation DeleteProject($uid: UUID!) {
+        deleteProject(uid: $uid)
+      }
+    `
+    const result = await client.mutate<DeleteProjectResponse>({
+      mutation,
+      variables: { uid: projectUid },
+    })
+    if (!result.data) throw new Error('Error deleting project')
+    return result.data.deleteProject === true
   }
 
   async function fetchAllWorkItemTags(): Promise<WorkItemTag[]> {
@@ -301,16 +264,15 @@ export function useProjectsGraphQLClient() {
           id
           uid
           tagText
-          userId
         }
       }
-    `;
+    `
     const result = await client.query<{ workItemTags: WorkItemTag[] }>({
       query,
       fetchPolicy: 'network-only',
-    });
-    if (!result.data?.workItemTags) throw new Error('No WorkItemTags found');
-    return result.data.workItemTags;
+    })
+    if (!result.data?.workItemTags) throw new Error('No WorkItemTags found')
+    return result.data.workItemTags
   }
 
   return {
@@ -321,5 +283,5 @@ export function useProjectsGraphQLClient() {
     deleteProject,
     createProject,
     fetchAllWorkItemTags,
-  };
+  }
 }

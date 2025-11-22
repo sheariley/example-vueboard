@@ -9,12 +9,11 @@
 
 <script setup lang="ts">
 const router = useRouter()
-const user = useSupabaseUser()
-const redirectInfo = useSupabaseCookieRedirect()
+const authStore = useAuthStore()
 
-watch(user, () => {
-  if (user.value) {
-    const path = redirectInfo.pluck()
+watch(() => authStore.isAuthenticated, isAuthenticated => {
+  if (isAuthenticated) {
+    const path = authStore.getAndClearPostAuthRedirectPath()
 
     router.replace(path || '/')
   }

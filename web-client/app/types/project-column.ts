@@ -7,12 +7,10 @@ export const ProjectColumnSchema = ProjectColumnOptionsSchema.extend({
   uid: zod.uuidv4(),
   projectId: zod.number()
     .int()
-    .nonnegative()
-    .optional(),
+    .nonnegative(),
   id: zod.number()
     .int()
-    .nonnegative()
-    .optional(),
+    .nonnegative(),
   index: zod.number()
     .int()
     .nonnegative(),
@@ -23,8 +21,11 @@ export const ProjectColumnSchema = ProjectColumnOptionsSchema.extend({
 export type ProjectColumn = zod.infer<typeof ProjectColumnSchema>
 
 export const DefaultProjectColumnState: ProjectColumn = {
+  id: 0,
   uid: '',
+  projectId: 0,
   index: 0,
   name: 'Backlog',
+  isDefault: false,
   workItems: []
 }
