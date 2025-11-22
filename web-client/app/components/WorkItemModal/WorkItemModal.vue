@@ -147,7 +147,9 @@
             <UFieldGroup class="w-full">
               <UInputTags
                 placeholder="Tags"
-                v-model="state.tags"
+                v-model="state.workItemTags"
+                :convert-value="convertTagValue"
+                :display-value="displayTagValue"
                 name="tags"
                 variant="subtle"
                 color="neutral"
@@ -156,8 +158,8 @@
               <UButton
                 color="neutral"
                 variant="subtle"
-                v-if="!isEqual(state.tags, original!.tags)"
-                @click="state.tags = original!.tags.slice()"
+                v-if="!isEqual(state.workItemTags, original!.workItemTags)"
+                @click="state.workItemTags = original!.workItemTags?.slice() || original!.workItemTags"
               >
                 <FontAwesomeIcon icon="fa-solid fa-rotate-left" />
               </UButton>
@@ -190,17 +192,30 @@
 <script lang="ts" setup>
   import { WorkItemOptionsSchema } from '~/types'
   import isEqual from 'lodash/isEqual'
+  import type { WorkItemTag } from '~/types/work-item-tag'
 
   const currentProjectStore = useCurrentProjectStore()
+  const workItemTagStore = useWorkItemTagStore()
 
   const { editingWorkItem: state, workItemEditTarget: original } = storeToRefs(currentProjectStore)
 
   const isValid = ref(false)
 
-  watch(() => currentProjectStore.editingWorkItem, async state => {
-    const result = await WorkItemOptionsSchema.safeParseAsync(state)
-    isValid.value = result.success
+  watch(() => currentProjectStore.editingWorkItem, async (state, oldState) => {
+    if (state) {
+      // detect opening of modal
+      if (!oldState) {
+        onModalOpened()
+      }
+
+      const result = await WorkItemOptionsSchema.safeParseAsync(state)
+      isValid.value = result.success
+    }
   }, { deep: true, immediate: true })
+
+  function onModalOpened() {
+    workItemTagStore.fetchAllTags()
+  }
 
   function done() {
     currentProjectStore.commitWorkItemEdit()
@@ -208,6 +223,17 @@
 
   function cancel() {
     currentProjectStore.cancelWorkItemEdit()
+  }
+
+  function convertTagValue(value: string): WorkItemTag {
+    if (workItemTagStore.loaded)
+      return workItemTagStore.getOrAddNewTag(value)
+    else
+      return { uid: crypto.randomUUID(), tagText: value }
+  }
+
+  function displayTagValue(value: WorkItemTag) {
+    return value.tagText;
   }
 
 </script>

@@ -34,14 +34,14 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
         {
             column.ProjectId = projectId;
             var entry = _context.ProjectColumns.Add(column);
-            // SaveChanges should be called by the consumer
+            _context.SaveChanges();
             return entry.Entity;
         }
 
         public bool Update(ProjectColumn column)
         {
             _context.ProjectColumns.Update(column);
-            // SaveChanges should be called by the consumer
+            _context.SaveChanges();
             return true;
         }
 
@@ -50,7 +50,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
             var column = GetById(id);
             if (column == null) return false;
             _context.ProjectColumns.Remove(column);
-            // SaveChanges should be called by the consumer
+            _context.SaveChanges();
             return true;
         }
     }

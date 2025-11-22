@@ -1,5 +1,6 @@
 import * as zod from 'zod'
 import { hexColor } from '~/util/zodSchemas'
+import { WorkItemTagSchema } from './work-item-tag'
 
 export const WorkItemOptionsSchema = zod.object({
   title: zod.string()
@@ -10,10 +11,8 @@ export const WorkItemOptionsSchema = zod.object({
     .nullable(),
   notes: zod.string()
     .nullable(),
-  tags: zod.array(zod.string()
-    .min(1, { message: 'A tag must not be empty' })
-    .max(30, { error: 'Too long (max: 30)' })
-  ),
+  workItemTags: zod.array(WorkItemTagSchema)
+    .optional(),
   fgColor: hexColor
     .optional(),
   bgColor: hexColor

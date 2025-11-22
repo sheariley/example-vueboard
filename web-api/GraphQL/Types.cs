@@ -43,6 +43,18 @@ namespace Vueboard.Api.GraphQL
     }
   }
 
+  public class WorkItemTagType : ObjectType<WorkItemTag>
+  {
+    protected override void Configure(IObjectTypeDescriptor<WorkItemTag> descriptor)
+    {
+      descriptor.Field(f => f.Id).Type<NonNullType<IntType>>();
+      descriptor.Field(f => f.Uid).Type<NonNullType<StringType>>();
+      descriptor.Field(f => f.TagText).Type<NonNullType<StringType>>();
+      descriptor.Field(f => f.UserId).Type<NonNullType<StringType>>();
+      // WorkItems field can be omitted or added as needed
+    }
+  }
+
   public class WorkItemType : ObjectType<WorkItem>
   {
     protected override void Configure(IObjectTypeDescriptor<WorkItem> descriptor)
@@ -59,7 +71,8 @@ namespace Vueboard.Api.GraphQL
       descriptor.Field(f => f.FgColor).Type<StringType>();
       descriptor.Field(f => f.BgColor).Type<StringType>();
       descriptor.Field(f => f.Index).Type<NonNullType<IntType>>();
-      descriptor.Field(f => f.WorkItemTags).Type<ListType<NonNullType<StringType>>>();
+      descriptor.Field(f => f.WorkItemTags)
+        .Type<ListType<WorkItemTagType>>();
     }
   }
 }

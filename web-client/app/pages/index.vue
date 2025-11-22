@@ -74,10 +74,9 @@
 
     if (modalResult.type === 'done') {
       // Save new project to back-end
-      const result = await projectsApiClient.saveProject({
+      const result = await projectsApiClient.createProject({
         ...modalResult.payload,
-        uid: crypto.randomUUID(),
-        projectColumns: []
+        uid: crypto.randomUUID()
       })
 
       if (!result) {

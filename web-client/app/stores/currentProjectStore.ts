@@ -16,7 +16,6 @@ import coerceErrorMessage from '~/util/coerceErrorMessage';
 import { useProjectsGraphQLClient } from '~/api-clients/projects-graphql-client';
 
 export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
-  const config = useRuntimeConfig()
   const projectsApiClient = useProjectsGraphQLClient()
 
   const loading = ref(true)
@@ -99,8 +98,6 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     loadError.value = null // clear previous error
     loading.value = true
 
-    const url = `${config.public.projectsApiBase}/projectByUid/${projectUid}`
-
     try {
       const result = await projectsApiClient.fetchProject(projectUid)
 
@@ -122,7 +119,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
         ...col,
         workItems: col.workItems?.map(workItem => ({
           ...workItem,
-          tags: workItem.tags.slice()
+          workItemTags: workItem.workItemTags?.slice() || []
         }))
       }))
     }
@@ -281,7 +278,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     _editingWorkItem.value = {
       workItem: {
         ...workItem,
-        tags: workItem.tags.slice(),
+        workItemTags: workItem.workItemTags?.slice() || [],
       },
       parentColumnUid,
     }
@@ -305,7 +302,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     targetWorkItem.notes = workItem.notes
     targetWorkItem.fgColor = workItem.fgColor
     targetWorkItem.bgColor = workItem.bgColor
-    targetWorkItem.tags = workItem.tags.slice()
+    targetWorkItem.workItemTags = workItem.workItemTags?.slice() || []
 
     _editingWorkItem.value = undefined
   }
@@ -343,7 +340,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
       projectColumnId: column.id,
       index,
       title,
-      tags: [],
+      workItemTags: [],
     }
     column.workItems = (column.workItems || []).concat([newItem])
 

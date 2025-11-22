@@ -22,10 +22,10 @@
       {{ workItem.description }}
     </div>
 
-    <div class="flex gap-2" v-if="workItem.tags?.length">
+    <div class="flex gap-2" v-if="workItem.workItemTags?.length">
       <UBadge
-        v-for="tag of workItem.tags"
-        :label="tag"
+        v-for="tag of workItem.workItemTags"
+        :label="tag.tagText"
         size="sm"
         variant="subtle"
         color="neutral"

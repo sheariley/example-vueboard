@@ -1,5 +1,4 @@
 using Vueboard.DataAccess.Models;
-using Vueboard.DataAccess.Repositories;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework
 {
@@ -33,16 +32,15 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
 
         public WorkItem CreateWorkItem(WorkItem item, Guid userId)
         {
-            // Optionally set userId or other properties
             var entry = _context.WorkItems.Add(item);
-            // SaveChanges should be called by the consumer
+            _context.SaveChanges();
             return entry.Entity;
         }
 
         public bool UpdateWorkItem(WorkItem item, Guid userId)
         {
             _context.WorkItems.Update(item);
-            // SaveChanges should be called by the consumer
+            _context.SaveChanges();
             return true;
         }
 
@@ -51,7 +49,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
             var item = GetById(workItemId);
             if (item == null) return false;
             _context.WorkItems.Remove(item);
-            // SaveChanges should be called by the consumer
+            _context.SaveChanges();
             return true;
         }
 

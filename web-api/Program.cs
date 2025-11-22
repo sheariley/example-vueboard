@@ -69,7 +69,7 @@ builder.Services.AddCors(options =>
 });
 
 // Register EF Context and config provider
-builder.Services.AddSingleton<IVueboardDbContextConfigProvider, VueboardDbContextEnvPostgresConfigProvider>();
+builder.Services.AddScoped<IVueboardDbContextConfigProvider, VueboardDbContextEnvPostgresConfigProvider>();
 builder.Services.AddDbContext<IVueboardDbContext, VueboardDbContext>((serviceProvider, options) =>
 {
   // Establish DB connection params using injected config provider
@@ -80,7 +80,7 @@ builder.Services.AddDbContext<IVueboardDbContext, VueboardDbContext>((servicePro
   // Configure interceptor to forward JWT claims to Postgres
   var interceptor = serviceProvider.GetRequiredService<JwtSessionInterceptor>();
   options.AddInterceptors(interceptor);
-});
+}, ServiceLifetime.Scoped);
 
 // Register Repositories
 // builder.Services.AddSingleton<IProjectRepository, InMemoryProjectRepository>();
@@ -114,7 +114,11 @@ builder.Services.AddGraphQLServer()
   .AddDataLoader<ProjectByIdDataLoader>()
   .AddDataLoader<ProjectColumnsByProjectIdDataLoader>()
   .AddDataLoader<WorkItemsByProjectColumnIdDataLoader>()
-  .ModifyRequestOptions(opts => opts.IncludeExceptionDetails = true);
+  .ModifyRequestOptions(opts =>
+  {
+    // TODO: Only enable this when in dev mode (use env vars to determine this)
+    opts.IncludeExceptionDetails = true;
+  });
 
 var app = builder.Build();
 

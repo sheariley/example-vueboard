@@ -6,7 +6,9 @@ export const ProjectListItemSchema = ProjectOptionsSchema.extend({
   id: zod.number()
     .int()
     .nonnegative()
-    .optional()
+    .optional(),
+  userId: zod.string()
+    .optional(),
 })
 
 export type ProjectListItem = zod.infer<typeof ProjectListItemSchema>

@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using EFCore.NamingConventions;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework.Config
 {

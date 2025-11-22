@@ -1,5 +1,4 @@
 import * as zod from 'zod'
-import { hexColor } from '~/util/zodSchemas'
 
 import { WorkItemOptionsSchema } from './work-item-options'
 
@@ -25,7 +24,7 @@ export const DefaultWorkItemState: WorkItem = {
   title: '',
   description: null,
   notes: null,
-  tags: [],
+  workItemTags: [],
   fgColor: undefined,
   bgColor: undefined,
   index: 0

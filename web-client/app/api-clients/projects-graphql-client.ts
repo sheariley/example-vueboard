@@ -3,6 +3,7 @@ import { SetContextLink } from '@apollo/client/link/context'
 import { useRuntimeConfig } from '#imports'
 import type { Project } from '~/types'
 import type { ProjectListItem } from '~/types/project-list-item'
+import type { WorkItemTag } from '~/types/work-item-tag'
 
 // TypeScript types for GraphQL responses
 interface ProjectColumn {
@@ -144,7 +145,7 @@ export function useProjectsGraphQLClient() {
           description
           defaultCardFgColor
           defaultCardBgColor
-          columns {
+          projectColumns {
             id
             uid
             name
@@ -159,10 +160,15 @@ export function useProjectsGraphQLClient() {
               index
               description
               notes
-              tags
               fgColor
               bgColor
               projectColumnId
+              workItemTags {
+                id
+                uid
+                tagText
+                userId
+              }
             }
           }
         }
@@ -184,6 +190,7 @@ export function useProjectsGraphQLClient() {
         projects {
           uid
           id
+          userId,
           title
           description
         }
@@ -199,17 +206,49 @@ export function useProjectsGraphQLClient() {
 
   async function saveProject(project: Project): Promise<Project> {
     const mutation = gql`
-      mutation SaveProject($input: ProjectInput!) {
-        updateProject(project: $input) {
+      mutation SaveProject($project: ProjectInput!) {
+        updateProject(project: $project) {
           id
           uid
+          updated
+          isDeleted
+          userId
           title
+          description
+          defaultCardFgColor
+          defaultCardBgColor
+          projectColumns {
+            id
+            uid
+            name
+            index
+            fgColor
+            bgColor
+            projectId
+            workItems {
+              id
+              uid
+              title
+              index
+              description
+              notes
+              fgColor
+              bgColor
+              projectColumnId
+              workItemTags {
+                id
+                uid
+                tagText
+                userId
+              }
+            }
+          }
         }
       }
     `;
     const result = await client.mutate<UpdateProjectResponse>({
       mutation,
-      variables: { input: project },
+      variables: { project },
     });
     if (!result.data?.updateProject) throw new Error('Error saving project');
     return result.data.updateProject as Project;
@@ -229,11 +268,58 @@ export function useProjectsGraphQLClient() {
     return result.data.deleteProject === true;
   }
 
+  async function createProject(input: {
+    uid?: string;
+    title: string;
+    description?: string;
+    defaultCardFgColor?: string;
+    defaultCardBgColor?: string;
+  }): Promise<Project> {
+    const mutation = gql`
+      mutation CreateProject($input: CreateProjectInput!) {
+        createProject(input: $input) {
+          uid
+          title
+          description
+          defaultCardFgColor
+          defaultCardBgColor
+        }
+      }
+    `;
+    const result = await client.mutate<{ createProject: Project }>({
+      mutation,
+      variables: { input },
+    });
+    if (!result.data?.createProject) throw new Error('Error creating project');
+    return result.data.createProject;
+  }
+
+  async function fetchAllWorkItemTags(): Promise<WorkItemTag[]> {
+    const query = gql`
+      query GetAllWorkItemTags {
+        workItemTags {
+          id
+          uid
+          tagText
+          userId
+        }
+      }
+    `;
+    const result = await client.query<{ workItemTags: WorkItemTag[] }>({
+      query,
+      fetchPolicy: 'network-only',
+    });
+    if (!result.data?.workItemTags) throw new Error('No WorkItemTags found');
+    return result.data.workItemTags;
+  }
+
   return {
     fetchProject,
     fetchAllProjects,
     fetchProjectListItems,
     saveProject,
     deleteProject,
+    createProject,
+    fetchAllWorkItemTags,
   };
 }

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Vueboard.Api.GraphQL.Models;
 using Vueboard.DataAccess.Models;
 using Vueboard.DataAccess.Repositories;
@@ -7,17 +8,25 @@ namespace Vueboard.Api.GraphQL
   public class Mutation
   {
     private readonly IProjectRepository _projectRepo;
-    public Mutation(IProjectRepository projectRepo)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public Mutation(IProjectRepository projectRepo, IHttpContextAccessor httpContextAccessor)
     {
       _projectRepo = projectRepo;
+      _httpContextAccessor = httpContextAccessor;
     }
 
     public Project CreateProject(CreateProjectInput input)
     {
       var projectUid = String.IsNullOrWhiteSpace(input.Uid) ? Guid.NewGuid() : Guid.Parse(input.Uid);
 
-      // TODO: Replace with Supabase User ID obtained via Supabase using JWT
-      var userId = Guid.Parse("e971375a-2a56-4661-84bb-ec88b6e88b05");
+      // Extract Supabase User ID from JWT claims
+      var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier) ??
+                        _httpContextAccessor.HttpContext?.User?.FindFirst("sub");
+      if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+      {
+        throw new Exception("Invalid user ID.");
+      }
 
       var project = new Project
       {
@@ -29,17 +38,17 @@ namespace Vueboard.Api.GraphQL
         Updated = DateTime.UtcNow,
         IsDeleted = false,
         Uid = projectUid,
-        UserId = userId, // Replace with actual user context
+        UserId = userId, // Extracted from JWT
         ProjectColumns = new List<ProjectColumn>()
       };
       return _projectRepo.Add(project);
     }
 
-    public Project? UpdateProject(Project updatedProject)
+    public Project? UpdateProject(Project project)
     {
-      updatedProject.Updated = DateTime.UtcNow;
-      var success = _projectRepo.Update(updatedProject);
-      return success ? updatedProject : null;
+      project.Updated = DateTime.UtcNow;
+      var success = _projectRepo.Update(project);
+      return success ? project : null;
     }
 
     public bool DeleteProject(string uid)
