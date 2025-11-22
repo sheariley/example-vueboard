@@ -40,6 +40,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       projectsApiBase: '',
+      projectsGraphqlBase: '',
       siteBaseUrl: ''
     }
   },

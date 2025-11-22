@@ -18,7 +18,7 @@ create schema if not exists "user_data";
 alter table "site_data"."site_log" enable row level security;
 
 
-  create table "user_data"."project" (
+  create table "user_data"."projects" (
     "id" integer generated always as identity not null,
     "uid" uuid not null default gen_random_uuid(),
     "created" timestamp without time zone default CURRENT_TIMESTAMP,
@@ -32,10 +32,10 @@ alter table "site_data"."site_log" enable row level security;
       );
 
 
-alter table "user_data"."project" enable row level security;
+alter table "user_data"."projects" enable row level security;
 
 
-  create table "user_data"."project_column" (
+  create table "user_data"."project_columns" (
     "id" integer generated always as identity not null,
     "uid" uuid not null default gen_random_uuid(),
     "created" timestamp without time zone default CURRENT_TIMESTAMP,
@@ -44,14 +44,15 @@ alter table "user_data"."project" enable row level security;
     "project_id" integer not null,
     "name" character varying(32) not null,
     "fg_color" character varying(12),
-    "bg_color" character varying(12)
+    "bg_color" character varying(12),
+    "index" integer not null default 0
       );
 
 
-alter table "user_data"."project_column" enable row level security;
+alter table "user_data"."project_columns" enable row level security;
 
 
-  create table "user_data"."work_item" (
+  create table "user_data"."work_items" (
     "id" integer generated always as identity not null,
     "uid" uuid not null default gen_random_uuid(),
     "created" timestamp without time zone default CURRENT_TIMESTAMP,
@@ -62,14 +63,15 @@ alter table "user_data"."project_column" enable row level security;
     "description" character varying(600),
     "notes" text,
     "fg_color" character varying(12),
-    "bg_color" character varying(12)
+    "bg_color" character varying(12),
+    "index" integer not null default 0
       );
 
 
-alter table "user_data"."work_item" enable row level security;
+alter table "user_data"."work_items" enable row level security;
 
 
-  create table "user_data"."work_item_tag" (
+  create table "user_data"."work_item_tags" (
     "id" integer generated always as identity not null,
     "uid" uuid not null default gen_random_uuid(),
     "user_id" uuid not null,
@@ -77,64 +79,64 @@ alter table "user_data"."work_item" enable row level security;
       );
 
 
-alter table "user_data"."work_item_tag" enable row level security;
+alter table "user_data"."work_item_tags" enable row level security;
 
 
-  create table "user_data"."work_item_tag_ref" (
+  create table "user_data"."work_item_tag_refs" (
     "work_item_tag_id" integer not null,
     "work_item_id" integer not null
       );
 
 
-alter table "user_data"."work_item_tag_ref" enable row level security;
+alter table "user_data"."work_item_tag_refs" enable row level security;
 
 CREATE UNIQUE INDEX site_log_pkey ON site_data.site_log USING btree (id);
 
-CREATE UNIQUE INDEX project_column_pkey ON user_data.project_column USING btree (id);
+CREATE UNIQUE INDEX project_columns_pkey ON user_data.project_columns USING btree (id);
 
-CREATE UNIQUE INDEX project_pkey ON user_data.project USING btree (id);
+CREATE UNIQUE INDEX projects_pkey ON user_data.projects USING btree (id);
 
-CREATE UNIQUE INDEX work_item_pkey ON user_data.work_item USING btree (id);
+CREATE UNIQUE INDEX work_items_pkey ON user_data.work_items USING btree (id);
 
-CREATE UNIQUE INDEX work_item_tag_pkey ON user_data.work_item_tag USING btree (id);
+CREATE UNIQUE INDEX work_item_tags_pkey ON user_data.work_item_tags USING btree (id);
 
-CREATE UNIQUE INDEX work_item_tag_ref_pkey ON user_data.work_item_tag_ref USING btree (work_item_tag_id, work_item_id);
+CREATE UNIQUE INDEX work_item_tag_refs_pkey ON user_data.work_item_tag_refs USING btree (work_item_tag_id, work_item_id);
 
 alter table "site_data"."site_log" add constraint "site_log_pkey" PRIMARY KEY using index "site_log_pkey";
 
-alter table "user_data"."project" add constraint "project_pkey" PRIMARY KEY using index "project_pkey";
+alter table "user_data"."projects" add constraint "projects_pkey" PRIMARY KEY using index "projects_pkey";
 
-alter table "user_data"."project_column" add constraint "project_column_pkey" PRIMARY KEY using index "project_column_pkey";
+alter table "user_data"."project_columns" add constraint "project_columns_pkey" PRIMARY KEY using index "project_columns_pkey";
 
-alter table "user_data"."work_item" add constraint "work_item_pkey" PRIMARY KEY using index "work_item_pkey";
+alter table "user_data"."work_items" add constraint "work_items_pkey" PRIMARY KEY using index "work_items_pkey";
 
-alter table "user_data"."work_item_tag" add constraint "work_item_tag_pkey" PRIMARY KEY using index "work_item_tag_pkey";
+alter table "user_data"."work_item_tags" add constraint "work_item_tags_pkey" PRIMARY KEY using index "work_item_tags_pkey";
 
-alter table "user_data"."work_item_tag_ref" add constraint "work_item_tag_ref_pkey" PRIMARY KEY using index "work_item_tag_ref_pkey";
+alter table "user_data"."work_item_tag_refs" add constraint "work_item_tag_refs_pkey" PRIMARY KEY using index "work_item_tag_refs_pkey";
 
-alter table "user_data"."project" add constraint "project_user_id_fkey" FOREIGN KEY (user_id) REFERENCES auth.users(id) not valid;
+alter table "user_data"."projects" add constraint "projects_user_id_fkey" FOREIGN KEY (user_id) REFERENCES auth.users(id) not valid;
 
-alter table "user_data"."project" validate constraint "project_user_id_fkey";
+alter table "user_data"."projects" validate constraint "projects_user_id_fkey";
 
-alter table "user_data"."project_column" add constraint "project_column_project_id_fkey" FOREIGN KEY (project_id) REFERENCES user_data.project(id) ON DELETE CASCADE not valid;
+alter table "user_data"."project_columns" add constraint "project_columns_project_id_fkey" FOREIGN KEY (project_id) REFERENCES user_data.projects(id) ON DELETE CASCADE not valid;
 
-alter table "user_data"."project_column" validate constraint "project_column_project_id_fkey";
+alter table "user_data"."project_columns" validate constraint "project_columns_project_id_fkey";
 
-alter table "user_data"."work_item" add constraint "work_item_project_column_id_fkey" FOREIGN KEY (project_column_id) REFERENCES user_data.project_column(id) ON DELETE CASCADE not valid;
+alter table "user_data"."work_items" add constraint "work_items_project_column_id_fkey" FOREIGN KEY (project_column_id) REFERENCES user_data.project_columns(id) ON DELETE CASCADE not valid;
 
-alter table "user_data"."work_item" validate constraint "work_item_project_column_id_fkey";
+alter table "user_data"."work_items" validate constraint "work_items_project_column_id_fkey";
 
-alter table "user_data"."work_item_tag" add constraint "work_item_tag_user_id_fkey" FOREIGN KEY (user_id) REFERENCES auth.users(id) not valid;
+alter table "user_data"."work_item_tags" add constraint "work_item_tags_user_id_fkey" FOREIGN KEY (user_id) REFERENCES auth.users(id) not valid;
 
-alter table "user_data"."work_item_tag" validate constraint "work_item_tag_user_id_fkey";
+alter table "user_data"."work_item_tags" validate constraint "work_item_tags_user_id_fkey";
 
-alter table "user_data"."work_item_tag_ref" add constraint "work_item_tag_ref_work_item_id_fkey" FOREIGN KEY (work_item_id) REFERENCES user_data.work_item(id) ON DELETE CASCADE not valid;
+alter table "user_data"."work_item_tag_refs" add constraint "work_item_tag_refs_work_item_id_fkey" FOREIGN KEY (work_item_id) REFERENCES user_data.work_items(id) ON DELETE CASCADE not valid;
 
-alter table "user_data"."work_item_tag_ref" validate constraint "work_item_tag_ref_work_item_id_fkey";
+alter table "user_data"."work_item_tag_refs" validate constraint "work_item_tag_refs_work_item_id_fkey";
 
-alter table "user_data"."work_item_tag_ref" add constraint "work_item_tag_ref_work_item_tag_id_fkey" FOREIGN KEY (work_item_tag_id) REFERENCES user_data.work_item_tag(id) not valid;
+alter table "user_data"."work_item_tag_refs" add constraint "work_item_tag_refs_work_item_tag_id_fkey" FOREIGN KEY (work_item_tag_id) REFERENCES user_data.work_item_tags(id) not valid;
 
-alter table "user_data"."work_item_tag_ref" validate constraint "work_item_tag_ref_work_item_tag_id_fkey";
+alter table "user_data"."work_item_tag_refs" validate constraint "work_item_tag_refs_work_item_tag_id_fkey";
 
 set check_function_bodies = off;
 
@@ -155,31 +157,31 @@ $function$
 
 grant insert on table "site_data"."site_log" to "anon";
 
-grant insert on table "user_data"."project" to "anon";
+grant insert on table "user_data"."projects" to "anon";
 
-grant select on table "user_data"."project" to "anon";
+grant select on table "user_data"."projects" to "anon";
 
-grant update on table "user_data"."project" to "anon";
+grant update on table "user_data"."projects" to "anon";
 
-grant insert on table "user_data"."project_column" to "anon";
+grant insert on table "user_data"."project_columns" to "anon";
 
-grant select on table "user_data"."project_column" to "anon";
+grant select on table "user_data"."project_columns" to "anon";
 
-grant update on table "user_data"."project_column" to "anon";
+grant update on table "user_data"."project_columns" to "anon";
 
-grant insert on table "user_data"."work_item" to "anon";
+grant insert on table "user_data"."work_items" to "anon";
 
-grant select on table "user_data"."work_item" to "anon";
+grant select on table "user_data"."work_items" to "anon";
 
-grant update on table "user_data"."work_item" to "anon";
+grant update on table "user_data"."work_items" to "anon";
 
-grant insert on table "user_data"."work_item_tag" to "anon";
+grant insert on table "user_data"."work_item_tags" to "anon";
 
-grant select on table "user_data"."work_item_tag" to "anon";
+grant select on table "user_data"."work_item_tags" to "anon";
 
-grant insert on table "user_data"."work_item_tag_ref" to "anon";
+grant insert on table "user_data"."work_item_tag_refs" to "anon";
 
-grant select on table "user_data"."work_item_tag_ref" to "anon";
+grant select on table "user_data"."work_item_tag_refs" to "anon";
 
 
   create policy "Allow anon to write to site_log"
@@ -191,120 +193,141 @@ with check (true);
 
 
 
-  create policy "Allow anon to insert into project"
-  on "user_data"."project"
+  create policy "Allow anon to insert into projects"
+  on "user_data"."projects"
   as permissive
   for insert
   to anon
-with check (true);
+with check ((((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (user_id)::text));
 
 
 
-  create policy "Allow anon to read from project"
-  on "user_data"."project"
+  create policy "Allow anon to read from projects"
+  on "user_data"."projects"
   as permissive
   for select
   to anon
-using (true);
+using ((((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (user_id)::text));
 
 
 
-  create policy "Allow anon to update project"
-  on "user_data"."project"
+  create policy "Allow anon to update projects"
+  on "user_data"."projects"
   as permissive
   for update
   to anon
-with check (true);
+with check ((((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (user_id)::text));
 
 
 
-  create policy "Allow anon to insert into project_column"
-  on "user_data"."project_column"
+  create policy "Allow anon to insert into project_columns"
+  on "user_data"."project_columns"
   as permissive
   for insert
   to anon
-with check (true);
+with check ((EXISTS ( SELECT 1
+   FROM user_data.projects p
+  WHERE ((p.id = project_columns.project_id) AND (((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (p.user_id)::text)))));
 
 
 
-  create policy "Allow anon to read from project_column"
-  on "user_data"."project_column"
+  create policy "Allow anon to read from project_columns"
+  on "user_data"."project_columns"
   as permissive
   for select
   to anon
-using (true);
+using ((EXISTS ( SELECT 1
+   FROM user_data.projects p
+  WHERE ((p.id = project_columns.project_id) AND (((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (p.user_id)::text)))));
 
 
 
-  create policy "Allow anon to update project_column"
-  on "user_data"."project_column"
+  create policy "Allow anon to update project_columns"
+  on "user_data"."project_columns"
   as permissive
   for update
   to anon
-with check (true);
+with check ((EXISTS ( SELECT 1
+   FROM user_data.projects p
+  WHERE ((p.id = project_columns.project_id) AND (((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (p.user_id)::text)))));
 
-
-
-  create policy "Allow anon to insert into work_item"
-  on "user_data"."work_item"
+  create policy "Allow anon to insert into work_items"
+  on "user_data"."work_items"
   as permissive
   for insert
   to anon
-with check (true);
+with check ((EXISTS ( SELECT 1
+   FROM (user_data.project_columns pc
+     JOIN user_data.projects p ON ((pc.project_id = p.id)))
+  WHERE ((pc.id = work_items.project_column_id) AND (((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (p.user_id)::text)))));
 
 
 
-  create policy "Allow anon to read from work_item"
-  on "user_data"."work_item"
+  create policy "Allow anon to read from work_items"
+  on "user_data"."work_items"
   as permissive
   for select
   to anon
-using (true);
+using ((EXISTS ( SELECT 1
+   FROM (user_data.project_columns pc
+     JOIN user_data.projects p ON ((pc.project_id = p.id)))
+  WHERE ((pc.id = work_items.project_column_id) AND (((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (p.user_id)::text)))));
 
 
 
-  create policy "Allow anon to update work_item"
-  on "user_data"."work_item"
+  create policy "Allow anon to update work_items"
+  on "user_data"."work_items"
   as permissive
   for update
   to anon
-with check (true);
+with check ((EXISTS ( SELECT 1
+   FROM (user_data.project_columns pc
+     JOIN user_data.projects p ON ((pc.project_id = p.id)))
+  WHERE ((pc.id = work_items.project_column_id) AND (((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (p.user_id)::text)))));
 
 
 
-  create policy "Allow anon to insert into work_item_tag"
-  on "user_data"."work_item_tag"
+  create policy "Allow anon to insert into work_item_tags"
+  on "user_data"."work_item_tags"
   as permissive
   for insert
   to anon
-with check (true);
+with check ((((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (user_id)::text));
 
 
 
-  create policy "Allow anon to read from work_item_tag"
-  on "user_data"."work_item_tag"
+  create policy "Allow anon to read from work_item_tags"
+  on "user_data"."work_item_tags"
   as permissive
   for select
   to anon
-using (true);
+using ((((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (user_id)::text));
 
 
 
-  create policy "Allow anon to insert into work_item_tag_ref"
-  on "user_data"."work_item_tag_ref"
+  create policy "Allow anon to insert into work_item_tag_refs"
+  on "user_data"."work_item_tag_refs"
   as permissive
   for insert
   to anon
-with check (true);
+with check ((EXISTS ( SELECT 1
+   FROM ((user_data.work_items wi
+     JOIN user_data.project_columns pc ON ((wi.project_column_id = pc.id)))
+     JOIN user_data.projects p ON ((pc.project_id = p.id)))
+  WHERE ((wi.id = work_item_tag_refs.work_item_id) AND (((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (p.user_id)::text)))));
 
 
 
-  create policy "Allow anon to read from work_item_tag_ref"
-  on "user_data"."work_item_tag_ref"
+  create policy "Allow anon to read from work_item_tag_refs"
+  on "user_data"."work_item_tag_refs"
   as permissive
   for select
   to anon
-using (true);
+using ((EXISTS ( SELECT 1
+   FROM ((user_data.work_items wi
+     JOIN user_data.project_columns pc ON ((wi.project_column_id = pc.id)))
+     JOIN user_data.projects p ON ((pc.project_id = p.id)))
+  WHERE ((wi.id = work_item_tag_refs.work_item_id) AND (((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (p.user_id)::text)))));
 
 
 

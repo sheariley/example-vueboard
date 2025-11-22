@@ -16,7 +16,7 @@ namespace Vueboard.Api.GraphQL
       descriptor.Field(f => f.Description).Type<StringType>();
       descriptor.Field(f => f.DefaultCardFgColor).Type<StringType>();
       descriptor.Field(f => f.DefaultCardBgColor).Type<StringType>();
-      descriptor.Field(f => f.Columns)
+      descriptor.Field(f => f.ProjectColumns)
         .ResolveWith<ProjectResolvers>(r => r.GetColumnsAsync(default!, default!, default))
         .Type<ListType<ProjectColumnType>>();
     }

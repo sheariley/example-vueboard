@@ -13,6 +13,9 @@ namespace Vueboard.Api.GraphQL
     }
 
     [UsePaging]
+    public IQueryable<Project> ProjectsPaged() => _projectQueryRoot.Query
+      .Where(p => !p.IsDeleted);
+
     public IQueryable<Project> Projects() => _projectQueryRoot.Query
       .Where(p => !p.IsDeleted);
 

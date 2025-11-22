@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
+import { useProjectsGraphQLClient } from '~/api-clients/projects-graphql-client'
 
 import type { ProjectListItem } from '~/types'
 import coerceErrorMessage from '~/util/coerceErrorMessage'
 
 export const useProjectListItemsStore = defineStore('projectListItemsStore', () => {
-  const config = useRuntimeConfig()
+  const projectsApiClient = useProjectsGraphQLClient();
 
   const listItems = ref<ProjectListItem[]>([])
   const loading = ref(true)
@@ -14,14 +15,8 @@ export const useProjectListItemsStore = defineStore('projectListItemsStore', () 
     loadError.value = null // clear previous error
     loading.value = true
 
-    const url = `${config.public.projectsApiBase}/projects`
-    
     try {
-      const resp = await fetch(url)
-      if (!resp.ok) {
-        throw new Error(`Error fetching projects: ${resp.statusText} (${resp.status})`, { cause: resp })
-      }
-      listItems.value = await resp.json()
+      listItems.value = await projectsApiClient.fetchProjectListItems()
     } catch (error) {
       loadError.value = coerceErrorMessage(error)
     } finally {

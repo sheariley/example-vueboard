@@ -61,13 +61,12 @@
 </template>
 
 <script lang="ts" setup>
-  import createProjectsApiClient from '~/api-clients/projects-api-client';
+  import { useProjectsGraphQLClient } from '~/api-clients/projects-graphql-client';
   import { DefaultProjectOptionsState } from '~/types';
 
   const projectListItemsStore = useProjectListItemsStore()
   const projectOptionsModal = useProjectOptionsModal()
-  const config = useRuntimeConfig();
-  const projectsApiClient = createProjectsApiClient(config)
+  const projectsApiClient = useProjectsGraphQLClient()
   const router = useRouter()
 
   async function onAddNewProjectClick() {

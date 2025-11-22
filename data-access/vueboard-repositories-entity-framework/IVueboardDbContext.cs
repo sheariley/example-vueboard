@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Vueboard.DataAccess.Models;
 
-namespace Vueboard.DataAccess.EntityFramework
+namespace Vueboard.DataAccess.Repositories.EntityFramework
 {
     public interface IVueboardDbContext
     {

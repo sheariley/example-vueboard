@@ -40,9 +40,9 @@ namespace Vueboard.DataAccess.Repositories.InMemory
     public Project Add(Project project)
     {
       _projects.Add(project);
-      if (project.Columns != null)
+      if (project.ProjectColumns != null)
       {
-        foreach (var column in project.Columns)
+        foreach (var column in project.ProjectColumns)
         {
           _columnRepo.Add(project.Id, column);
           if (column.WorkItems != null)
@@ -66,9 +66,9 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       existingProj.DefaultCardFgColor = project.DefaultCardFgColor;
       existingProj.DefaultCardBgColor = project.DefaultCardBgColor;
       existingProj.Updated = DateTime.UtcNow;
-      if (project.Columns != null)
+      if (project.ProjectColumns != null)
       {
-        foreach (var column in project.Columns)
+        foreach (var column in project.ProjectColumns)
         {
           if (column.Id == 0)
           {
@@ -102,9 +102,9 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       var project = _projects.FirstOrDefault(p => p.Uid.Equals(uid));
       if (project == null) return false;
       project.IsDeleted = true;
-      if (project.Columns != null)
+      if (project.ProjectColumns != null)
       {
-        foreach (var column in project.Columns)
+        foreach (var column in project.ProjectColumns)
         {
           _columnRepo.Delete(column.Id);
           if (column.WorkItems != null)

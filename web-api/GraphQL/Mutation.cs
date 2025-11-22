@@ -30,7 +30,7 @@ namespace Vueboard.Api.GraphQL
         IsDeleted = false,
         Uid = projectUid,
         UserId = userId, // Replace with actual user context
-        Columns = new List<ProjectColumn>()
+        ProjectColumns = new List<ProjectColumn>()
       };
       return _projectRepo.Add(project);
     }

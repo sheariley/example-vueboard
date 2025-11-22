@@ -1,4 +1,4 @@
-namespace Vueboard.DataAccess.EntityFramework.Config
+namespace Vueboard.DataAccess.Repositories.EntityFramework.Config
 {
   public interface IVueboardDbContextConfigProvider
   {

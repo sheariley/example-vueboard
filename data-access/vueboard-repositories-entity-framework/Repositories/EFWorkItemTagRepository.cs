@@ -1,5 +1,4 @@
 using Vueboard.DataAccess.Models;
-using Vueboard.DataAccess.EntityFramework;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework
 {

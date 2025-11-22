@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Vueboard.DataAccess.Models;
 
-namespace Vueboard.DataAccess.EntityFramework
+namespace Vueboard.DataAccess.Repositories.EntityFramework
 {
   public class VueboardDbContext : DbContext, IVueboardDbContext
   {
@@ -19,23 +19,27 @@ namespace Vueboard.DataAccess.EntityFramework
     {
       // Project -> ProjectColumns
       modelBuilder.Entity<Project>()
-        .HasMany(p => p.Columns)
+        .ToTable(p => p.Metadata.SetSchema("user_data"))
+        .HasMany(p => p.ProjectColumns)
         .WithOne()
         .HasForeignKey(pc => pc.ProjectId);
 
       // ProjectColumn -> WorkItems
       modelBuilder.Entity<ProjectColumn>()
+        .ToTable(p => p.Metadata.SetSchema("user_data"))
         .HasMany(pc => pc.WorkItems)
         .WithOne()
         .HasForeignKey(wi => wi.ProjectColumnId);
 
       // WorkItem <-> WorkItemTag (Many-to-Many using WorkItemTagRef table)
       modelBuilder.Entity<WorkItem>()
+        .ToTable(p => p.Metadata.SetSchema("user_data"))
         .HasMany(wi => wi.WorkItemTags)
         .WithMany(wt => wt.WorkItems)
         .UsingEntity("WorkItemTagRef");
 
-      modelBuilder.Entity<WorkItemTag>();
+      modelBuilder.Entity<WorkItemTag>()
+        .ToTable(p => p.Metadata.SetSchema("user_data"));
     }
   }
 }

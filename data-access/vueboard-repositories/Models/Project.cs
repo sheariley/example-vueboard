@@ -12,6 +12,6 @@ namespace Vueboard.DataAccess.Models
     public string? Description { get; set; }
     public string? DefaultCardFgColor { get; set; }
     public string? DefaultCardBgColor { get; set; }
-    public List<ProjectColumn> Columns { get; set; } = new();
+    public List<ProjectColumn> ProjectColumns { get; set; } = new();
   }
 }

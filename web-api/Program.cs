@@ -3,12 +3,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Vueboard.Api.Auth;
 using Vueboard.Api.GraphQL;
-using Vueboard.DataAccess.EntityFramework;
-using Vueboard.DataAccess.EntityFramework.Config;
-using Vueboard.DataAccess.EntityFramework.Repositories;
+using Vueboard.DataAccess.Repositories.EntityFramework;
+using Vueboard.DataAccess.Repositories.EntityFramework.Config;
 using Vueboard.DataAccess.Repositories;
 using Vueboard.DataAccess.Repositories.EntityFramework.QueryRoots;
-using Vueboard.DataAccess.Repositories.InMemory;
+// using Vueboard.DataAccess.Repositories.InMemory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,9 +15,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddLogging();
 
 // JWT Bearer authentication (validate token signature/claims) - configuration via env vars
-var jwtIssuer = builder.Configuration["JWT:Issuer"] ?? "https://supabase.local";
-var jwtAudience = builder.Configuration["JWT:Audience"] ?? "vueboard";
-var jwtSecret = builder.Configuration["JWT:Secret"] ?? "ReplaceWithSupabaseJWTSecretForLocalDevOnly";
+var jwtIssuer = builder.Configuration["JWT:Issuer"] ?? "http://localhost:54321";
+var jwtAudience = builder.Configuration["JWT:Audience"] ?? "authenticated";
+var jwtSecret = builder.Configuration["JWT:Secret"] ?? "super-secret-jwt-token-with-at-least-32-characters-long";
+
+// HINT: To get the JWT Secret from Supabase, you can run `show app.settings.jwt_secret;` in the SQL Editor tab.
 
 builder.Services.AddAuthentication(options =>
 {
@@ -40,10 +41,35 @@ builder.Services.AddAuthentication(options =>
   };
 });
 builder.Services.AddAuthorization();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<JwtSessionInterceptor>();
 
+// CORS configuration
+var allowedOrigins = builder.Configuration["CORS_ALLOWED_ORIGINS"] ?? "";
+string[] originsArray = allowedOrigins.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+builder.Services.AddCors(options =>
+{
+  options.AddPolicy("VueboardCorsPolicy", policy =>
+  {
+    if (originsArray.Length > 0)
+    {
+      policy.WithOrigins(originsArray)
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
+    }
+    else
+    {
+      policy.WithOrigins(["http://localhost:3000"])
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
+    }
+  });
+});
+
 // Register EF Context and config provider
-builder.Services.AddSingleton<IVueboardDbContextConfigProvider, VueboardDbContextEnvConfigProvider>();
+builder.Services.AddSingleton<IVueboardDbContextConfigProvider, VueboardDbContextEnvPostgresConfigProvider>();
 builder.Services.AddDbContext<IVueboardDbContext, VueboardDbContext>((serviceProvider, options) =>
 {
   // Establish DB connection params using injected config provider
@@ -56,17 +82,16 @@ builder.Services.AddDbContext<IVueboardDbContext, VueboardDbContext>((servicePro
   options.AddInterceptors(interceptor);
 });
 
-// TODO: Implement EF repositories and replace in-memory ones here.
 // Register Repositories
-builder.Services.AddSingleton<IProjectRepository, InMemoryProjectRepository>();
-builder.Services.AddSingleton<IProjectColumnRepository, InMemoryProjectColumnRepository>();
-builder.Services.AddSingleton<IWorkItemRepository, InMemoryWorkItemRepository>();
-builder.Services.AddSingleton<IWorkItemTagRepository, InMemoryWorkItemTagRepository>();
+// builder.Services.AddSingleton<IProjectRepository, InMemoryProjectRepository>();
+// builder.Services.AddSingleton<IProjectColumnRepository, InMemoryProjectColumnRepository>();
+// builder.Services.AddSingleton<IWorkItemRepository, InMemoryWorkItemRepository>();
+// builder.Services.AddSingleton<IWorkItemTagRepository, InMemoryWorkItemTagRepository>();
 
-// builder.Services.AddScoped<IProjectRepository, EFProjectRepository>();
-// builder.Services.AddScoped<IProjectColumnRepository, EFProjectColumnRepository>();
-// builder.Services.AddScoped<IWorkItemRepository, EFWorkItemRepository>();
-// builder.Services.AddScoped<IWorkItemTagRepository, EFWorkItemTagRepository>();
+builder.Services.AddScoped<IProjectRepository, EFProjectRepository>();
+builder.Services.AddScoped<IProjectColumnRepository, EFProjectColumnRepository>();
+builder.Services.AddScoped<IWorkItemRepository, EFWorkItemRepository>();
+builder.Services.AddScoped<IWorkItemTagRepository, EFWorkItemTagRepository>();
 
 // Register QueryRoots
 builder.Services.AddScoped<IProjectQueryRoot, ProjectQueryRoot>();
@@ -94,6 +119,7 @@ builder.Services.AddGraphQLServer()
 var app = builder.Build();
 
 app.UseRouting();
+app.UseCors("VueboardCorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 

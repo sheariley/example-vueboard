@@ -1,4 +1,3 @@
-using Vueboard.DataAccess.EntityFramework;
 using Vueboard.DataAccess.Models;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework.QueryRoots
