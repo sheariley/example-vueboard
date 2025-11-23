@@ -10,7 +10,6 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
     DbSet<ProjectColumn> ProjectColumns { get; }
     DbSet<WorkItem> WorkItems { get; }
     DbSet<WorkItemTag> WorkItemTags { get; }
-    //DbSet<WorkItemTagRef> WorkItemTagRefs { get; set; }
 
     int SaveChanges();
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

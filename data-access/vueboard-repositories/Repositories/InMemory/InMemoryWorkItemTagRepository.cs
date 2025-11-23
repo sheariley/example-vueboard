@@ -2,16 +2,17 @@ using Vueboard.DataAccess.Models;
 
 namespace Vueboard.DataAccess.Repositories
 {
-  public class InMemoryWorkItemTagRepository : IWorkItemTagRepository
+  public class InMemoryWorkItemTagRepository : GenericRepository<WorkItemTag>, IWorkItemTagRepository
   {
+    private int _nextTagId = 1;
     private readonly List<WorkItemTag> _tags = new();
 
-    public IEnumerable<WorkItemTag> GetAll()
+    protected override IQueryable<WorkItemTag> GetQueryRoot()
     {
-      return _tags;
+      return _tags.AsQueryable();
     }
 
-    public WorkItemTag Create(WorkItemTag tag)
+    public override WorkItemTag Create(WorkItemTag tag)
     {
       if (!_tags.Any(x => x.TagText == tag.TagText))
       {
@@ -22,7 +23,7 @@ namespace Vueboard.DataAccess.Repositories
       return tag;
     }
 
-    public bool Update(WorkItemTag tag)
+    public override bool Update(WorkItemTag tag)
     {
       var existing = _tags.FirstOrDefault(t => t.Id == tag.Id);
       if (existing == null) return false;
@@ -30,14 +31,16 @@ namespace Vueboard.DataAccess.Repositories
       return true;
     }
 
-    public bool Delete(int id)
+    public override bool Delete(WorkItemTag? entity)
     {
-      var tag = _tags.FirstOrDefault(t => t.Id == id);
-      if (tag == null) return false;
-      _tags.Remove(tag);
+      if (entity == null) return false;
+      _tags.Remove(entity);
       return true;
     }
 
-    private int _nextTagId = 1;
+    public override void CommitChanges()
+    {
+      // DO NOTHING
+    }
   }
 }

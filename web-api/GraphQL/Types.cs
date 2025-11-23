@@ -17,8 +17,8 @@ namespace Vueboard.Api.GraphQL
       descriptor.Field(f => f.DefaultCardFgColor).Type<StringType>();
       descriptor.Field(f => f.DefaultCardBgColor).Type<StringType>();
       descriptor.Field(f => f.ProjectColumns)
-        .ResolveWith<ProjectResolvers>(r => r.GetColumnsAsync(default!, default!, default))
-        .Type<ListType<ProjectColumnType>>();
+        .Type<ListType<ProjectColumnType>>()
+        .ResolveWith<ProjectResolvers>(r => r.GetColumnsAsync(default!, default!, default));
     }
   }
 
@@ -39,8 +39,8 @@ namespace Vueboard.Api.GraphQL
       descriptor.Field(f => f.BgColor).Type<StringType>();
       descriptor.Field(f => f.Index).Type<NonNullType<IntType>>();
       descriptor.Field(f => f.WorkItems)
-        .ResolveWith<ProjectColumnResolvers>(r => r.GetWorkItemsAsync(default!, default!, default))
-        .Type<ListType<WorkItemType>>();
+        .Type<ListType<WorkItemType>>()
+        .ResolveWith<ProjectColumnResolvers>(r => r.GetWorkItemsAsync(default!, default!, default));
     }
   }
 
@@ -54,7 +54,7 @@ namespace Vueboard.Api.GraphQL
       descriptor.Field(f => f.TagText).Type<NonNullType<StringType>>();
       descriptor.Field(f => f.WorkItems)
         .Type<ListType<WorkItemType>>()
-        .Ignore();
+        .ResolveWith<WorkItemTagResolvers>(r => r.GetWorkItemsAsync(default!, default!, default));
     }
   }
 
@@ -76,8 +76,8 @@ namespace Vueboard.Api.GraphQL
       descriptor.Field(f => f.BgColor).Type<StringType>();
       descriptor.Field(f => f.Index).Type<NonNullType<IntType>>();
       descriptor.Field(f => f.WorkItemTags)
-        .ResolveWith<WorkItemResolvers>(r => r.GetTagsAsync(default!, default!, default))
-        .Type<ListType<WorkItemTagType>>();
+        .Type<ListType<WorkItemTagType>>()
+        .ResolveWith<WorkItemResolvers>(r => r.GetTagsAsync(default!, default!, default));
     }
   }
 }

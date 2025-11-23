@@ -7,7 +7,7 @@ namespace Vueboard.Api.GraphQL
 {
   public class Mutation
   {
-    public Project CreateProject(
+    public Project? CreateProject(
       [Service] IProjectRepository projectRepo,
       [Service] IUserIdAccessor userIdAccessor,
       CreateProjectInput input
@@ -16,7 +16,9 @@ namespace Vueboard.Api.GraphQL
       var projectUid = String.IsNullOrWhiteSpace(input.Uid) ? Guid.NewGuid() : Guid.Parse(input.Uid);
       var userId = userIdAccessor.GetUserId();
       var project = InputMapping.MapToProject(input, userId, projectUid);
-      return projectRepo.Add(project);
+      var newProject = projectRepo.Create(project);
+      if (newProject != null) projectRepo.CommitChanges();
+      return newProject;
     }
 
     public Project? UpdateProject(
@@ -28,6 +30,7 @@ namespace Vueboard.Api.GraphQL
       var userId = userIdAccessor.GetUserId();
       var project = InputMapping.MapToProject(input, userId);
       var success = projectRepo.Update(project);
+      if (success) projectRepo.CommitChanges();
       return success ? project : null;
     }
 
@@ -37,7 +40,9 @@ namespace Vueboard.Api.GraphQL
     )
     {
       var guid = Guid.Parse(uid);
-      return projectRepo.Delete(guid);
+      var success = projectRepo.DeleteByUid(guid);
+      if (success) projectRepo.CommitChanges();
+      return success;
     }
   }
 }

@@ -2,7 +2,7 @@ using Vueboard.DataAccess.Models;
 
 namespace Vueboard.DataAccess.Repositories.InMemory
 {
-  public class InMemoryWorkItemRepository : IWorkItemRepository
+  public class InMemoryWorkItemRepository : GenericRepository<WorkItem>, IWorkItemRepository
   {
     private readonly IWorkItemTagRepository _tagRepo;
     private readonly List<WorkItem> _workItems = new();
@@ -13,27 +13,22 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       _tagRepo = tagRepo;
     }
 
+    protected override IQueryable<WorkItem> GetQueryRoot()
+    {
+      return _workItems.AsQueryable().Where(x => !x.IsDeleted);
+    }
+    
     public IEnumerable<WorkItem> GetAllForProjectColumn(int projectColumnId)
     {
-      return _workItems.Where(w => w.ProjectColumnId == projectColumnId && !w.IsDeleted);
+      return GetQueryRoot().Where(w => w.ProjectColumnId == projectColumnId);
     }
 
     public IEnumerable<WorkItem> GetAllForProjectColumns(IEnumerable<int> projectColumnIds)
     {
-      return _workItems.Where(w => projectColumnIds.Contains(w.ProjectColumnId) && !w.IsDeleted);
+      return GetQueryRoot().Where(w => projectColumnIds.Contains(w.ProjectColumnId));
     }
 
-    public WorkItem? GetById(int id)
-    {
-      return _workItems.FirstOrDefault(w => w.Id == id && !w.IsDeleted);
-    }
-
-    public WorkItem? GetByUid(Guid uid)
-    {
-      return _workItems.FirstOrDefault(w => w.Uid == uid && !w.IsDeleted);
-    }
-
-    public WorkItem CreateWorkItem(WorkItem item, Guid userId)
+    public override WorkItem Create(WorkItem item)
     {
       item.Id = _nextWorkItemId++;
       item.Uid = Guid.NewGuid();
@@ -47,7 +42,7 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       return item;
     }
 
-    public bool UpdateWorkItem(WorkItem item, Guid userId)
+    public override bool Update(WorkItem item)
     {
       var existing = _workItems.FirstOrDefault(w => w.Id == item.Id);
       if (existing == null) return false;
@@ -68,27 +63,21 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       return true;
     }
 
-    public bool DeleteWorkItem(int workItemId)
+    public override bool Delete(WorkItem? entity)
     {
-      var item = _workItems.FirstOrDefault(w => w.Id == workItemId);
-      if (item == null) return false;
-      item.IsDeleted = true;
+      if (entity == null) return false;
+      entity.IsDeleted = true;
       return true;
-    }
-
-    public WorkItem? GetWorkItem(int workItemId)
-    {
-      return _workItems.FirstOrDefault(w => w.Id == workItemId && !w.IsDeleted);
-    }
-
-    public List<WorkItem> GetWorkItemsForColumn(int projectColumnId)
-    {
-      return _workItems.Where(w => w.ProjectColumnId == projectColumnId && !w.IsDeleted).ToList();
     }
 
     public List<WorkItemTag> GetTagsForWorkItem(int workItemId)
     {
-      return _workItems.First(x => x.Id == workItemId).WorkItemTags;
+      return GetQueryRoot().First(x => x.Id == workItemId).WorkItemTags;
+    }
+
+    public override void CommitChanges()
+    {
+      // DO NOTHING
     }
   }
 }

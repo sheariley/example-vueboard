@@ -17,7 +17,7 @@ namespace Vueboard.Api.GraphQL
     {
       return await Task.Run(
         () => _queryRoot.Query.Where(p => keys.Contains(p.Id) && !p.IsDeleted).ToDictionary(p => p.Id)
-      );
+      , cancellationToken);
     }
   }
 
@@ -37,7 +37,7 @@ namespace Vueboard.Api.GraphQL
         () => _queryRoot.Query
           .Where(x => keys.Contains(x.ProjectId) && !x.IsDeleted)
           .ToLookup(x => x.ProjectId)
-      );
+      , cancellationToken);
     }
   }
 
@@ -57,7 +57,7 @@ namespace Vueboard.Api.GraphQL
         () => _queryRoot.Query
           .Where(x => keys.Contains(x.ProjectColumnId) && !x.IsDeleted)
           .ToLookup(x => x.ProjectColumnId)
-      );
+        , cancellationToken);
     }
   }
 
@@ -83,13 +83,49 @@ namespace Vueboard.Api.GraphQL
         () => _queryRoot.Query
           .Where(w => keys.Contains(w.Id) && !w.IsDeleted)
           .SelectMany(w => w.WorkItemTags
-            .Select(t => new {
+            .Select(t => new
+            {
               WorkItemId = w.Id,
               Tag = t
             })
           )
           .ToLookup(x => x.WorkItemId, x => x.Tag)
+        , cancellationToken);
+    }
+  }
+
+  // Group DataLoader for WorkItems by WorkItemTagId
+  public class WorkItemsByWorkItemTagIdDataLoader : GroupedDataLoader<int, WorkItem>
+  {
+    private readonly IWorkItemTagQueryRoot _queryRoot;
+
+    public WorkItemsByWorkItemTagIdDataLoader(
+      IBatchScheduler batchScheduler,
+      DataLoaderOptions options,
+      IWorkItemTagQueryRoot queryRoot)
+      : base(batchScheduler, options)
+    {
+      _queryRoot = queryRoot;
+    }
+
+    protected override async Task<ILookup<int, WorkItem>> LoadGroupedBatchAsync(
+      IReadOnlyList<int> keys,
+      CancellationToken cancellationToken)
+    {
+      return await Task.Run(
+        () => _queryRoot.Query
+          .Where(t => keys.Contains(t.Id))
+          .SelectMany(t => t.WorkItems
+            .Where(w => !w.IsDeleted)
+            .Select(w => new
+            {
+              WorkItemTagId = t.Id,
+              WorkItem = w
+            })
+          )
+          .ToLookup(x => x.WorkItemTagId, x => x.WorkItem)
       , cancellationToken);
     }
+    
   }
 }

@@ -2,44 +2,31 @@ using Vueboard.DataAccess.Models;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework
 {
-  public class EFWorkItemTagRepository : IWorkItemTagRepository
+  public class EFWorkItemTagRepository : EFGenericRepository<WorkItemTag>, IWorkItemTagRepository
   {
-    private readonly IVueboardDbContext _context;
-
+    private List<WorkItemTag>? _localCache = null;
     public EFWorkItemTagRepository(IVueboardDbContext context)
+      : base(context)
     {
-      _context = context;
     }
 
-    public IEnumerable<WorkItemTag> GetAll()
+    // override to add duplicate-checking logic
+    public override WorkItemTag Create(WorkItemTag tag)
     {
-      return _context.WorkItemTags;
-    }
+      if (_localCache == null)
+        hydrateLocalCache();
 
-    public WorkItemTag Create(WorkItemTag tag)
-    {
-      if (!_context.WorkItemTags.Any(x => x.TagText == tag.TagText))
+      if (!_localCache!.Any(x => x.TagText == tag.TagText))
       {
-        _context.WorkItemTags.Add(tag);
-        _context.SaveChanges();
+        GetDbSet().Add(tag);
+        _localCache!.Add(tag);
       }
       return tag;
     }
 
-    public bool Update(WorkItemTag tag)
+    private void hydrateLocalCache()
     {
-      _context.WorkItemTags.Update(tag);
-      _context.SaveChanges();
-      return true;
-    }
-
-    public bool Delete(int id)
-    {
-      var tag = _context.WorkItemTags.FirstOrDefault(t => t.Id == id);
-      if (tag == null) return false;
-      _context.WorkItemTags.Remove(tag);
-      _context.SaveChanges();
-      return true;
+      _localCache = GetQueryRoot().ToList();
     }
   }
 }

@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Vueboard.DataAccess.Models;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework
@@ -15,7 +14,6 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
     public DbSet<ProjectColumn> ProjectColumns { get; set; }
     public DbSet<WorkItem> WorkItems { get; set; }
     public DbSet<WorkItemTag> WorkItemTags { get; set; }
-    //public DbSet<WorkItemTagRef> WorkItemTagRefs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -53,6 +51,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
             .OnDelete(DeleteBehavior.Cascade);
       });
 
+      // TODO: Implement soft-delete stored procedures for deleting most entities and register them with the DbContext here.
       modelBuilder.Entity<WorkItem>()
         .ToTable(p => p.Metadata.SetSchema("user_data"))
         .HasMany(wi => wi.WorkItemTags)

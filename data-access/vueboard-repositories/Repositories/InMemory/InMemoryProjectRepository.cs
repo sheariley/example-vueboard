@@ -3,7 +3,7 @@ using Vueboard.DataAccess.Models;
 
 namespace Vueboard.DataAccess.Repositories.InMemory
 {
-  public class InMemoryProjectRepository : IProjectRepository
+  public class InMemoryProjectRepository : GenericSoftDeleteRepository<Project>, IProjectRepository
   {
     private readonly List<Project> _projects = new();
     private readonly IProjectColumnRepository _columnRepo;
@@ -15,41 +15,24 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       _workItemRepo = workItemRepo;
     }
 
-    public IEnumerable<Project> Get(FetchSpecification<Project> spec) => Get(x => x, spec);
-
-    public IEnumerable<Project> Get(Expression<Func<Project, bool>> predicate) => Get(x => x, new FetchSpecification<Project> { Criteria = predicate });
-
-    public IEnumerable<TOut> Get<TOut>(Expression<Func<Project, TOut>> selector, FetchSpecification<Project>? specification = null)
+    protected override IQueryable<Project> GetRawQueryRoot()
     {
-      var query = _projects.Where(p => !p.IsDeleted).AsQueryable();
-      
-      if (specification != null)
-      {
-        query = specification.Apply(query);
-      }
-
-      return query.Select(selector).ToList();
-    }    
-
-    public Project? GetByUid(Guid uid)
-    {
-      var project = _projects.FirstOrDefault(p => p.Uid.Equals(uid) && !p.IsDeleted);
-      return project;
+      return _projects.AsQueryable();
     }
 
-    public Project Add(Project project)
+    public override Project Create(Project project)
     {
       _projects.Add(project);
       if (project.ProjectColumns != null)
       {
         foreach (var column in project.ProjectColumns)
         {
-          _columnRepo.Add(project.Id, column);
+          _columnRepo.Create(column);
           if (column.WorkItems != null)
           {
             foreach (var workItem in column.WorkItems)
             {
-              _workItemRepo.CreateWorkItem(workItem, project.UserId);
+              _workItemRepo.Create(workItem);
             }
           }
         }
@@ -57,7 +40,7 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       return project;
     }
 
-    public bool Update(Project project)
+    public override bool Update(Project project)
     {
       var existingProj = _projects.FirstOrDefault(p => p.Uid == project.Uid);
       if (existingProj == null) return false;
@@ -72,7 +55,8 @@ namespace Vueboard.DataAccess.Repositories.InMemory
         {
           if (column.Id == 0)
           {
-            _columnRepo.Add(existingProj.Id, column);
+            column.ProjectId = project.Id;
+            _columnRepo.Create(column);
           }
           else
           {
@@ -82,13 +66,14 @@ namespace Vueboard.DataAccess.Repositories.InMemory
           {
             foreach (var workItem in column.WorkItems)
             {
+              workItem.ProjectColumnId = column.Id;
               if (workItem.Id == 0)
               {
-                _workItemRepo.CreateWorkItem(workItem, existingProj.UserId);
+                _workItemRepo.Create(workItem);
               }
               else
               {
-                _workItemRepo.UpdateWorkItem(workItem, existingProj.UserId);
+                _workItemRepo.Update(workItem);
               }
             }
           }
@@ -97,9 +82,8 @@ namespace Vueboard.DataAccess.Repositories.InMemory
       return true;
     }
 
-    public bool Delete(Guid uid)
+    public override bool Delete(Project? project)
     {
-      var project = _projects.FirstOrDefault(p => p.Uid.Equals(uid));
       if (project == null) return false;
       project.IsDeleted = true;
       if (project.ProjectColumns != null)
@@ -111,12 +95,17 @@ namespace Vueboard.DataAccess.Repositories.InMemory
           {
             foreach (var workItem in column.WorkItems)
             {
-              _workItemRepo.DeleteWorkItem(workItem.Id);
+              _workItemRepo.Delete(workItem.Id);
             }
           }
         }
       }
       return true;
+    }
+
+    public override void CommitChanges()
+    {
+      // DO NOTHING
     }
   }
 }

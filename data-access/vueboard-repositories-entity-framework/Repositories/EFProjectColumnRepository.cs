@@ -1,57 +1,28 @@
+using Microsoft.EntityFrameworkCore;
 using Vueboard.DataAccess.Models;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework
 {
-    public class EFProjectColumnRepository : IProjectColumnRepository
+  public class EFProjectColumnRepository : EFGenericSoftDeleteRepository<ProjectColumn>, IProjectColumnRepository
+  {
+    public EFProjectColumnRepository(IVueboardDbContext context)
+      : base(context)
     {
-        private readonly IVueboardDbContext _context;
-        public EFProjectColumnRepository(IVueboardDbContext context)
-        {
-            _context = context;
-        }
-
-        public IEnumerable<ProjectColumn> GetAllForProject(int projectId)
-        {
-            return _context.ProjectColumns.Where(pc => pc.ProjectId == projectId).ToList();
-        }
-
-        public IEnumerable<ProjectColumn> GetAllForProjects(IEnumerable<int> projectIds)
-        {
-            return _context.ProjectColumns.Where(pc => projectIds.Contains(pc.ProjectId)).ToList();
-        }
-
-        public ProjectColumn? GetById(int id)
-        {
-            return _context.ProjectColumns.FirstOrDefault(pc => pc.Id == id);
-        }
-
-        public ProjectColumn? GetByUid(Guid uid)
-        {
-            return _context.ProjectColumns.FirstOrDefault(pc => pc.Uid == uid);
-        }
-
-        public ProjectColumn Add(int projectId, ProjectColumn column)
-        {
-            column.ProjectId = projectId;
-            var entry = _context.ProjectColumns.Add(column);
-            _context.SaveChanges();
-            return entry.Entity;
-        }
-
-        public bool Update(ProjectColumn column)
-        {
-            _context.ProjectColumns.Update(column);
-            _context.SaveChanges();
-            return true;
-        }
-
-        public bool Delete(int id)
-        {
-            var column = GetById(id);
-            if (column == null) return false;
-            _context.ProjectColumns.Remove(column);
-            _context.SaveChanges();
-            return true;
-        }
     }
+
+    public IEnumerable<ProjectColumn> GetAllForProject(int projectId)
+    {
+      return GetAllForProjects([projectId]);
+    }
+
+    public IEnumerable<ProjectColumn> GetAllForProjects(IEnumerable<int> projectIds)
+    {
+      return GetQueryRoot().Where(pc => projectIds.Contains(pc.ProjectId)).ToList();
+    }
+
+    protected override IEnumerable<IVueboardSoftDeleteEntity> GetNestedSoftDeleteEntities(ProjectColumn entity)
+    {
+      return entity.WorkItems.ToList();
+    }
+  }
 }

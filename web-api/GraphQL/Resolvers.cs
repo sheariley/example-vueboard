@@ -31,4 +31,13 @@ namespace Vueboard.Api.GraphQL
       return result ?? System.Array.Empty<WorkItemTag>();
     }
   }
+
+  public class WorkItemTagResolvers
+  {
+    public async Task<IEnumerable<WorkItem>?> GetWorkItemsAsync(
+      [Parent] WorkItemTag workItemTag,
+      WorkItemsByWorkItemTagIdDataLoader dataLoader,
+      CancellationToken cancellationToken
+    ) => await dataLoader.LoadAsync(workItemTag.Id, cancellationToken);
+  }
 }

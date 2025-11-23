@@ -1,36 +1,25 @@
-using System.Linq.Expressions;
-using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Vueboard.DataAccess.Models;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework
 {
-  public class EFProjectRepository : IProjectRepository
+  public class EFProjectRepository : EFGenericSoftDeleteRepository<Project>, IProjectRepository
   {
-    private readonly IVueboardDbContext _context;
-    public EFProjectRepository(IVueboardDbContext context)
+    private IProjectColumnRepository _projectColumnRepo;
+    private IWorkItemRepository _workItemRepo;
+    
+    public EFProjectRepository(
+      IVueboardDbContext context,
+      IProjectColumnRepository projectColumnRepo,
+      IWorkItemRepository workItemRepo
+    )
+      : base(context)
     {
-      _context = context;
+      _projectColumnRepo = projectColumnRepo;
+      _workItemRepo = workItemRepo;
     }
 
-    public IEnumerable<Project> Get(Expression<Func<Project, bool>> predicate) => Get(x => x, new FetchSpecification<Project> { Criteria = predicate });
-
-    public IEnumerable<Project> Get(FetchSpecification<Project> spec) => Get(x => x, spec);
-
-    public IEnumerable<TOut> Get<TOut>(Expression<Func<Project, TOut>> selector, FetchSpecification<Project>? specification = null)
-    {
-      var query = _context.Projects.AsQueryable();
-      if (specification != null)
-        query = specification.Apply(query);
-      return query.Select(selector).ToList();
-    }
-
-    public Project? GetByUid(Guid uid)
-    {
-      return _context.Projects.FirstOrDefault(p => p.Uid.Equals(uid));
-    }
-
-    public Project Add(Project project)
+    public override Project Create(Project project)
     {
       // Ensure all sub-entities have appropriate UserId fields set
       // NOTE: This will have to change if we implement team-based project ownership.
@@ -42,14 +31,12 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
         });
       });
 
-      var entry = _context.Projects.Add(project);
-      _context.SaveChanges();
-      return entry.Entity;
+      return base.Create(project);
     }
 
-    public bool Update(Project project)
+    public override bool Update(Project project)
     {
-      var existingProject = _context.Set<Project>()
+      var existingProject = GetDbSet()
         .Include(p => p.ProjectColumns)
           .ThenInclude(pc => pc.WorkItems)
             .ThenInclude(wi => wi.WorkItemTags)
@@ -67,11 +54,16 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
         prop.SetValue(existingProject, value);
       }
 
+      // TODO: Inject EF repos for nested entities and use them to soft-delete entities that should be removed instead of actually deleting them from the DB.
+
       // Synchronize columns
       if (project.ProjectColumns == null)
       {
         // Remove all columns if incoming collection is null
-        existingProject.ProjectColumns.Clear();
+        foreach (var col in existingProject.ProjectColumns)
+        {
+          _projectColumnRepo.Delete(col);
+        }
       }
       else
       {
@@ -79,7 +71,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
         var columnsToRemove = existingProject.ProjectColumns.Where(ec => !project.ProjectColumns.Any(pc => pc.Uid == ec.Uid)).ToList();
         foreach (var col in columnsToRemove)
         {
-          existingProject.ProjectColumns.Remove(col);
+          _projectColumnRepo.Delete(col);
         }
 
         // Add new columns from incoming project
@@ -107,7 +99,10 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
             if (column.WorkItems == null)
             {
               // Remove all work items if incoming collection is null
-              existingColumn.WorkItems.Clear();
+              foreach (var workItem in existingColumn.WorkItems)
+              {
+                _workItemRepo.Delete(workItem);
+              }
             }
             else
             {
@@ -115,7 +110,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
               var workItemsToRemove = existingColumn.WorkItems.Where(ew => !column.WorkItems.Any(w => w.Uid == ew.Uid)).ToList();
               foreach (var wi in workItemsToRemove)
               {
-                existingColumn.WorkItems.Remove(wi);
+                _workItemRepo.Delete(wi);
               }
 
               // Add new work items from incoming column
@@ -161,34 +156,23 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
           }
         }
       }
-
-      _context.SaveChanges();
       return true;
     }
 
-    public bool Delete(Guid uid)
+    protected override IEnumerable<IVueboardSoftDeleteEntity> GetNestedSoftDeleteEntities(Project entity)
     {
-      var project = GetByUid(uid);
-      if (project == null) return false;
-      _context.Projects.Remove(project);
-      _context.SaveChanges();
-      return true;
+      var nestedEntities = new List<IVueboardSoftDeleteEntity>();
+      foreach (var col in entity.ProjectColumns ?? [])
+      {
+        nestedEntities.Add(col);
+        foreach (var workItem in col.WorkItems ?? [])
+        {
+          nestedEntities.Add(workItem);
+        }
+      }
+      return nestedEntities;
     }
-
-    private bool isScalarEntityProperty(PropertyInfo prop)
-    {
-      return (
-        !typeof(System.Collections.IEnumerable).IsAssignableFrom(prop.PropertyType)
-        || prop.PropertyType == typeof(string)
-      ) && (
-        prop.PropertyType != typeof(Project)
-        && prop.PropertyType != typeof(ProjectColumn)
-        && prop.PropertyType != typeof(WorkItem)
-        && prop.PropertyType != typeof(WorkItemTag)
-        && prop.PropertyType != typeof(WorkItemTagRef)
-      );
-    }
-
+    
     // Equality comparer for WorkItemTag based on Uid
     private class WorkItemTagUidEqualityComparer : IEqualityComparer<WorkItemTag>
     {

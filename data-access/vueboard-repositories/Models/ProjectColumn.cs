@@ -1,12 +1,9 @@
 namespace Vueboard.DataAccess.Models
 {
-  public class ProjectColumn
+  public class ProjectColumn : VueboardSoftDeleteEntity
   {
-    public int Id { get; set; }
-    public Guid Uid { get; set; } = Guid.NewGuid();
     public DateTime Created { get; set; } = DateTime.UtcNow;
     public DateTime Updated { get; set; } = DateTime.UtcNow;
-    public bool IsDeleted { get; set; } = false;
     public int ProjectId { get; set; }
     public string Name { get; set; } = string.Empty;
     public bool IsDefault { get; set; }
