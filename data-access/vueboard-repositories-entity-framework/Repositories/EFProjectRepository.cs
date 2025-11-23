@@ -68,8 +68,27 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
       }
 
       // Synchronize columns
-      if (project.ProjectColumns != null)
+      if (project.ProjectColumns == null)
       {
+        // Remove all columns if incoming collection is null
+        existingProject.ProjectColumns.Clear();
+      }
+      else
+      {
+        // Remove columns not present in incoming project
+        var columnsToRemove = existingProject.ProjectColumns.Where(ec => !project.ProjectColumns.Any(pc => pc.Uid == ec.Uid)).ToList();
+        foreach (var col in columnsToRemove)
+        {
+          existingProject.ProjectColumns.Remove(col);
+        }
+
+        // Add new columns from incoming project
+        var columnsToAdd = project.ProjectColumns.Where(pc => !existingProject.ProjectColumns.Any(ec => ec.Uid == pc.Uid)).ToList();
+        foreach (var col in columnsToAdd)
+        {
+          existingProject.ProjectColumns.Add(col);
+        }
+
         foreach (var column in project.ProjectColumns)
         {
           var existingColumn = existingProject.ProjectColumns.FirstOrDefault(c => c.Uid == column.Uid);
@@ -85,8 +104,27 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
             }
 
             // Synchronize work items
-            if (column.WorkItems != null)
+            if (column.WorkItems == null)
             {
+              // Remove all work items if incoming collection is null
+              existingColumn.WorkItems.Clear();
+            }
+            else
+            {
+              // Remove work items not present in incoming column
+              var workItemsToRemove = existingColumn.WorkItems.Where(ew => !column.WorkItems.Any(w => w.Uid == ew.Uid)).ToList();
+              foreach (var wi in workItemsToRemove)
+              {
+                existingColumn.WorkItems.Remove(wi);
+              }
+
+              // Add new work items from incoming column
+              var workItemsToAdd = column.WorkItems.Where(w => !existingColumn.WorkItems.Any(ew => ew.Uid == w.Uid)).ToList();
+              foreach (var wi in workItemsToAdd)
+              {
+                existingColumn.WorkItems.Add(wi);
+              }
+
               foreach (var workItem in column.WorkItems)
               {
                 var existingWorkItem = existingColumn.WorkItems.FirstOrDefault(w => w.Uid == workItem.Uid);
@@ -103,7 +141,6 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
 
                   // Synchronize tags (many-to-many)
                   var incomingTags = workItem.WorkItemTags ?? new List<WorkItemTag>();
-                  // var unchangedTags = existingWorkItem.WorkItemTags.Where(et => incomingTags.Any(t => t.Uid.Equals(et.Uid)));
                   var tagsToAdd = incomingTags.Where(t => !existingWorkItem.WorkItemTags.Any(et => et.Uid.Equals(t.Uid))).ToList();
                   var tagsToRemove = existingWorkItem.WorkItemTags.Where(et => !incomingTags.Any(t => t.Uid.Equals(et.Uid))).ToList();
 
