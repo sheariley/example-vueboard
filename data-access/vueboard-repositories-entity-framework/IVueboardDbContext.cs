@@ -4,20 +4,23 @@ using Vueboard.DataAccess.Models;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework
 {
-    public interface IVueboardDbContext
-    {
-        DbSet<Project> Projects { get; set; }
-        DbSet<ProjectColumn> ProjectColumns { get; set; }
-        DbSet<WorkItem> WorkItems { get; set; }
-        DbSet<WorkItemTag> WorkItemTags { get; set; }
+  public interface IVueboardDbContext : IDisposable
+  {
+    DbSet<Project> Projects { get; }
+    DbSet<ProjectColumn> ProjectColumns { get; }
+    DbSet<WorkItem> WorkItems { get; }
+    DbSet<WorkItemTag> WorkItemTags { get; }
+    //DbSet<WorkItemTagRef> WorkItemTagRefs { get; set; }
 
-        int SaveChanges();
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+    int SaveChanges();
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
-        void SetEntityState<TEntity>(TEntity entity, EntityState state)
-          where TEntity : class;
+    void SetEntityState<TEntity>(TEntity entity, EntityState state)
+      where TEntity : class;
 
-        EntityEntry<TEntity> Attach<TEntity>(TEntity entity)
-          where TEntity : class;
-    }
+    EntityEntry<TEntity> Attach<TEntity>(TEntity entity)
+      where TEntity : class;
+
+    DbSet<TEntity> Set<TEntity>() where TEntity : class;
+  }
 }

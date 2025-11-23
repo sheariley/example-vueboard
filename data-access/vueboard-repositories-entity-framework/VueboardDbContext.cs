@@ -15,6 +15,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
     public DbSet<ProjectColumn> ProjectColumns { get; set; }
     public DbSet<WorkItem> WorkItems { get; set; }
     public DbSet<WorkItemTag> WorkItemTags { get; set; }
+    //public DbSet<WorkItemTagRef> WorkItemTagRefs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -33,20 +34,36 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
         .HasForeignKey(wi => wi.ProjectColumnId);
 
       // WorkItem <-> WorkItemTag (Many-to-Many using WorkItemTagRef table)
+      modelBuilder.Entity<WorkItemTagRef>(entity =>
+      {
+        entity.ToTable(t => {
+          t.Metadata.SetTableName("work_item_tag_refs");
+          t.Metadata.SetSchema("user_data");
+        });
+        entity.HasKey(e => new { e.WorkItemId, e.WorkItemTagId }); // composite PK
+
+        entity.HasOne<WorkItem>()
+            .WithMany()
+            .HasForeignKey(e => e.WorkItemId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        entity.HasOne<WorkItemTag>()
+            .WithMany()
+            .HasForeignKey(e => e.WorkItemTagId)
+            .OnDelete(DeleteBehavior.Cascade);
+      });
+
       modelBuilder.Entity<WorkItem>()
         .ToTable(p => p.Metadata.SetSchema("user_data"))
         .HasMany(wi => wi.WorkItemTags)
-        .WithMany(wt => wt.WorkItems)
-        .UsingEntity<WorkItemTagRef>();
+        .WithMany(w => w.WorkItems)
+        .UsingEntity<WorkItemTagRef>(
+          j => j.HasOne<WorkItemTag>().WithMany().HasForeignKey(r => r.WorkItemTagId),
+          j => j.HasOne<WorkItem>().WithMany().HasForeignKey(r => r.WorkItemId)
+        );
 
       modelBuilder.Entity<WorkItemTag>()
         .ToTable(t => t.Metadata.SetSchema("user_data"));
-
-      modelBuilder.Entity<WorkItemTagRef>()
-        .ToTable(r => {
-          r.Metadata.SetTableName("work_item_tag_refs");
-          r.Metadata.SetSchema("user_data");
-        });
     }
 
     public void SetEntityState<TEntity>(TEntity entity, EntityState state)

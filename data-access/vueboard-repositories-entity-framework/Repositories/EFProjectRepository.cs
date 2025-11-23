@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Vueboard.DataAccess.Models;
 
@@ -48,22 +49,82 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
 
     public bool Update(Project project)
     {
-      var projectWorkItemTags = project.ProjectColumns?.SelectMany(
-        c => c.WorkItems?.SelectMany(w => w.WorkItemTags) ?? Enumerable.Empty<WorkItemTag>()
-      ).Distinct(new WorkItemTagUidEqualityComparer());
+      var existingProject = _context.Set<Project>()
+        .Include(p => p.ProjectColumns)
+          .ThenInclude(pc => pc.WorkItems)
+            .ThenInclude(wi => wi.WorkItemTags)
+        .FirstOrDefault(p => p.Uid == project.Uid);
 
-      // Prevent EF from updating existing WorkItemTag entities
-      foreach (var tag in projectWorkItemTags ?? Enumerable.Empty<WorkItemTag>())
+      if (existingProject == null)
+        return false;
+
+      // Update scalar properties only (not navigation properties)
+      var scalarProperties = typeof(Project).GetProperties()
+        .Where(isScalarEntityProperty);
+      foreach (var prop in scalarProperties)
       {
-        // If tag exists, mark as unchanged
-        if (tag.Id > 0)
+        var value = prop.GetValue(project);
+        prop.SetValue(existingProject, value);
+      }
+
+      // Synchronize columns
+      if (project.ProjectColumns != null)
+      {
+        foreach (var column in project.ProjectColumns)
         {
-          _context.Attach(tag);
-          _context.SetEntityState(tag, EntityState.Unchanged);
+          var existingColumn = existingProject.ProjectColumns.FirstOrDefault(c => c.Uid == column.Uid);
+          if (existingColumn != null)
+          {
+            // Update scalar properties for column
+            var colScalarProps = typeof(ProjectColumn).GetProperties()
+              .Where(isScalarEntityProperty);
+            foreach (var prop in colScalarProps)
+            {
+              var value = prop.GetValue(column);
+              prop.SetValue(existingColumn, value);
+            }
+
+            // Synchronize work items
+            if (column.WorkItems != null)
+            {
+              foreach (var workItem in column.WorkItems)
+              {
+                var existingWorkItem = existingColumn.WorkItems.FirstOrDefault(w => w.Uid == workItem.Uid);
+                if (existingWorkItem != null)
+                {
+                  // Update scalar properties for work item
+                  var wiScalarProps = typeof(WorkItem).GetProperties()
+                    .Where(isScalarEntityProperty);
+                  foreach (var prop in wiScalarProps)
+                  {
+                    var value = prop.GetValue(workItem);
+                    prop.SetValue(existingWorkItem, value);
+                  }
+
+                  // Synchronize tags (many-to-many)
+                  var incomingTags = workItem.WorkItemTags ?? new List<WorkItemTag>();
+                  // var unchangedTags = existingWorkItem.WorkItemTags.Where(et => incomingTags.Any(t => t.Uid.Equals(et.Uid)));
+                  var tagsToAdd = incomingTags.Where(t => !existingWorkItem.WorkItemTags.Any(et => et.Uid.Equals(t.Uid))).ToList();
+                  var tagsToRemove = existingWorkItem.WorkItemTags.Where(et => !incomingTags.Any(t => t.Uid.Equals(et.Uid))).ToList();
+
+                  foreach (var tag in tagsToAdd)
+                  {
+                    if (tag.Id <= 0)
+                      tag.UserId = project.UserId;
+                    existingWorkItem.WorkItemTags.Add(tag);
+                  }
+
+                  foreach (var tag in tagsToRemove)
+                  {
+                    existingWorkItem.WorkItemTags.Remove(tag);
+                  }
+                }
+              }
+            }
+          }
         }
       }
 
-      _context.Projects.Update(project);
       _context.SaveChanges();
       return true;
     }
@@ -75,6 +136,20 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
       _context.Projects.Remove(project);
       _context.SaveChanges();
       return true;
+    }
+
+    private bool isScalarEntityProperty(PropertyInfo prop)
+    {
+      return (
+        !typeof(System.Collections.IEnumerable).IsAssignableFrom(prop.PropertyType)
+        || prop.PropertyType == typeof(string)
+      ) && (
+        prop.PropertyType != typeof(Project)
+        && prop.PropertyType != typeof(ProjectColumn)
+        && prop.PropertyType != typeof(WorkItem)
+        && prop.PropertyType != typeof(WorkItemTag)
+        && prop.PropertyType != typeof(WorkItemTagRef)
+      );
     }
 
     // Equality comparer for WorkItemTag based on Uid
