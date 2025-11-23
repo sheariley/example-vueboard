@@ -100,13 +100,6 @@ builder.Services.AddScoped<IProjectColumnQueryRoot, ProjectColumnQueryRoot>();
 builder.Services.AddScoped<IWorkItemQueryRoot, WorkItemQueryRoot>();
 builder.Services.AddScoped<IWorkItemTagQueryRoot, WorkItemTagQueryRoot>();
 
-// TODO: Remove these lines if not needed, due to data loader reg below
-// Register DataLoaders
-// builder.Services.AddDataLoader<ProjectByIdDataLoader>();
-// builder.Services.AddDataLoader<ProjectColumnsByProjectIdDataLoader>();
-// builder.Services.AddDataLoader<WorkItemsByProjectColumnIdDataLoader>();
-// builder.Services.AddDataLoader<WorkItemTagsByWorkItemIdDataLoader>();
-
 // Configure GraphQL
 builder.Services.AddGraphQLServer()
   .AddQueryType<Query>()

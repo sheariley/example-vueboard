@@ -54,8 +54,6 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
         prop.SetValue(existingProject, value);
       }
 
-      // TODO: Inject EF repos for nested entities and use them to soft-delete entities that should be removed instead of actually deleting them from the DB.
-
       // Synchronize columns
       if (project.ProjectColumns == null)
       {

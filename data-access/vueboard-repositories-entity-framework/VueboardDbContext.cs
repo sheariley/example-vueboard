@@ -51,7 +51,6 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
             .OnDelete(DeleteBehavior.Cascade);
       });
 
-      // TODO: Implement soft-delete stored procedures for deleting most entities and register them with the DbContext here.
       modelBuilder.Entity<WorkItem>()
         .ToTable(p => p.Metadata.SetSchema("user_data"))
         .HasMany(wi => wi.WorkItemTags)
