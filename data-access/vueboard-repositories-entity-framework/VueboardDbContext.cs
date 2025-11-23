@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Vueboard.DataAccess.Models;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework
@@ -46,6 +47,12 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
           r.Metadata.SetTableName("work_item_tag_refs");
           r.Metadata.SetSchema("user_data");
         });
+    }
+
+    public void SetEntityState<TEntity>(TEntity entity, EntityState state)
+      where TEntity : class
+    {
+      base.Entry(entity).State = state;
     }
   }
 }

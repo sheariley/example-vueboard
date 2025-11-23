@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using Vueboard.DataAccess.Models;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework
@@ -47,6 +48,21 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
 
     public bool Update(Project project)
     {
+      var projectWorkItemTags = project.ProjectColumns?.SelectMany(
+        c => c.WorkItems?.SelectMany(w => w.WorkItemTags) ?? Enumerable.Empty<WorkItemTag>()
+      ).Distinct(new WorkItemTagUidEqualityComparer());
+
+      // Prevent EF from updating existing WorkItemTag entities
+      foreach (var tag in projectWorkItemTags ?? Enumerable.Empty<WorkItemTag>())
+      {
+        // If tag exists, mark as unchanged
+        if (tag.Id > 0)
+        {
+          _context.Attach(tag);
+          _context.SetEntityState(tag, EntityState.Unchanged);
+        }
+      }
+
       _context.Projects.Update(project);
       _context.SaveChanges();
       return true;
@@ -59,6 +75,22 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
       _context.Projects.Remove(project);
       _context.SaveChanges();
       return true;
+    }
+
+    // Equality comparer for WorkItemTag based on Uid
+    private class WorkItemTagUidEqualityComparer : IEqualityComparer<WorkItemTag>
+    {
+      public bool Equals(WorkItemTag? x, WorkItemTag? y)
+      {
+        if (ReferenceEquals(x, y)) return true;
+        if (x is null || y is null) return false;
+        return x.Uid.Equals(y.Uid);
+      }
+  
+      public int GetHashCode(WorkItemTag obj)
+      {
+        return obj.Uid.GetHashCode();
+      }
     }
   }
 }
