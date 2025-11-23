@@ -183,6 +183,8 @@ grant insert on table "user_data"."work_item_tag_refs" to "anon";
 
 grant select on table "user_data"."work_item_tag_refs" to "anon";
 
+grant delete on table "user_data"."work_item_tag_refs" to "anon";
+
 
   create policy "Allow anon to write to site_log"
   on "site_data"."site_log"
@@ -329,5 +331,17 @@ using ((EXISTS ( SELECT 1
      JOIN user_data.projects p ON ((pc.project_id = p.id)))
   WHERE ((wi.id = work_item_tag_refs.work_item_id) AND (((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (p.user_id)::text)))));
 
+
+
+  create policy "Allow anon to delete from work_item_tag_refs"
+  on "user_data"."work_item_tag_refs"
+  as permissive
+  for delete
+  to anon
+using ((EXISTS ( SELECT 1
+   FROM ((user_data.work_items wi
+     JOIN user_data.project_columns pc ON ((wi.project_column_id = pc.id)))
+     JOIN user_data.projects p ON ((pc.project_id = p.id)))
+  WHERE ((wi.id = work_item_tag_refs.work_item_id) AND (((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (p.user_id)::text)))));
 
 

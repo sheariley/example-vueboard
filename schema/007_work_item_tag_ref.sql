@@ -36,13 +36,28 @@ WITH CHECK (
   )
 );
 
+CREATE POLICY "Allow anon to delete from work_item_tag_refs"
+ON "user_data"."work_item_tag_refs"
+AS PERMISSIVE
+FOR DELETE
+TO anon
+USING (
+  EXISTS (
+    SELECT 1 FROM user_data.work_items wi
+    JOIN user_data.project_columns pc ON wi.project_column_id = pc.id
+    JOIN user_data.projects p ON pc.project_id = p.id
+    WHERE wi.id = work_item_id
+      AND (current_setting('request.jwt.claims', true)::json ->> 'sub') = p.user_id::text
+  )
+);
+
 -- Remove default privileges
 REVOKE ALL PRIVILEGES
 ON TABLE "user_data"."work_item_tag_refs"
 FROM anon;
 
--- Grant select and insert for anon
-GRANT SELECT, INSERT
+-- Grant select, insert, delete for anon
+GRANT SELECT, INSERT, DELETE
 ON TABLE "user_data"."work_item_tag_refs"
 TO anon;
 
