@@ -29,8 +29,8 @@
 - [x] Add JWT middleware configured with Supabase JWT secret and issuer.
 - [x] Implement a DbConnectionInterceptor to set claims in Postgres session upon establishing a connection to the DB.
 - [x] Implement DataLoaders for relationships.
-- [ ] Ensure database connection pooling is configured for database clients (.NET GraphQL web API).
-- [ ] Configure CORS and TLS on the API and on Supabase OAuth redirect URIs.
+- [x] Ensure database connection pooling is configured for database clients (.NET GraphQL web API).
+- [x] Configure CORS and TLS on the API and on Supabase OAuth redirect URIs.
 - [ ] Add Redis for caching and use it for heavy read queries. (TBD later)
 - [ ] Add logging, rate limiting, and health endpoints.
 - [ ] Run security review: ensure no service-role key exposure in client code or build logs.
