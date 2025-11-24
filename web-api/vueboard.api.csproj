@@ -15,5 +15,6 @@
   <ItemGroup>
     <ProjectReference Include="..\data-access\vueboard-repositories\vueboard-repositories.csproj" />
     <ProjectReference Include="..\data-access\vueboard-repositories-entity-framework\vueboard-repositories-entity-framework.csproj" />
+    <ProjectReference Include="..\server-utils\vueboard-server-environment\vueboard.server.environment.csproj" />
   </ItemGroup>
 </Project>

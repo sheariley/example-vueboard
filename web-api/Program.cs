@@ -7,9 +7,13 @@ using Vueboard.DataAccess.Repositories.EntityFramework;
 using Vueboard.DataAccess.Repositories.EntityFramework.Config;
 using Vueboard.DataAccess.Repositories;
 using Vueboard.DataAccess.Repositories.EntityFramework.QueryRoots;
+using Vueboard.Server.Environment;
 // using Vueboard.DataAccess.Repositories.InMemory;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var serverEnvironment = ServerEnvironment.FromEnvironmentVariables();
+builder.Services.AddSingleton(serverEnvironment);
 
 // Minimal configuration - in real project use configuration providers and secrets
 builder.Services.AddLogging();
@@ -115,8 +119,7 @@ builder.Services.AddGraphQLServer()
   .AddDataLoader<WorkItemTagsByWorkItemIdDataLoader>()
   .ModifyRequestOptions(opts =>
   {
-    // TODO: Only enable this when in dev mode (use env vars to determine this)
-    opts.IncludeExceptionDetails = true;
+    opts.IncludeExceptionDetails = serverEnvironment.EnvironmentType != ServerEnvironmentType.Production;
   });
 
 var app = builder.Build();

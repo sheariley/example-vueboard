@@ -10,6 +10,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vueboard-repositories", "da
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vueboard-repositories-entity-framework", "data-access\vueboard-repositories-entity-framework\vueboard-repositories-entity-framework.csproj", "{36E33122-18A7-41C1-AEB2-16893AEEC64E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "server-utils", "server-utils", "{8D5D52B1-451F-4D03-9A91-5DB78E4020A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vueboard.server.environment", "server-utils\vueboard-server-environment\vueboard.server.environment.csproj", "{90E408FF-1B66-42F5-A926-99121893E7B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +32,10 @@ Global
 		{36E33122-18A7-41C1-AEB2-16893AEEC64E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36E33122-18A7-41C1-AEB2-16893AEEC64E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36E33122-18A7-41C1-AEB2-16893AEEC64E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90E408FF-1B66-42F5-A926-99121893E7B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90E408FF-1B66-42F5-A926-99121893E7B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90E408FF-1B66-42F5-A926-99121893E7B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90E408FF-1B66-42F5-A926-99121893E7B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -38,5 +46,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{7018B504-A42A-4817-B6AB-2BE5B28BD7CC} = {C51AEAE5-84AF-48A6-96D1-163A6B1CFDB3}
 		{36E33122-18A7-41C1-AEB2-16893AEEC64E} = {C51AEAE5-84AF-48A6-96D1-163A6B1CFDB3}
+		{90E408FF-1B66-42F5-A926-99121893E7B9} = {8D5D52B1-451F-4D03-9A91-5DB78E4020A9}
 	EndGlobalSection
 EndGlobal
