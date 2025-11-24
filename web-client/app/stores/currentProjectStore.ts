@@ -14,6 +14,7 @@ import {
 } from '~/types';
 import coerceErrorMessage from '~/util/coerceErrorMessage';
 import { useProjectsGraphQLClient } from '~/api-clients/projects-graphql-client';
+import { createWriteableEntity } from '~/util/objectTransforms';
 
 export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   const projectsApiClient = useProjectsGraphQLClient()
@@ -68,8 +69,8 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     // ensure project columns and their work items are sorted by index
     projectColumns.value = sortBy(
       (projectEntity.projectColumns || []).map(x => ({
-        ...x,
-        workItems: sortBy(x.workItems, 'index'),
+        ...createWriteableEntity(x),
+        workItems: sortBy(x.workItems?.map(createWriteableEntity), 'index'),
       })),
       'index'
     )
@@ -255,6 +256,15 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
     _editingColumn.value = undefined
   }
 
+  function findWorkItem(workItemUid: string) {
+    const parentColumn = projectColumns.value.find(x => x.uid === _editingWorkItem.value?.parentColumnUid)
+    if (!parentColumn) {
+      return undefined
+    }
+
+    return parentColumn.workItems?.find(x => x.uid === workItemUid)
+  }
+
   const _editingWorkItem = ref<{
     parentColumnUid: string
     workItem: WorkItem
@@ -265,14 +275,9 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
   const workItemEditTarget = computed(() => {
     if (!_editingWorkItem.value?.workItem) return undefined
 
-    const uid = _editingWorkItem.value?.workItem.uid
+    const workItemUid = _editingWorkItem.value?.workItem.uid
 
-    const parentColumn = projectColumns.value.find(x => x.uid === _editingWorkItem.value?.parentColumnUid)
-    if (!parentColumn) {
-      return undefined
-    }
-
-    return parentColumn.workItems?.find(x => x.uid === uid)
+    return findWorkItem(workItemUid)
   })
 
   function startWorkItemEdit(workItem: WorkItem, parentColumnUid: string) {
@@ -290,7 +295,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
 
     const { workItem } = _editingWorkItem.value
 
-    const targetWorkItem = workItemEditTarget.value
+    const targetWorkItem = findWorkItem(workItem.uid)
 
     if (!targetWorkItem) {
       // TODO: Show error message
