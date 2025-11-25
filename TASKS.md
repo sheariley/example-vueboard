@@ -46,3 +46,9 @@
   - [ ] Containerize cleanup process
 - [ ] Use docker compose to create a unified image of all .NET containers and Supabase
 - [ ] Create CI/CD script for building unified container image
+
+## Testing Tasks
+- [ ] Create unit tests for client-side
+- [ ] Create E2E tests
+- [ ] Create unit tests for server-side
+- [ ] Run unit and E2E tests as part of CI/CD
