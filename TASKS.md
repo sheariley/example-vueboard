@@ -32,7 +32,7 @@
 - [x] Implement DataLoaders for relationships.
 - [x] Ensure database connection pooling is configured for database clients (.NET GraphQL web API).
 - [x] Configure CORS and TLS on the API and on Supabase OAuth redirect URIs.
-- [ ] Add table for storing soft-delete history and FK values that could be restored if entity is restored.
+- [x] Add table for storing soft-delete history and FK values that could be restored if entity is restored.
 - [ ] Add Redis for caching and use it for heavy read queries. (TBD later)
 - [ ] Add logging, rate limiting, and health endpoints.
 - [ ] Run security review: ensure no service-role key exposure in client code or build logs.
