@@ -56,16 +56,5 @@ namespace Vueboard.DataAccess.Repositories
       return Delete(entity);
     }
 
-    protected bool isScalarEntityProperty(PropertyInfo prop)
-    {
-      return (
-        !typeof(System.Collections.IEnumerable).IsAssignableFrom(prop.PropertyType)
-        || prop.PropertyType == typeof(string)
-      ) && (
-        !typeof(IVueboardEntity).IsAssignableFrom(prop.PropertyType)
-        && prop.PropertyType != typeof(WorkItemTagRef)
-      );
-    }
-
   }
 }

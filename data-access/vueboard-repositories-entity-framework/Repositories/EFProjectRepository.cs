@@ -46,13 +46,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
         return false;
 
       // Update scalar properties only (not navigation properties)
-      var scalarProperties = typeof(Project).GetProperties()
-        .Where(isScalarEntityProperty);
-      foreach (var prop in scalarProperties)
-      {
-        var value = prop.GetValue(project);
-        prop.SetValue(existingProject, value);
-      }
+      existingProject.UpdateScalarProperties(project);
 
       // Synchronize columns
       if (project.ProjectColumns == null)
@@ -85,14 +79,8 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
           if (existingColumn != null)
           {
             // Update scalar properties for column
-            var colScalarProps = typeof(ProjectColumn).GetProperties()
-              .Where(isScalarEntityProperty);
-            foreach (var prop in colScalarProps)
-            {
-              var value = prop.GetValue(column);
-              prop.SetValue(existingColumn, value);
-            }
-
+            existingColumn.UpdateScalarProperties(column);
+            
             // Synchronize work items
             if (column.WorkItems == null)
             {
@@ -115,7 +103,18 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
               var workItemsToAdd = column.WorkItems.Where(w => !existingColumn.WorkItems.Any(ew => ew.Uid == w.Uid)).ToList();
               foreach (var wi in workItemsToAdd)
               {
-                existingColumn.WorkItems.Add(wi);
+                if (wi.Id <= 0)
+                {
+                  existingColumn.WorkItems.Add(wi);
+                }
+                else
+                {
+                  // pull existingWorkItem from local entities, because it may not exist
+                  // in the incoming ProjectColumn, as the user may have moved it to a diff column.
+                  // This avoids an attempt to attach duplicate entities to the context.
+                  var existingWorkItem = _context.WorkItems.Local.FirstOrDefault(w => w.Uid == wi.Uid);
+                  existingColumn.WorkItems.Add(existingWorkItem?.UpdateScalarProperties(wi) ?? wi);
+                }
               }
 
               foreach (var workItem in column.WorkItems)
@@ -124,13 +123,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
                 if (existingWorkItem != null)
                 {
                   // Update scalar properties for work item
-                  var wiScalarProps = typeof(WorkItem).GetProperties()
-                    .Where(isScalarEntityProperty);
-                  foreach (var prop in wiScalarProps)
-                  {
-                    var value = prop.GetValue(workItem);
-                    prop.SetValue(existingWorkItem, value);
-                  }
+                  existingWorkItem.UpdateScalarProperties(workItem);
 
                   // Synchronize tags (many-to-many)
                   var incomingTags = workItem.WorkItemTags ?? new List<WorkItemTag>();
