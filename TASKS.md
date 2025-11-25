@@ -39,3 +39,4 @@
 ## Configuration/Infrastructure Tasks
 - [x] Configure local SMTP server for development purposes
 - [x] Configure OAuth in Supabase config and setup providers
+- [ ] Create some seed data SQL files to provide some initial data for testing
