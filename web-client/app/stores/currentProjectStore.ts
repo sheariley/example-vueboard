@@ -146,7 +146,7 @@ export const useCurrentProjectStore = defineStore('currentProjectStore', () => {
       // update local values with values from server
       id.value = result.id
       uid.value = result.uid
-      setProjectOptions(result)
+      hydrateFromEntity(result)
       
       // commit changes to originalState for change detection
       commitChanges()
