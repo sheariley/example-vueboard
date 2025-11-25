@@ -68,7 +68,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
     public void SetEntityState<TEntity>(TEntity entity, EntityState state)
       where TEntity : class
     {
-      base.Entry(entity).State = state;
+      Entry(entity).State = state;
     }
 
     public IEnumerable<EntityEntry> Entries()

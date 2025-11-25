@@ -42,6 +42,8 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
             .ThenInclude(wi => wi.WorkItemTags)
         .FirstOrDefault(p => p.Uid == project.Uid);
 
+      var allWorkItemTags = _context.WorkItemTags.ToList();
+
       if (existingProject == null)
         return false;
 
@@ -70,7 +72,11 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
         var columnsToAdd = project.ProjectColumns.Where(pc => !existingProject.ProjectColumns.Any(ec => ec.Uid == pc.Uid)).ToList();
         foreach (var col in columnsToAdd)
         {
-          existingProject.ProjectColumns.Add(col);
+          // Create a new column object without copying WorkItems so
+          // we don't attach them yet (happens later).
+          var newCol = new ProjectColumn();
+          newCol.UpdateScalarProperties(col);
+          existingProject.ProjectColumns.Add(newCol);
         }
 
         foreach (var column in project.ProjectColumns)
@@ -122,6 +128,14 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
                   {
                     existingWorkItem.UpdateScalarProperties(wi);
                     _context.SetEntityState(existingWorkItem, EntityState.Modified);
+                    // make sure we don't remove tags just because we removed the work item from a column
+                    // as a result of moving it to another column
+                    var tagRefs = _context.Entries<WorkItemTagRef>()
+                      .Where(r => r.Entity.WorkItemId == existingWorkItem.Id);
+                    foreach (var tagRef in tagRefs)
+                    {
+                      _context.SetEntityState(tagRef.Entity, EntityState.Unchanged);
+                    }
                   }
                   existingColumn.WorkItems.Add(existingWorkItem ?? wi);
                 }
@@ -137,7 +151,9 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
 
                   // Synchronize tags (many-to-many)
                   var incomingTags = workItem.WorkItemTags ?? new List<WorkItemTag>();
-                  var tagsToAdd = incomingTags.Where(t => !existingWorkItem.WorkItemTags.Any(et => et.Uid.Equals(t.Uid))).ToList();
+                  var tagsToAdd = incomingTags.Where(t => !existingWorkItem.WorkItemTags.Any(et => et.Uid.Equals(t.Uid)))
+                    .Select(t => t.Id <= 0 ? t : allWorkItemTags.First(et => et.Uid.Equals(t.Uid)))
+                    .ToList();
                   var tagsToRemove = existingWorkItem.WorkItemTags.Where(et => !incomingTags.Any(t => t.Uid.Equals(et.Uid))).ToList();
 
                   foreach (var tag in tagsToAdd)
