@@ -6,6 +6,10 @@ export const useAuthStore = defineStore('authStore', () => {
   const isAuthenticated = computed(() => !!_user.value)
   const userEmail = computed(() => _user.value?.email)
   const userId = computed(() => _user.value?.sub)
+  const userAvatarUrl = computed<string | null>(() => {
+    const meta = _user.value?.user_metadata ?? {}
+    return meta?.avatar_url || null;
+  })
 
   const _redirectInfo = useSupabaseCookieRedirect()
   const postAuthRedirectPath = computed(() => _redirectInfo.path.value)
@@ -50,6 +54,8 @@ export const useAuthStore = defineStore('authStore', () => {
     accessToken,
     userId,
     userEmail,
+    userAvatarUrl,
+
     getAndClearPostAuthRedirectPath,
     signInWithOAuth,
     signOut

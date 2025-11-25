@@ -1,9 +1,13 @@
 <template>
   <UHeader>
+    <template #left>
+
+    </template>
     <template #title>
-      <div class="text-lg text-nowrap">
-        <span class="text-primary">Vue</span><span class="text-secondary">Board</span>
-      </div>
+      <AppLogo />
+    </template>
+    <template #right>
+      <UserMenu />
     </template>
   </UHeader>
 </template>

@@ -64,7 +64,7 @@
 
 <script lang="ts" setup>
   import type { ProjectColumn } from '~/types'
-import { createFontAwesomeIcon } from '~/util/createFontAwesomeIcon'
+  import { createFontAwesomeIcon } from '~/util/createFontAwesomeIcon'
   
   const { show: showConfirmModal } = useConfirmModal()
   const toast = useToast()
