@@ -40,3 +40,9 @@
 - [x] Configure local SMTP server for development purposes
 - [x] Configure OAuth in Supabase config and setup providers
 - [ ] Create some seed data SQL files to provide some initial data for testing
+- [ ] Create scheduled cleanup job that removes soft-deleted records after a certain amount of time.
+  - [ ] Add DeleteDate to soft-delete enabled tables
+  - [ ] Create new .NET console app that performs the cleanup
+  - [ ] Containerize cleanup process
+- [ ] Use docker compose to create a unified image of all .NET containers and Supabase
+- [ ] Create CI/CD script for building unified container image
