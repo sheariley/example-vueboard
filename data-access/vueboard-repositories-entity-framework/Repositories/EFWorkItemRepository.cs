@@ -1,15 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Vueboard.DataAccess.Models;
+using Vueboard.Server.Environment.Auth;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework
 {
-  public class EFWorkItemRepository : EFGenericSoftDeleteRepository<WorkItem>, IWorkItemRepository
+  public class EFWorkItemRepository(
+    IVueboardDbContext context,
+    IUserIdAccessor userIdAccessor
+    ) : EFGenericSoftDeleteRepository<WorkItem>(context, userIdAccessor), IWorkItemRepository
   {
-    public EFWorkItemRepository(IVueboardDbContext context)
-      : base(context)
-    {
-    }
-
     public IEnumerable<WorkItem> GetAllForProjectColumn(int projectColumnId)
     {
       return GetAllForProjectColumns([projectColumnId]);
@@ -26,6 +25,11 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
     {
       var item = GetById(workItemId);
       return item?.WorkItemTags ?? new List<WorkItemTag>();
+    }
+
+    protected override int? GetParentID(WorkItem entity)
+    {
+      return entity.ProjectColumnId;
     }
 
     protected override void BeforeDelete(WorkItem entity)

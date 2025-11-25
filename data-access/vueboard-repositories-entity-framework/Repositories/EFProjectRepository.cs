@@ -1,23 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using Vueboard.DataAccess.Models;
+using Vueboard.Server.Environment.Auth;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework
 {
-  public class EFProjectRepository : EFGenericSoftDeleteRepository<Project>, IProjectRepository
+  public class EFProjectRepository(
+    IVueboardDbContext context,
+    IUserIdAccessor userIdAccessor,
+    IProjectColumnRepository projectColumnRepo,
+    IWorkItemRepository workItemRepo
+    ) : EFGenericSoftDeleteRepository<Project>(context, userIdAccessor), IProjectRepository
   {
-    private IProjectColumnRepository _projectColumnRepo;
-    private IWorkItemRepository _workItemRepo;
-    
-    public EFProjectRepository(
-      IVueboardDbContext context,
-      IProjectColumnRepository projectColumnRepo,
-      IWorkItemRepository workItemRepo
-    )
-      : base(context)
-    {
-      _projectColumnRepo = projectColumnRepo;
-      _workItemRepo = workItemRepo;
-    }
+    private readonly IProjectColumnRepository _projectColumnRepo = projectColumnRepo;
+    private readonly IWorkItemRepository _workItemRepo = workItemRepo;
 
     public override Project Create(Project project)
     {
@@ -61,13 +56,6 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
       }
       else
       {
-        // Remove columns not present in incoming project
-        var columnsToRemove = existingProject.ProjectColumns.Where(ec => !ec.IsDeleted && !project.ProjectColumns.Any(pc => pc.Uid == ec.Uid)).ToList();
-        foreach (var col in columnsToRemove)
-        {
-          _projectColumnRepo.Delete(col);
-        }
-
         // Add new columns from incoming project
         var columnsToAdd = project.ProjectColumns.Where(pc => !existingProject.ProjectColumns.Any(ec => ec.Uid == pc.Uid)).ToList();
         foreach (var col in columnsToAdd)
@@ -159,7 +147,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
                   foreach (var tag in tagsToAdd)
                   {
                     if (tag.Id <= 0)
-                      tag.UserId = project.UserId;
+                      tag.UserId = _userIdAccessor.GetUserId();
                     existingWorkItem.WorkItemTags.Add(tag);
                   }
 
@@ -171,6 +159,13 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
               }
             }
           }
+        }
+
+        // Remove columns not present in incoming project
+        var columnsToRemove = existingProject.ProjectColumns.Where(ec => !ec.IsDeleted && !project.ProjectColumns.Any(pc => pc.Uid == ec.Uid)).ToList();
+        foreach (var col in columnsToRemove)
+        {
+          _projectColumnRepo.Delete(col);
         }
       }
       return true;

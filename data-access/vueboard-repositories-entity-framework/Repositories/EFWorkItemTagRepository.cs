@@ -2,19 +2,17 @@ using Vueboard.DataAccess.Models;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework
 {
-  public class EFWorkItemTagRepository : EFGenericRepository<WorkItemTag>, IWorkItemTagRepository
+  public class EFWorkItemTagRepository(
+    IVueboardDbContext context
+  ) : EFGenericRepository<WorkItemTag>(context), IWorkItemTagRepository
   {
     private List<WorkItemTag>? _localCache = null;
-    public EFWorkItemTagRepository(IVueboardDbContext context)
-      : base(context)
-    {
-    }
 
     // override to add duplicate-checking logic
     public override WorkItemTag Create(WorkItemTag tag)
     {
       if (_localCache == null)
-        hydrateLocalCache();
+        HydrateLocalCache();
 
       if (!_localCache!.Any(x => x.TagText == tag.TagText))
       {
@@ -24,7 +22,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
       return tag;
     }
 
-    private void hydrateLocalCache()
+    private void HydrateLocalCache()
     {
       _localCache = GetQueryRoot().ToList();
     }

@@ -8,6 +8,7 @@ using Vueboard.DataAccess.Repositories.EntityFramework.Config;
 using Vueboard.DataAccess.Repositories;
 using Vueboard.DataAccess.Repositories.EntityFramework.QueryRoots;
 using Vueboard.Server.Environment;
+using Vueboard.Server.Environment.Auth;
 // using Vueboard.DataAccess.Repositories.InMemory;
 
 var builder = WebApplication.CreateBuilder(args);

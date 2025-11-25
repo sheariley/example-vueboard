@@ -4,17 +4,13 @@ using Vueboard.DataAccess.Models;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework
 {
-  public class VueboardDbContext : DbContext, IVueboardDbContext
+  public class VueboardDbContext(DbContextOptions<VueboardDbContext> options) : DbContext(options), IVueboardDbContext
   {
-    public VueboardDbContext(DbContextOptions<VueboardDbContext> options)
-        : base(options)
-    {
-    }
-
     public DbSet<Project> Projects { get; set; }
     public DbSet<ProjectColumn> ProjectColumns { get; set; }
     public DbSet<WorkItem> WorkItems { get; set; }
     public DbSet<WorkItemTag> WorkItemTags { get; set; }
+    public DbSet<SoftDelete> SoftDeletes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -62,6 +58,9 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
         );
 
       modelBuilder.Entity<WorkItemTag>()
+        .ToTable(t => t.Metadata.SetSchema("user_data"));
+
+      modelBuilder.Entity<SoftDelete>()
         .ToTable(t => t.Metadata.SetSchema("user_data"));
     }
 

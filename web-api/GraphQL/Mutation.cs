@@ -2,6 +2,7 @@ using Vueboard.Api.Auth;
 using Vueboard.Api.GraphQL.Models;
 using Vueboard.DataAccess.Models;
 using Vueboard.DataAccess.Repositories;
+using Vueboard.Server.Environment.Auth;
 
 namespace Vueboard.Api.GraphQL
 {

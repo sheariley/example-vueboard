@@ -1,20 +1,26 @@
 using Microsoft.EntityFrameworkCore;
 using Vueboard.DataAccess.Models;
+using Vueboard.Server.Environment.Auth;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework
 {
-  public abstract class EFGenericSoftDeleteRepository<TEntity> : GenericSoftDeleteRepository<TEntity>, IGenericRepository<TEntity>
+  public abstract class EFGenericSoftDeleteRepository<TEntity>(
+    IVueboardDbContext context,
+    IUserIdAccessor userIdAccessor
+  ) : GenericSoftDeleteRepository<TEntity>, IGenericRepository<TEntity>
     where TEntity : class, IVueboardSoftDeleteEntity
   {
-    protected IVueboardDbContext _context;
-    public EFGenericSoftDeleteRepository(IVueboardDbContext context)
-    {
-      _context = context;
-    }
+    protected readonly IVueboardDbContext _context = context;
+    protected readonly IUserIdAccessor _userIdAccessor = userIdAccessor;
 
     protected virtual DbSet<TEntity> GetDbSet()
     {
       return _context.Set<TEntity>();
+    }
+
+    protected virtual int? GetParentID(TEntity entity)
+    {
+      return null;
     }
 
     protected override IQueryable<TEntity> GetRawQueryRoot()
@@ -37,6 +43,24 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
     {
       GetDbSet().Update(entity);
       return true;
+    }
+
+    public override bool Delete(TEntity? entity)
+    {
+      
+      var result = base.Delete(entity);
+      if (entity != null)
+      {
+        _context.SoftDeletes.Add(new SoftDelete
+        {
+          Uid = Guid.NewGuid(),
+          Deleted = DateTime.UtcNow,
+          EntityType = entity.GetType().Name,
+          UserId = _userIdAccessor.GetUserId(),
+          ParentId = GetParentID(entity)
+        });
+      }
+      return result;
     }
 
   }

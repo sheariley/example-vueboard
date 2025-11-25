@@ -1,4 +1,4 @@
-namespace Vueboard.Api.Auth
+namespace Vueboard.Server.Environment.Auth
 {
   public interface IUserIdAccessor
   {
