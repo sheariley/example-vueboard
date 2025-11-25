@@ -1,7 +1,15 @@
+using Vueboard.Server.Environment;
+
 namespace Vueboard.DataAccess.Repositories.EntityFramework.Config
 {
   public class VueboardDbContextEnvPostgresConfigProvider : IVueboardDbContextConfigProvider
   {
+    private readonly IServerEnvironment _serverEnv;
+    public VueboardDbContextEnvPostgresConfigProvider(IServerEnvironment serverEnvironment)
+    {
+      _serverEnv = serverEnvironment;
+    }
+
     public IVueboardDbContextConfig Provide()
     {
       return new VueboardDbContextPostgresConfig()
@@ -11,7 +19,8 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework.Config
         DbName = Environment.GetEnvironmentVariable("POSTGRES_DB_NAME") ?? "postgres",
         DbUser = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres",
         DbPassword = Environment.GetEnvironmentVariable("POSTGRES_PASS") ?? "postgres",
-        PoolerTenantId = Environment.GetEnvironmentVariable("POOLER_TENANT_ID")
+        PoolerTenantId = Environment.GetEnvironmentVariable("POOLER_TENANT_ID"),
+        EnableSensitvieDataLogging = _serverEnv.EnvironmentType == ServerEnvironmentType.Development
       };
     }
   }

@@ -10,14 +10,24 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework.Config
     public required string DbUser { get; init; }
     public required string DbPassword {get; init; }
     public string? PoolerTenantId { get; init; } = null;
+    public bool EnableSensitvieDataLogging { get; init; } = false;
 
     public void Apply(DbContextOptionsBuilder optionsBuilder)
     {
       var actualUserName = PoolerTenantId?.Length > 0 ? $"{DbUser}.{PoolerTenantId}" : DbUser;
       var connectionString = $"Host={Host};Port={Port};Database={DbName};Username={actualUserName};Password={DbPassword};SearchPath=const_data,user_data,public,extensions";
+
+      if (EnableSensitvieDataLogging)
+      {
+        optionsBuilder.EnableSensitiveDataLogging();
+        connectionString = $"{connectionString};Include Error Detail=true";
+      }
+
       optionsBuilder
         .UseNpgsql(connectionString)
         .UseSnakeCaseNamingConvention();
+      
+
     }
   }
 }
