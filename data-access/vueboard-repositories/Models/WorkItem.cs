@@ -4,7 +4,7 @@ namespace Vueboard.DataAccess.Models
   {
     public DateTime Created { get; set; } = DateTime.UtcNow;
     public DateTime Updated { get; set; } = DateTime.UtcNow;
-    public int ProjectColumnId { get; set; }
+    public int? ProjectColumnId { get; set; } = null;
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
     public string? Notes { get; set; }

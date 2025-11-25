@@ -19,7 +19,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
 
     protected override IQueryable<TEntity> GetRawQueryRoot()
     {
-      return _context.Set<TEntity>().AsQueryable();
+      return GetDbSet().AsQueryable();
     }
 
     public override void CommitChanges()

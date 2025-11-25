@@ -4,7 +4,7 @@ CREATE TABLE user_data.project_columns (
   created timestamp DEFAULT CURRENT_TIMESTAMP,
   updated timestamp DEFAULT CURRENT_TIMESTAMP,
   is_deleted boolean DEFAULT false,
-  project_id integer NOT NULL REFERENCES user_data.projects (id) ON DELETE CASCADE,
+  project_id integer REFERENCES user_data.projects (id) ON DELETE CASCADE,
 
   name varchar(32) NOT NULL,
   fg_color varchar(12) NULL,

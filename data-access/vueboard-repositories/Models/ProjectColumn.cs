@@ -4,7 +4,7 @@ namespace Vueboard.DataAccess.Models
   {
     public DateTime Created { get; set; } = DateTime.UtcNow;
     public DateTime Updated { get; set; } = DateTime.UtcNow;
-    public int ProjectId { get; set; }
+    public int? ProjectId { get; set; } = null;
     public string Name { get; set; } = string.Empty;
     public bool IsDefault { get; set; }
     public string? FgColor { get; set; }

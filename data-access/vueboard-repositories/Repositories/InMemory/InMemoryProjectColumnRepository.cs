@@ -19,7 +19,7 @@ namespace Vueboard.DataAccess.Repositories.InMemory
 
     public IEnumerable<ProjectColumn> GetAllForProjects(IEnumerable<int> projectIds)
     {
-      return GetQueryRoot().Where(c => projectIds.Contains(c.ProjectId));
+      return GetQueryRoot().Where(c => c.ProjectId.HasValue && projectIds.Contains(c.ProjectId.Value));
     }
 
     public override ProjectColumn Create(ProjectColumn column)

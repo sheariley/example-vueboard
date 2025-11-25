@@ -35,8 +35,8 @@ namespace Vueboard.Api.GraphQL
     {
       return await Task.Run(
         () => _queryRoot.Query
-          .Where(x => keys.Contains(x.ProjectId) && !x.IsDeleted)
-          .ToLookup(x => x.ProjectId)
+          .Where(x => x.ProjectId.HasValue && keys.Contains(x.ProjectId.Value) && !x.IsDeleted)
+          .ToLookup(x => x.ProjectId!.Value)
       , cancellationToken);
     }
   }
@@ -55,8 +55,8 @@ namespace Vueboard.Api.GraphQL
     {
       return await Task.Run(
         () => _queryRoot.Query
-          .Where(x => keys.Contains(x.ProjectColumnId) && !x.IsDeleted)
-          .ToLookup(x => x.ProjectColumnId)
+          .Where(x => x.ProjectColumnId.HasValue && keys.Contains(x.ProjectColumnId.Value) && !x.IsDeleted)
+          .ToLookup(x => x.ProjectColumnId!.Value)
         , cancellationToken);
     }
   }

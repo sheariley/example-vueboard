@@ -176,7 +176,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
       return true;
     }
 
-    protected override void AfterDelete(Project entity)
+    protected override void BeforeDelete(Project entity)
     {
       foreach (var col in entity.ProjectColumns ?? [])
       {

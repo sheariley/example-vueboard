@@ -17,13 +17,20 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
 
     public IEnumerable<WorkItem> GetAllForProjectColumns(IEnumerable<int> projectColumnIds)
     {
-      return GetQueryRoot().Where(wi => projectColumnIds.Contains(wi.ProjectColumnId)).ToList();
+      return GetQueryRoot()
+        .Where(wi => wi.ProjectColumnId.HasValue && projectColumnIds.Contains(wi.ProjectColumnId.Value))
+        .ToList();
     }
 
     public List<WorkItemTag> GetTagsForWorkItem(int workItemId)
     {
       var item = GetById(workItemId);
       return item?.WorkItemTags ?? new List<WorkItemTag>();
+    }
+
+    protected override void BeforeDelete(WorkItem entity)
+    {
+      entity.ProjectColumnId = null;
     }
   }
 }

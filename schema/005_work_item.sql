@@ -4,7 +4,7 @@ CREATE TABLE user_data.work_items (
   created timestamp DEFAULT CURRENT_TIMESTAMP,
   updated timestamp DEFAULT CURRENT_TIMESTAMP,
   is_deleted boolean DEFAULT false,
-  project_column_id integer NOT NULL REFERENCES user_data.project_columns (id) ON DELETE CASCADE,
+  project_column_id integer REFERENCES user_data.project_columns (id) ON DELETE CASCADE,
 
   title varchar(200) NOT NULL,
   description varchar(600) NULL,

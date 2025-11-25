@@ -19,11 +19,14 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
 
     public IEnumerable<ProjectColumn> GetAllForProjects(IEnumerable<int> projectIds)
     {
-      return GetQueryRoot().Where(pc => projectIds.Contains(pc.ProjectId)).ToList();
+      return GetQueryRoot()
+        .Where(pc => pc.ProjectId.HasValue && projectIds.Contains(pc.ProjectId.Value))
+        .ToList();
     }
 
-    protected override void AfterDelete(ProjectColumn entity)
+    protected override void BeforeDelete(ProjectColumn entity)
     {
+      entity.ProjectId = null;
       foreach (var workItem in entity.WorkItems ?? [])
       {
         _workItemRepo.Delete(workItem);

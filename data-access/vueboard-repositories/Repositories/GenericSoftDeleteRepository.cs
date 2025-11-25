@@ -13,7 +13,7 @@ namespace Vueboard.DataAccess.Repositories
       return GetRawQueryRoot().Where(x => !x.IsDeleted);
     }
 
-    protected virtual void AfterDelete(TEntity entity)
+    protected virtual void BeforeDelete(TEntity entity)
     {
       // DO NOTHING
     }
@@ -21,8 +21,8 @@ namespace Vueboard.DataAccess.Repositories
     public override bool Delete(TEntity? entity)
     {
       if (entity == null) return false;
+      BeforeDelete(entity);
       entity.IsDeleted = true;
-      AfterDelete(entity);
       return true;
     }
   }
