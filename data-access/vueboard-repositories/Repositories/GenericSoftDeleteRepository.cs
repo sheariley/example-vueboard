@@ -13,20 +13,16 @@ namespace Vueboard.DataAccess.Repositories
       return GetRawQueryRoot().Where(x => !x.IsDeleted);
     }
 
-    protected virtual IEnumerable<IVueboardSoftDeleteEntity> GetNestedSoftDeleteEntities(TEntity entity)
+    protected virtual void AfterDelete(TEntity entity)
     {
-      return Enumerable.Empty<IVueboardSoftDeleteEntity>();
+      // DO NOTHING
     }
 
     public override bool Delete(TEntity? entity)
     {
       if (entity == null) return false;
       entity.IsDeleted = true;
-      var nestedEntities = GetNestedSoftDeleteEntities(entity);
-      foreach (var nestedEntity in nestedEntities)
-      {
-        nestedEntity.IsDeleted = true;
-      }
+      AfterDelete(entity);
       return true;
     }
   }

@@ -5,9 +5,11 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
 {
   public class EFProjectColumnRepository : EFGenericSoftDeleteRepository<ProjectColumn>, IProjectColumnRepository
   {
-    public EFProjectColumnRepository(IVueboardDbContext context)
+    private readonly IWorkItemRepository _workItemRepo;
+    public EFProjectColumnRepository(IVueboardDbContext context, IWorkItemRepository workItemRepo)
       : base(context)
     {
+      _workItemRepo = workItemRepo;
     }
 
     public IEnumerable<ProjectColumn> GetAllForProject(int projectId)
@@ -20,9 +22,12 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
       return GetQueryRoot().Where(pc => projectIds.Contains(pc.ProjectId)).ToList();
     }
 
-    protected override IEnumerable<IVueboardSoftDeleteEntity> GetNestedSoftDeleteEntities(ProjectColumn entity)
+    protected override void AfterDelete(ProjectColumn entity)
     {
-      return entity.WorkItems.ToList();
+      foreach (var workItem in entity.WorkItems ?? [])
+      {
+        _workItemRepo.Delete(workItem);
+      }
     }
   }
 }

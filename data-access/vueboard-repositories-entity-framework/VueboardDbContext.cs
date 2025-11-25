@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Vueboard.DataAccess.Models;
 
 namespace Vueboard.DataAccess.Repositories.EntityFramework
@@ -68,6 +69,17 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
       where TEntity : class
     {
       base.Entry(entity).State = state;
+    }
+
+    public IEnumerable<EntityEntry> Entries()
+    {
+      return ChangeTracker.Entries();
+    }
+
+    public IEnumerable<EntityEntry<TEntity>> Entries<TEntity>()
+      where TEntity : class
+    {
+      return ChangeTracker.Entries<TEntity>();
     }
   }
 }

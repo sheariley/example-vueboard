@@ -60,7 +60,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
       else
       {
         // Remove columns not present in incoming project
-        var columnsToRemove = existingProject.ProjectColumns.Where(ec => !project.ProjectColumns.Any(pc => pc.Uid == ec.Uid)).ToList();
+        var columnsToRemove = existingProject.ProjectColumns.Where(ec => !ec.IsDeleted && !project.ProjectColumns.Any(pc => pc.Uid == ec.Uid)).ToList();
         foreach (var col in columnsToRemove)
         {
           _projectColumnRepo.Delete(col);
@@ -93,10 +93,13 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
             else
             {
               // Remove work items not present in incoming column
-              var workItemsToRemove = existingColumn.WorkItems.Where(ew => !column.WorkItems.Any(w => w.Uid == ew.Uid)).ToList();
+              var workItemsToRemove = existingColumn.WorkItems.Where(ew => !ew.IsDeleted && !column.WorkItems.Any(w => w.Uid == ew.Uid)).ToList();
               foreach (var wi in workItemsToRemove)
               {
-                _workItemRepo.Delete(wi);
+                existingColumn.WorkItems.Remove(wi);
+                // If the WorkItem is no longer attached to any columns, soft-delete it in the DB.
+                if (!project.ProjectColumns.Any(col => col.WorkItems?.Any(w => w.Uid == wi.Uid) ?? false))
+                  _workItemRepo.Delete(wi);
               }
 
               // Add new work items from incoming column
@@ -112,8 +115,15 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
                   // pull existingWorkItem from local entities, because it may not exist
                   // in the incoming ProjectColumn, as the user may have moved it to a diff column.
                   // This avoids an attempt to attach duplicate entities to the context.
-                  var existingWorkItem = _context.WorkItems.Local.FirstOrDefault(w => w.Uid == wi.Uid);
-                  existingColumn.WorkItems.Add(existingWorkItem?.UpdateScalarProperties(wi) ?? wi);
+                  var existingWorkItem = _context.Entries<WorkItem>()
+                    .FirstOrDefault(entry => entry.Entity.Uid == wi.Uid)?
+                    .Entity;
+                  if (existingWorkItem != null)
+                  {
+                    existingWorkItem.UpdateScalarProperties(wi);
+                    _context.SetEntityState(existingWorkItem, EntityState.Modified);
+                  }
+                  existingColumn.WorkItems.Add(existingWorkItem ?? wi);
                 }
               }
 
@@ -150,33 +160,11 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
       return true;
     }
 
-    protected override IEnumerable<IVueboardSoftDeleteEntity> GetNestedSoftDeleteEntities(Project entity)
+    protected override void AfterDelete(Project entity)
     {
-      var nestedEntities = new List<IVueboardSoftDeleteEntity>();
       foreach (var col in entity.ProjectColumns ?? [])
       {
-        nestedEntities.Add(col);
-        foreach (var workItem in col.WorkItems ?? [])
-        {
-          nestedEntities.Add(workItem);
-        }
-      }
-      return nestedEntities;
-    }
-    
-    // Equality comparer for WorkItemTag based on Uid
-    private class WorkItemTagUidEqualityComparer : IEqualityComparer<WorkItemTag>
-    {
-      public bool Equals(WorkItemTag? x, WorkItemTag? y)
-      {
-        if (ReferenceEquals(x, y)) return true;
-        if (x is null || y is null) return false;
-        return x.Uid.Equals(y.Uid);
-      }
-  
-      public int GetHashCode(WorkItemTag obj)
-      {
-        return obj.Uid.GetHashCode();
+        _projectColumnRepo.Delete(col);
       }
     }
   }

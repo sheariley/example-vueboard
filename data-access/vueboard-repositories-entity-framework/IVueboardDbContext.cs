@@ -21,5 +21,10 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
       where TEntity : class;
 
     DbSet<TEntity> Set<TEntity>() where TEntity : class;
+
+    IEnumerable<EntityEntry<TEntity>> Entries<TEntity>()
+      where TEntity : class;
+
+    IEnumerable<EntityEntry> Entries();
   }
 }
