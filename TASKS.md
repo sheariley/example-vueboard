@@ -22,6 +22,9 @@
 - [x] Implement client-side GraphQL services and ensure JWT is forwarded
 - [x] Wire up client-side GraphQL services to UI components
 - [ ] Polish front-end auth components
+- [ ] Add terms of use
+- [ ] Add privacy policy
+- [ ] Add cookie policy
 
 
 ## Web API Tasks
