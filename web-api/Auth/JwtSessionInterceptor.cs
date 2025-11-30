@@ -8,22 +8,16 @@ namespace Vueboard.Api.Auth
 {
   public class JwtSessionInterceptor : DbConnectionInterceptor
   {
-    private readonly ILogger _logger;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUserIdAccessor _userIdAccessor;
-    private readonly IServerEnvironment _env;
 
     public JwtSessionInterceptor(
-      ILogger<JwtSessionInterceptor> logger,
       IHttpContextAccessor accessor,
-      IUserIdAccessor userIdAccessor,
-      IServerEnvironment env
+      IUserIdAccessor userIdAccessor
     )
     {
-      _logger = logger;
       _httpContextAccessor = accessor;
       _userIdAccessor = userIdAccessor;
-      _env = env;
     }
 
     public override async Task ConnectionOpenedAsync(
@@ -59,15 +53,6 @@ namespace Vueboard.Api.Auth
       cmd.Parameters.Add(roleParam);
 
       await cmd.ExecuteNonQueryAsync(cancellationToken);
-
-      if (_env.EnvironmentType == ServerEnvironmentType.Development || _env.EnvironmentType == ServerEnvironmentType.Testing)
-      {
-        var verifyCmd = connection.CreateCommand();
-        // verifyCmd.CommandText = "SELECT auth.uid();";
-        verifyCmd.CommandText = "SELECT ((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text)";
-        var results = await verifyCmd.ExecuteScalarAsync() as string;
-        _logger.LogInformation($"Postgres session userId set to {results}");
-      }
     }
   }
 }
