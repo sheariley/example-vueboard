@@ -85,7 +85,7 @@
           icon: 'fa-solid fa-exclamation-triangle',
           class: 'translate-y-0.5'
         }),
-        "onUpdate:open": (open) => {
+        'onUpdate:open': open => {
           if (!open) currentProjectStore.dismissSaveError()
         }
       })

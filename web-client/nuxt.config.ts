@@ -41,7 +41,9 @@ export default defineNuxtConfig({
     public: {
       projectsApiBase: '',
       projectsGraphqlBase: '',
-      siteBaseUrl: ''
+      siteBaseUrl: '',
+      oauthAuthorizeHost: '',
+      selfHostedOauthClientId: ''
     }
   },
   
@@ -57,7 +59,11 @@ export default defineNuxtConfig({
     redirectOptions: {
       login: '/login',
       callback: '/auth-callback',
-      saveRedirectToCookie: true
+      saveRedirectToCookie: true,
+      exclude: [
+        '/auth-callback',
+        '/register'
+      ]
     }
   },
 
@@ -74,5 +80,10 @@ export default defineNuxtConfig({
 
   ui: {
     mdc: true
+  },
+
+  routeRules: {
+    '/oauth/**': { ssr: false },
+    '/auth-callback': { ssr: false }
   }
 })

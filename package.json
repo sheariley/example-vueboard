@@ -11,6 +11,6 @@
   },
   "dependencies": {
     "json-server": "0.17.4",
-    "supabase": "^2.58.5"
+    "supabase": "^2.62.5"
   }
 }
