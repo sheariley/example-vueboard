@@ -23,7 +23,10 @@
             {{ projectListItemsStore.loadError }}
           </template>
           <template #actions>
-            <UButton>
+            <UButton
+              color="primary"
+              @click="fetchListItems()"
+            >
               <FontAwesomeIcon icon="fa-solid fa-repeat" /> Retry
             </UButton>
           </template>
