@@ -1,3 +1,4 @@
+using System.Security.Authentication;
 using Vueboard.Api.Auth;
 using Vueboard.Api.GraphQL.Models;
 using Vueboard.DataAccess.Models;
@@ -14,9 +15,12 @@ namespace Vueboard.Api.GraphQL
       CreateProjectInput input
     )
     {
-      var projectUid = String.IsNullOrWhiteSpace(input.Uid) ? Guid.NewGuid() : Guid.Parse(input.Uid);
       var userId = userIdAccessor.GetUserId();
-      var project = InputMapping.MapToProject(input, userId, projectUid);
+
+      if (!userId.HasValue) throw new AuthenticationException();
+
+      var projectUid = String.IsNullOrWhiteSpace(input.Uid) ? Guid.NewGuid() : Guid.Parse(input.Uid);
+      var project = InputMapping.MapToProject(input, userId.Value!, projectUid);
       var newProject = projectRepo.Create(project);
       if (newProject != null) projectRepo.CommitChanges();
       return newProject;
@@ -29,7 +33,10 @@ namespace Vueboard.Api.GraphQL
     )
     {
       var userId = userIdAccessor.GetUserId();
-      var project = InputMapping.MapToProject(input, userId);
+
+      if (!userId.HasValue) throw new AuthenticationException();
+
+      var project = InputMapping.MapToProject(input, userId.Value!);
       var success = projectRepo.Update(project);
       if (success) projectRepo.CommitChanges();
       return success ? project : null;

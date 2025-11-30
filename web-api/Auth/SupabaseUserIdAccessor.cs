@@ -12,14 +12,14 @@ namespace Vueboard.Api.Auth
       _httpContextAccessor = httpContextAccessor;
     }
 
-    public Guid GetUserId()
+    public Guid? GetUserId()
     {
       // Extract Supabase User ID from JWT claims
       var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier) ??
                         _httpContextAccessor.HttpContext?.User?.FindFirst("sub");
       if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
       {
-        throw new Exception("Invalid user ID.");
+        return null;
       }
       
       return userId;

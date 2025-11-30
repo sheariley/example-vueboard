@@ -6,11 +6,11 @@ CREATE TABLE user_data.work_item_tag_refs (
 );
 
 -- Create policies for allowing select and insert
-CREATE POLICY "Allow anon to read from work_item_tag_refs"
+CREATE POLICY "Allow anon/authenticated to read from work_item_tag_refs"
 ON "user_data"."work_item_tag_refs"
 AS PERMISSIVE
 FOR SELECT
-TO anon
+TO anon, authenticated
 USING (
   EXISTS (
     SELECT 1 FROM user_data.work_items wi
@@ -21,11 +21,11 @@ USING (
   )
 );
 
-CREATE POLICY "Allow anon to insert into work_item_tag_refs"
+CREATE POLICY "Allow anon/authenticated to insert into work_item_tag_refs"
 ON "user_data"."work_item_tag_refs"
 AS PERMISSIVE
 FOR INSERT
-TO anon
+TO anon, authenticated
 WITH CHECK (
   EXISTS (
     SELECT 1 FROM user_data.work_items wi
@@ -36,11 +36,11 @@ WITH CHECK (
   )
 );
 
-CREATE POLICY "Allow anon to delete from work_item_tag_refs"
+CREATE POLICY "Allow anon/authenticated to delete from work_item_tag_refs"
 ON "user_data"."work_item_tag_refs"
 AS PERMISSIVE
 FOR DELETE
-TO anon
+TO anon, authenticated
 USING (
   EXISTS (
     SELECT 1 FROM user_data.work_items wi
@@ -54,12 +54,12 @@ USING (
 -- Remove default privileges
 REVOKE ALL PRIVILEGES
 ON TABLE "user_data"."work_item_tag_refs"
-FROM anon;
+FROM anon, authenticated;
 
 -- Grant select, insert, delete for anon
 GRANT SELECT, INSERT, DELETE
 ON TABLE "user_data"."work_item_tag_refs"
-TO anon;
+TO anon, authenticated;
 
 -- Enable RLS
 ALTER TABLE "user_data"."work_item_tag_refs" ENABLE ROW LEVEL SECURITY;

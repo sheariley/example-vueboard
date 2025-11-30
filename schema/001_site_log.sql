@@ -10,22 +10,22 @@ CREATE TABLE IF NOT EXISTS site_data.site_log (
 );
 
 -- Create policy for allowing insert
-CREATE POLICY "Allow anon to write to site_log"
+CREATE POLICY "Allow anon/authenticated to write to site_log"
 ON "site_data"."site_log"
 AS PERMISSIVE
 FOR INSERT
-TO anon
+TO anon, authenticated
 WITH CHECK (true);
 
 -- Remove default privileges
 REVOKE ALL PRIVILEGES
 ON TABLE site_data.site_log
-FROM anon;
+FROM anon, authenticated;
 
 -- Grant insert for anon
 GRANT INSERT
 ON TABLE site_data.site_log
-TO anon;
+TO anon, authenticated;
 
 -- Enable RLS
 ALTER TABLE "site_data"."site_log" ENABLE ROW LEVEL SECURITY;

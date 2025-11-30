@@ -18,7 +18,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework.Config
         Port = int.TryParse(Environment.GetEnvironmentVariable("SUPABASE_PORT"), out var p) ? p : 54329,
         DbName = Environment.GetEnvironmentVariable("POSTGRES_DB_NAME") ?? "postgres",
         DbUser = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres",
-        DbPassword = Environment.GetEnvironmentVariable("POSTGRES_PASS") ?? "postgres",
+        DbPassword = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "postgres",
         PoolerTenantId = Environment.GetEnvironmentVariable("POOLER_TENANT_ID"),
         EnableSensitvieDataLogging = _serverEnv.EnvironmentType == ServerEnvironmentType.Development
       };

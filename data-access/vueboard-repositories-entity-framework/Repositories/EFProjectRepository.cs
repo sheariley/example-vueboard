@@ -147,7 +147,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
                   foreach (var tag in tagsToAdd)
                   {
                     if (tag.Id <= 0)
-                      tag.UserId = _userIdAccessor.GetUserId();
+                      tag.UserId = _userIdAccessor.GetUserId()!.Value;
                     existingWorkItem.WorkItemTags.Add(tag);
                   }
 

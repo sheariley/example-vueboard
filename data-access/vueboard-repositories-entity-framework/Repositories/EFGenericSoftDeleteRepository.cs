@@ -56,7 +56,7 @@ namespace Vueboard.DataAccess.Repositories.EntityFramework
           Uid = Guid.NewGuid(),
           Deleted = DateTime.UtcNow,
           EntityType = entity.GetType().Name,
-          UserId = _userIdAccessor.GetUserId(),
+          UserId = _userIdAccessor.GetUserId()!.Value,
           ParentId = GetParentID(entity)
         });
       }

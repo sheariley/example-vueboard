@@ -16,11 +16,11 @@ CREATE TABLE user_data.project_columns (
 );
 
 -- Create policies for allowing select, insert, and update
-CREATE POLICY "Allow anon to read from project_columns"
+CREATE POLICY "Allow anon/authenticated to read from project_columns"
 ON "user_data"."project_columns"
 AS PERMISSIVE
 FOR SELECT
-TO anon
+TO anon, authenticated
 USING (
   EXISTS (
     SELECT 1 FROM user_data.projects p
@@ -29,11 +29,11 @@ USING (
   )
 );
 
-CREATE POLICY "Allow anon to insert into project_columns"
+CREATE POLICY "Allow anon/authenticated to insert into project_columns"
 ON "user_data"."project_columns"
 AS PERMISSIVE
 FOR INSERT
-TO anon
+TO anon, authenticated
 WITH CHECK (
   EXISTS (
     SELECT 1 FROM user_data.projects p
@@ -42,11 +42,11 @@ WITH CHECK (
   )
 );
 
-CREATE POLICY "Allow anon to update project_columns"
+CREATE POLICY "Allow anon/authenticated to update project_columns"
 ON "user_data"."project_columns"
 AS PERMISSIVE
 FOR UPDATE
-TO anon
+TO anon, authenticated
 WITH CHECK (
   EXISTS (
     SELECT 1 FROM user_data.projects p
@@ -58,12 +58,12 @@ WITH CHECK (
 -- Remove default privileges
 REVOKE ALL PRIVILEGES
 ON TABLE "user_data"."project_columns"
-FROM anon;
+FROM anon, authenticated;
 
 -- Grant select, insert, and update for anon
 GRANT SELECT, INSERT, UPDATE
 ON TABLE "user_data"."project_columns"
-TO anon;
+TO anon, authenticated;
 
 -- Enable RLS
 ALTER TABLE "user_data"."project_columns" ENABLE ROW LEVEL SECURITY;

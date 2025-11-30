@@ -27,39 +27,47 @@ grant select on table "user_data"."soft_deletes" to "anon";
 
 grant update on table "user_data"."soft_deletes" to "anon";
 
+grant delete on table "user_data"."soft_deletes" to "authenticated";
 
-  create policy "Allow anon to delete from soft_deletes"
+grant insert on table "user_data"."soft_deletes" to "authenticated";
+
+grant select on table "user_data"."soft_deletes" to "authenticated";
+
+grant update on table "user_data"."soft_deletes" to "authenticated";
+
+
+  create policy "Allow anon/authenticated to delete from soft_deletes"
   on "user_data"."soft_deletes"
   as permissive
   for delete
-  to anon
+  to anon, authenticated
 using ((((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (user_id)::text));
 
 
 
-  create policy "Allow anon to insert into soft_deletes"
+  create policy "Allow anon/authenticated to insert into soft_deletes"
   on "user_data"."soft_deletes"
   as permissive
   for insert
-  to anon
+  to anon, authenticated
 with check ((((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (user_id)::text));
 
 
 
-  create policy "Allow anon to read from soft_deletes"
+  create policy "Allow anon/authenticated to read from soft_deletes"
   on "user_data"."soft_deletes"
   as permissive
   for select
-  to anon
+  to anon, authenticated
 using ((((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (user_id)::text));
 
 
 
-  create policy "Allow anon to update soft_deletes"
+  create policy "Allow anon/authenticated to update soft_deletes"
   on "user_data"."soft_deletes"
   as permissive
   for update
-  to anon
+  to anon, authenticated
 with check ((((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (user_id)::text));
 
 

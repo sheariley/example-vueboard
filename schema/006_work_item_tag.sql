@@ -9,20 +9,20 @@ CREATE TABLE user_data.work_item_tags (
 );
 
 -- Create policies for allowing select, insert, and update
-CREATE POLICY "Allow anon to read from work_item_tags"
+CREATE POLICY "Allow anon/authenticated to read from work_item_tags"
 ON "user_data"."work_item_tags"
 AS PERMISSIVE
 FOR SELECT
-TO anon
+TO anon, authenticated
 USING (
   (current_setting('request.jwt.claims', true)::json ->> 'sub') = user_id::text
 );
 
-CREATE POLICY "Allow anon to insert into work_item_tags"
+CREATE POLICY "Allow anon/authenticated to insert into work_item_tags"
 ON "user_data"."work_item_tags"
 AS PERMISSIVE
 FOR INSERT
-TO anon
+TO anon, authenticated
 WITH CHECK (
   (current_setting('request.jwt.claims', true)::json ->> 'sub') = user_id::text
 );
@@ -30,12 +30,12 @@ WITH CHECK (
 -- Remove default privileges
 REVOKE ALL PRIVILEGES
 ON TABLE "user_data"."work_item_tags"
-FROM anon;
+FROM anon, authenticated;
 
 -- Grant select, insert, and update for anon
 GRANT SELECT, INSERT
 ON TABLE "user_data"."work_item_tags"
-TO anon;
+TO anon, authenticated;
 
 -- Enable RLS
 ALTER TABLE "user_data"."work_item_tags" ENABLE ROW LEVEL SECURITY;

@@ -10,38 +10,38 @@ CREATE TABLE user_data.soft_deletes (
 );
 
 -- Create policies for allowing select, insert, update, and delete
-CREATE POLICY "Allow anon to read from soft_deletes"
+CREATE POLICY "Allow anon/authenticated to read from soft_deletes"
 ON "user_data"."soft_deletes"
 AS PERMISSIVE
 FOR SELECT
-TO anon
+TO anon, authenticated
 USING (
   (current_setting('request.jwt.claims', true)::json ->> 'sub') = user_id::text
 );
 
-CREATE POLICY "Allow anon to insert into soft_deletes"
+CREATE POLICY "Allow anon/authenticated to insert into soft_deletes"
 ON "user_data"."soft_deletes"
 AS PERMISSIVE
 FOR INSERT
-TO anon
+TO anon, authenticated
 WITH CHECK (
   (current_setting('request.jwt.claims', true)::json ->> 'sub') = user_id::text
 );
 
-CREATE POLICY "Allow anon to update soft_deletes"
+CREATE POLICY "Allow anon/authenticated to update soft_deletes"
 ON "user_data"."soft_deletes"
 AS PERMISSIVE
 FOR UPDATE
-TO anon
+TO anon, authenticated
 WITH CHECK (
   (current_setting('request.jwt.claims', true)::json ->> 'sub') = user_id::text
 );
 
-CREATE POLICY "Allow anon to delete from soft_deletes"
+CREATE POLICY "Allow anon/authenticated to delete from soft_deletes"
 ON "user_data"."soft_deletes"
 AS PERMISSIVE
 FOR DELETE
-TO anon
+TO anon, authenticated
 USING (
   (current_setting('request.jwt.claims', true)::json ->> 'sub') = user_id::text
 );
@@ -49,12 +49,12 @@ USING (
 -- Remove default privileges
 REVOKE ALL PRIVILEGES
 ON TABLE "user_data"."soft_deletes"
-FROM anon;
+FROM anon, authenticated;
 
 -- Grant select, insert, and update for anon
 GRANT SELECT, INSERT, UPDATE, DELETE
 ON TABLE "user_data"."soft_deletes"
-TO anon;
+TO anon, authenticated;
 
 -- Enable RLS
 ALTER TABLE "user_data"."soft_deletes" ENABLE ROW LEVEL SECURITY;

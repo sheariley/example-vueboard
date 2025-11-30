@@ -185,79 +185,109 @@ grant select on table "user_data"."work_item_tag_refs" to "anon";
 
 grant delete on table "user_data"."work_item_tag_refs" to "anon";
 
+grant insert on table "site_data"."site_log" to "authenticated";
 
-  create policy "Allow anon to write to site_log"
+grant insert on table "user_data"."project_columns" to "authenticated";
+
+grant select on table "user_data"."project_columns" to "authenticated";
+
+grant update on table "user_data"."project_columns" to "authenticated";
+
+grant insert on table "user_data"."projects" to "authenticated";
+
+grant select on table "user_data"."projects" to "authenticated";
+
+grant update on table "user_data"."projects" to "authenticated";
+
+grant delete on table "user_data"."work_item_tag_refs" to "authenticated";
+
+grant insert on table "user_data"."work_item_tag_refs" to "authenticated";
+
+grant select on table "user_data"."work_item_tag_refs" to "authenticated";
+
+grant insert on table "user_data"."work_item_tags" to "authenticated";
+
+grant select on table "user_data"."work_item_tags" to "authenticated";
+
+grant insert on table "user_data"."work_items" to "authenticated";
+
+grant select on table "user_data"."work_items" to "authenticated";
+
+grant update on table "user_data"."work_items" to "authenticated";
+
+
+  create policy "Allow anon/authenticated to write to site_log"
   on "site_data"."site_log"
   as permissive
   for insert
-  to anon
+  to anon, authenticated
 with check (true);
 
 
 
-  create policy "Allow anon to insert into projects"
+  create policy "Allow anon/authenticated to insert into projects"
   on "user_data"."projects"
   as permissive
   for insert
-  to anon
+  to anon, authenticated
 with check ((((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (user_id)::text));
 
 
 
-  create policy "Allow anon to read from projects"
+  create policy "Allow anon/authenticated to read from projects"
   on "user_data"."projects"
   as permissive
   for select
-  to anon
+  to anon, authenticated
 using ((((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (user_id)::text));
 
 
 
-  create policy "Allow anon to update projects"
+  create policy "Allow anon/authenticated to update projects"
   on "user_data"."projects"
   as permissive
   for update
-  to anon
+  to anon, authenticated
 with check ((((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (user_id)::text));
 
 
 
-  create policy "Allow anon to insert into project_columns"
+  create policy "Allow anon/authenticated to insert into project_columns"
   on "user_data"."project_columns"
   as permissive
   for insert
-  to anon
+  to anon, authenticated
 with check ((EXISTS ( SELECT 1
    FROM user_data.projects p
   WHERE ((p.id = project_columns.project_id) AND (((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (p.user_id)::text)))));
 
 
 
-  create policy "Allow anon to read from project_columns"
+  create policy "Allow anon/authenticated to read from project_columns"
   on "user_data"."project_columns"
   as permissive
   for select
-  to anon
+  to anon, authenticated
 using ((EXISTS ( SELECT 1
    FROM user_data.projects p
   WHERE ((p.id = project_columns.project_id) AND (((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (p.user_id)::text)))));
 
 
 
-  create policy "Allow anon to update project_columns"
+  create policy "Allow anon/authenticated to update project_columns"
   on "user_data"."project_columns"
   as permissive
   for update
-  to anon
+  to anon, authenticated
 with check ((EXISTS ( SELECT 1
    FROM user_data.projects p
   WHERE ((p.id = project_columns.project_id) AND (((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (p.user_id)::text)))));
 
-  create policy "Allow anon to insert into work_items"
+  create policy "Allow anon/authenticated to insert into work_items"
   on "user_data"."work_items"
   as permissive
   for insert
-  to anon
+  to anon, authenticated
 with check ((EXISTS ( SELECT 1
    FROM (user_data.project_columns pc
      JOIN user_data.projects p ON ((pc.project_id = p.id)))
@@ -265,11 +295,11 @@ with check ((EXISTS ( SELECT 1
 
 
 
-  create policy "Allow anon to read from work_items"
+  create policy "Allow anon/authenticated to read from work_items"
   on "user_data"."work_items"
   as permissive
   for select
-  to anon
+  to anon, authenticated
 using ((EXISTS ( SELECT 1
    FROM (user_data.project_columns pc
      JOIN user_data.projects p ON ((pc.project_id = p.id)))
@@ -277,11 +307,11 @@ using ((EXISTS ( SELECT 1
 
 
 
-  create policy "Allow anon to update work_items"
+  create policy "Allow anon/authenticated to update work_items"
   on "user_data"."work_items"
   as permissive
   for update
-  to anon
+  to anon, authenticated
 with check ((EXISTS ( SELECT 1
    FROM (user_data.project_columns pc
      JOIN user_data.projects p ON ((pc.project_id = p.id)))
@@ -289,29 +319,29 @@ with check ((EXISTS ( SELECT 1
 
 
 
-  create policy "Allow anon to insert into work_item_tags"
+  create policy "Allow anon/authenticated to insert into work_item_tags"
   on "user_data"."work_item_tags"
   as permissive
   for insert
-  to anon
+  to anon, authenticated
 with check ((((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (user_id)::text));
 
 
 
-  create policy "Allow anon to read from work_item_tags"
+  create policy "Allow anon/authenticated to read from work_item_tags"
   on "user_data"."work_item_tags"
   as permissive
   for select
-  to anon
+  to anon, authenticated
 using ((((current_setting('request.jwt.claims'::text, true))::json ->> 'sub'::text) = (user_id)::text));
 
 
 
-  create policy "Allow anon to insert into work_item_tag_refs"
+  create policy "Allow anon/authenticated to insert into work_item_tag_refs"
   on "user_data"."work_item_tag_refs"
   as permissive
   for insert
-  to anon
+  to anon, authenticated
 with check ((EXISTS ( SELECT 1
    FROM ((user_data.work_items wi
      JOIN user_data.project_columns pc ON ((wi.project_column_id = pc.id)))
@@ -320,11 +350,11 @@ with check ((EXISTS ( SELECT 1
 
 
 
-  create policy "Allow anon to read from work_item_tag_refs"
+  create policy "Allow anon/authenticated to read from work_item_tag_refs"
   on "user_data"."work_item_tag_refs"
   as permissive
   for select
-  to anon
+  to anon, authenticated
 using ((EXISTS ( SELECT 1
    FROM ((user_data.work_items wi
      JOIN user_data.project_columns pc ON ((wi.project_column_id = pc.id)))
@@ -333,11 +363,11 @@ using ((EXISTS ( SELECT 1
 
 
 
-  create policy "Allow anon to delete from work_item_tag_refs"
+  create policy "Allow anon/authenticated to delete from work_item_tag_refs"
   on "user_data"."work_item_tag_refs"
   as permissive
   for delete
-  to anon
+  to anon, authenticated
 using ((EXISTS ( SELECT 1
    FROM ((user_data.work_items wi
      JOIN user_data.project_columns pc ON ((wi.project_column_id = pc.id)))

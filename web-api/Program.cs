@@ -17,14 +17,15 @@ var serverEnvironment = ServerEnvironment.FromEnvironmentVariables();
 builder.Services.AddSingleton(serverEnvironment);
 
 // Minimal configuration - in real project use configuration providers and secrets
-builder.Services.AddLogging();
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 // JWT Bearer authentication (validate token signature/claims) - configuration via env vars
 var jwtIssuer = builder.Configuration["JWT:Issuer"] ?? "http://localhost:54321";
 var jwtAudience = builder.Configuration["JWT:Audience"] ?? "authenticated";
 var jwtSecret = builder.Configuration["JWT:Secret"] ?? "super-secret-jwt-token-with-at-least-32-characters-long";
 
-// HINT: To get the JWT Secret from Supabase, you can run `show app.settings.jwt_secret;` in the SQL Editor tab.
+// NOTE: To get the JWT Secret from Supabase, you can run `show app.settings.jwt_secret;` in the SQL Editor tab.
 
 builder.Services.AddAuthentication(options =>
 {
@@ -47,8 +48,8 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IUserIdAccessor, SupabaseUserIdAccessor>();
 builder.Services.AddSingleton<JwtSessionInterceptor>();
-builder.Services.AddScoped<IUserIdAccessor, SupabaseUserIdAccessor>();
 
 // CORS configuration
 var allowedOrigins = builder.Configuration["CORS_ALLOWED_ORIGINS"] ?? "";
@@ -131,6 +132,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGraphQL();
+app.MapGraphQLHttp().RequireAuthorization();
+
 // Playground for local dev
 app.MapGet("/", () => Results.Redirect("/graphql"));
 

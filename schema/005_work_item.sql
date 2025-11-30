@@ -17,11 +17,11 @@ CREATE TABLE user_data.work_items (
 );
 
 -- Create policies for allowing select, insert, and update
-CREATE POLICY "Allow anon to read from work_items"
+CREATE POLICY "Allow anon/authenticated to read from work_items"
 ON "user_data"."work_items"
 AS PERMISSIVE
 FOR SELECT
-TO anon
+TO anon, authenticated
 USING (
   EXISTS (
     SELECT 1 FROM user_data.project_columns pc
@@ -31,11 +31,11 @@ USING (
   )
 );
 
-CREATE POLICY "Allow anon to insert into work_items"
+CREATE POLICY "Allow anon/authenticated to insert into work_items"
 ON "user_data"."work_items"
 AS PERMISSIVE
 FOR INSERT
-TO anon
+TO anon, authenticated
 WITH CHECK (
   EXISTS (
     SELECT 1 FROM user_data.project_columns pc
@@ -45,11 +45,11 @@ WITH CHECK (
   )
 );
 
-CREATE POLICY "Allow anon to update work_items"
+CREATE POLICY "Allow anon/authenticated to update work_items"
 ON "user_data"."work_items"
 AS PERMISSIVE
 FOR UPDATE
-TO anon
+TO anon, authenticated
 WITH CHECK (
   EXISTS (
     SELECT 1 FROM user_data.project_columns pc
@@ -62,12 +62,12 @@ WITH CHECK (
 -- Remove default privileges
 REVOKE ALL PRIVILEGES
 ON TABLE "user_data"."work_items"
-FROM anon;
+FROM anon, authenticated;
 
 -- Grant select, insert, and update for anon
 GRANT SELECT, INSERT, UPDATE
 ON TABLE "user_data"."work_items"
-TO anon;
+TO anon, authenticated;
 
 -- Enable RLS
 ALTER TABLE "user_data"."work_items" ENABLE ROW LEVEL SECURITY;
