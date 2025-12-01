@@ -1,5 +1,15 @@
 <template>
-  <div class="flex flex-col gap-2 divide-y divide-default items-stretch mb-4 overflow-y-hidden layout-fixed">
+  <template v-if="currentProjectStore.loading">
+    <USkeleton class="h-[150px]" />
+    <div class="flex items-stretch flex-nowrap gap-4 flex-1 *:flex-1">
+      <USkeleton />
+      <USkeleton />
+      <USkeleton />
+    </div>
+  </template>
+  <template v-else-if="currentProjectStore.loadError">
+  </template>
+  <div v-else class="flex flex-col gap-2 divide-y divide-default items-stretch mb-4 overflow-y-hidden layout-fixed">
     <div class="flex flex-nowrap justify-between">
       <div class="flex items-baseline gap-1">
         <h1 class="text-2xl">{{ title }}</h1>
@@ -63,6 +73,10 @@
 </template>
 
 <script lang="ts" setup>
+  const props = defineProps<{
+    projectUid: string
+  }>()
+
   import type { ProjectColumn } from '~/types'
   import { createFontAwesomeIcon } from '~/util/createFontAwesomeIcon'
   
@@ -72,6 +86,16 @@
   const currentProjectStore = useCurrentProjectStore()
 
   const { title, description, projectColumns: columns } = storeToRefs(currentProjectStore)
+
+  onMounted(async () => {
+    if (props.projectUid === 'new') {
+      // reset to "new project" state
+      currentProjectStore.initNewProject()
+      currentProjectStore.loading = false
+    } else if (!!props.projectUid.length) {
+      currentProjectStore.fetchProject(props.projectUid)
+    }
+  })
 
   watch(() => currentProjectStore.saveError, (value, oldValue) => {
     if (value && !oldValue) {

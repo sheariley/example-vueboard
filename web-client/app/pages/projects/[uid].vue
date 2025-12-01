@@ -1,35 +1,14 @@
 <template>
   <UContainer id="container-main" class="flex flex-col flex-1 py-6 items-stretch gap-4">
-    <template v-if="currentProjectStore.loading">
-      <USkeleton class="h-[150px]" />
-      <div class="flex items-stretch flex-nowrap gap-4 flex-1 *:flex-1">
-        <USkeleton />
-        <USkeleton />
-        <USkeleton />
-      </div>
-    </template>
-    <template v-else-if="currentProjectStore.loadError">
-    </template>
-    <template v-else>
-      <ProjectBoard />
-    </template>
+    <ProjectBoard :projectUid="projectUid" />
   </UContainer>
 </template>
 
 <script lang="ts" setup>
-  const currentProjectStore = useCurrentProjectStore()
-
   const route = useRoute()
-
-  const projectUid = route.params.uid as string;
+  const projectUid = ref<string>('')
   
   onMounted(() => {
-    if (projectUid === 'new') {
-      // reset to "new project" state
-      currentProjectStore.initNewProject()
-      currentProjectStore.loading = false
-    } else if (!!projectUid) {
-      currentProjectStore.fetchProject(projectUid)
-    }
+    projectUid.value = route.params.uid as string
   })
 </script>
