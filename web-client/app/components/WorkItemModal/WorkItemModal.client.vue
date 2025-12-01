@@ -145,6 +145,14 @@
 
           <UFormField name="tags" label="Tags">
             <UFieldGroup class="w-full">
+              <datalist id="work-item-tags">
+                <option 
+                  v-for="tag of availWorkItemTags"
+                  :key="tag.uid"
+                  :value="tag.tagText"
+                >
+                </option>
+              </datalist>
               <UInputTags
                 placeholder="Tags"
                 v-model="state.workItemTags"
@@ -153,7 +161,15 @@
                 name="tags"
                 variant="subtle"
                 color="neutral"
-                class="w-full"
+                list="work-item-tags"
+                :class="{
+                  'w-full': true,
+                  'rounded-r-none': !isEqual(state.workItemTags, original!.workItemTags)
+                }"
+                :delete-icon="createFontAwesomeIcon({
+                  icon: 'fa-solid fa-xmark',
+                  class: 'translate-y-0.25 cursor-pointer'
+                })"
               />
               <UButton
                 color="neutral"
@@ -193,6 +209,7 @@
   import { WorkItemOptionsSchema } from '~/types'
   import isEqual from 'lodash/isEqual'
   import type { WorkItemTag } from '~/types/work-item-tag'
+  import { createFontAwesomeIcon } from '~/util/createFontAwesomeIcon'
 
   const currentProjectStore = useCurrentProjectStore()
   const workItemTagStore = useWorkItemTagStore()
@@ -200,6 +217,11 @@
   const { editingWorkItem: state, workItemEditTarget: original } = storeToRefs(currentProjectStore)
 
   const isValid = ref(false)
+
+  const availWorkItemTags = computed(() => {
+    return workItemTagStore.workItemTags
+      ?.filter(t => !state.value?.workItemTags?.some(x => x.tagText === t.tagText))
+  })
 
   watch(() => currentProjectStore.editingWorkItem, async (state, oldState) => {
     if (state) {
