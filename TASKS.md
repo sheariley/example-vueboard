@@ -16,6 +16,7 @@
 - [x] Allow adding of new projects
 - [ ] Add list of projects to main nav menu
 - [x] Allow saving of projects
+- [ ] Allow deleting of projects
 - [ ] Add undo functionality at Project entity level???
 - [ ] Add tooltips to all buttons
 - [x] Implement front-end auth components
