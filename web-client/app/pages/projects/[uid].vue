@@ -1,6 +1,6 @@
 <template>
   <UContainer id="container-main" class="flex flex-col flex-1 py-6 items-stretch gap-4">
-    <ProjectBoard :projectUid="projectUid" />
+    <ProjectBoard v-if="projectUid.length" :projectUid="projectUid" />
   </UContainer>
 </template>
 
