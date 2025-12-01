@@ -5,6 +5,7 @@ import { useProjectsGraphQLClient } from '~/api-clients/projects-graphql-client'
 import { DefaultWorkItemTagState, type WorkItemTag } from '~/types/work-item-tag'
 
 export const useWorkItemTagStore = defineStore('workItemTagStore', () => {
+  const projectsApiClient = useProjectsGraphQLClient();
   const workItemTags = ref<WorkItemTag[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
@@ -14,8 +15,7 @@ export const useWorkItemTagStore = defineStore('workItemTagStore', () => {
     loading.value = true
     error.value = null
     try {
-      const client = useProjectsGraphQLClient()
-      workItemTags.value = await client.fetchAllWorkItemTags()
+      workItemTags.value = await projectsApiClient.fetchAllWorkItemTags()
       loaded.value = true
     } catch (err: any) {
       error.value = err?.message || 'Failed to fetch tags'
