@@ -10,9 +10,9 @@ export const useAuthStore = defineStore('authStore', () => {
   
   const postAuthRedirectPath = computed(() => _redirectInfo.path.value);
 
-  const _currentOAuthProvider = createSessionStorageComputed<OAuthProvider>('cur_oauth_provider')
-  const _codeVerifier = createSessionStorageComputed('code_verifier')
-  const _oauthRequestId = createSessionStorageComputed('oauth_request_id')
+  const _currentOAuthProvider = createStorageComputed<OAuthProvider>('cur_oauth_provider', localStorage)
+  const _codeVerifier = createStorageComputed('code_verifier')
+  const _oauthRequestId = createStorageComputed('oauth_request_id')
 
   const _signinError = ref<string | null>(null);
   const signinError = computed(() => _signinError.value);
@@ -27,8 +27,11 @@ export const useAuthStore = defineStore('authStore', () => {
     return meta?.avatar_url || null;
   });
 
-  const _accessToken = ref<string>()
-  const accessToken = computed(() => _accessToken.value);
+  const _accessToken = createStorageComputed('oauth_access_token', localStorage)
+  const accessToken = computed(() => _accessToken.value); // expose read-only prop
+  const _refreshToken = createStorageComputed('oauth_refresh_token', localStorage)
+  const _tokenExpiry = createStorageComputed('oauth_token_expiry', localStorage)
+  let _tokenRefreshTimeout: NodeJS.Timeout | null = null;
 
   const isAuthenticated = computed(() => !!_accessToken.value);
 
@@ -180,17 +183,54 @@ export const useAuthStore = defineStore('authStore', () => {
     }
 
     // get access token from response and store it
-    const tokens: OAuthAuthTokenResponse = await response.json();
-    _accessToken.value = tokens.access_token
-    supabase.auth.setSession({
-      access_token: tokens.access_token,
-      refresh_token: tokens.refresh_token
-    })
+    const result: OAuthAuthTokenResponse = await response.json();
+    _accessToken.value = result.access_token
+    _refreshToken.value = result.refresh_token
+    _tokenExpiry.value = result.expires_in?.toString()
+    
+    startSelfOAuthTokenRefresh()
 
     return true
   }
 
-  // TODO: Add refresh token logic
+  function startSelfOAuthTokenRefresh() {
+    const expiry = Number(_tokenExpiry.value || 3600)
+    _tokenRefreshTimeout = setTimeout(() => refreshSelfOAuthAccessToken(), (expiry - 120) * 1000)
+  }
+
+  function stopSelfOAuthTokenRefresh() {
+    if (_tokenRefreshTimeout) clearTimeout(_tokenRefreshTimeout)
+  }
+
+  async function refreshSelfOAuthAccessToken() {
+    // Pause the refresh cycle while we refresh
+    stopSelfOAuthTokenRefresh()
+
+    const endpointUrl = `${config.public.oauthAuthorizeHost}/auth/v1/oauth/token`
+    const response = await fetch(endpointUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: _refreshToken.value!,
+        client_id: config.public.selfHostedOauthClientId
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to refresh token')
+    }
+
+    const result: OAuthAuthTokenResponse = await response.json()
+    _accessToken.value = result.access_token
+    _refreshToken.value = result.refresh_token
+    _tokenExpiry.value = result.expires_in?.toString()
+
+    // Resume the refresh cycle
+    startSelfOAuthTokenRefresh()
+  }
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -236,19 +276,21 @@ export const useAuthStore = defineStore('authStore', () => {
     denyConsent,
     approveConsent,
     finalizeSelfOAuth,
+    startSelfOAuthTokenRefresh,
+    stopSelfOAuthTokenRefresh,
     signOut,
     dismissSigninError,
   };
 });
 
-function createSessionStorageComputed<T extends (string | null) = string | null>(key: string) {
+function createStorageComputed<T extends (string | null) = string | null>(key: string, storage: Storage = sessionStorage) {
   return computed<T>({
-    get: () => (sessionStorage.getItem(key)) as T,
+    get: () => (storage.getItem(key)) as T,
     set: (value: T) => {
       if (value === null)
-        sessionStorage.removeItem(key)
+        storage.removeItem(key)
       else
-        sessionStorage.setItem(key, value)
+        storage.setItem(key, value)
     }
   })
 }
